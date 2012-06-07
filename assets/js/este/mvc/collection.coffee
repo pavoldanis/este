@@ -1,12 +1,7 @@
 ###*
   @fileoverview Collection.
   
-  Why not plain array?
-    - uninheritable
-    - closure templates for items needs object with array property
-
   todo
-    add optional type.. update tojson etc.
     find, sort, filter
 ###
 
@@ -17,10 +12,11 @@ goog.require 'goog.events.EventTarget'
 
 ###*
   @param {Array=} opt_array
+  @param {Function=} model
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.mvc.Collection = (opt_array) ->
+este.mvc.Collection = (opt_array, @model = null) ->
   goog.base @
   @array = []
   @addMany opt_array if opt_array
@@ -46,6 +42,12 @@ goog.scope ->
   _::array
 
   ###*
+    @type {Function}
+    @protected
+  ###
+  _::model
+
+  ###*
     @param {*} object Object to add.
   ###
   _::add = (object) ->
@@ -57,7 +59,10 @@ goog.scope ->
   ###
   _::addMany = (array) ->
     for item in array
-      @array.push item
+      if @model
+        @array.push new @model item
+      else
+        @array.push item
       item.setParentEventTarget @ if item instanceof goog.events.EventTarget
     @dispatchEvent
       type: _.EventType.ADD
@@ -69,16 +74,9 @@ goog.scope ->
     @return {boolean} True if an element was removed.
   ###
   _::remove = (object) ->
-    return false if !goog.array.remove @array, object
-    object.setParentEventTarget null if object instanceof goog.events.EventTarget
-    @dispatchEvent
-      type: _.EventType.REMOVE
-      removed: [object]
-    @dispatchChangeEvent [object]
-    true
+    @removeMany [object]
 
   ###*
-    todo: tests
     @param {Array} array Objects to remove.
     @return {boolean} True if any element was removed.
   ###
@@ -113,6 +111,13 @@ goog.scope ->
   ###
   _::contains = (object) ->
     goog.array.contains @array, object
+
+  ###*
+    @param {number} index
+    @return {*}
+  ###
+  _::at = (index) ->
+    @array[index]
 
   ###*
     @return {number}

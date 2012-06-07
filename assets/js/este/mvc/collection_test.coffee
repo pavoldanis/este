@@ -17,6 +17,16 @@ suite 'este.mvc.Collection', ->
       collection = new Collection json
       assert.deepEqual collection.toJson(), json
 
+  suite 'model property', ->
+    test 'should wrap json', ->
+      json = [
+        a: 1
+      ,
+        b: 2
+      ]
+      collection = new Collection json, Model
+      assert.instanceOf collection.at(0), Model
+
   suite 'add and remove', ->
     test 'should work', ->
       assert.equal collection.getLength(), 0
@@ -75,12 +85,39 @@ suite 'este.mvc.Collection', ->
       collection.remove 1
       assert.isFalse removeCalled
       assert.isFalse changeCalled
+
+  suite 'removeMany', ->
+    test 'should fire remove, change events', ->
+      removeCalled = changeCalled = false
+      removed = null
+      collection.add 1
+      goog.events.listen collection, 'remove', (e) ->
+        removed = e.removed
+        removeCalled = true
+      goog.events.listen collection, 'change', -> changeCalled = true
+      collection.removeMany [1]
+      assert.isTrue removeCalled, 'removeCalled'
+      assert.isTrue changeCalled, 'changeCalled'
+      assert.deepEqual removed, [1]
+
+    test 'should not fire remove, change events', ->
+      removeCalled = changeCalled = false
+      goog.events.listen collection, 'remove', -> removeCalled = true
+      goog.events.listen collection, 'change', -> changeCalled = true
+      collection.removeMany [1]
+      assert.isFalse removeCalled
+      assert.isFalse changeCalled
       
   suite 'contains', ->
     test 'should return true if obj is present', ->
       assert.isFalse collection.contains 1
       collection.add 1
       assert.isTrue collection.contains 1
+
+  suite 'at', ->
+    test 'should return item by index', ->
+      collection.add 1
+      assert.equal collection.at(0), 1
 
   suite 'toJson', ->
     test 'should return inner array', ->
