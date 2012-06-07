@@ -93,7 +93,6 @@ goog.scope ->
     true
 
   ###*
-    todo: tests etc.
     @param {Function} callback
   ###
   _::removeIf = (callback) ->

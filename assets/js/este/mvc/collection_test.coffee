@@ -114,6 +114,13 @@ suite 'este.mvc.Collection', ->
       collection.add 1
       assert.isTrue collection.contains 1
 
+  suite 'removeIf', ->
+    test 'should remove item', ->
+      collection.add 1
+      assert.isTrue collection.contains 1
+      collection.removeIf (item) -> item == 1
+      assert.isFalse collection.contains 1
+
   suite 'at', ->
     test 'should return item by index', ->
       collection.add 1
