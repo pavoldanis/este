@@ -58,16 +58,16 @@ goog.scope ->
     @param {Array} array Objects to add.
   ###
   _::addMany = (array) ->
+    added = []
     for item in array
-      if @model
-        @array.push new @model item
-      else
-        @array.push item
+      item = if @model then new @model item else item
+      added.push item
       item.setParentEventTarget @ if item instanceof goog.events.EventTarget
+    @array.push.apply @array, added
     @dispatchEvent
       type: _.EventType.ADD
-      added: array
-    @dispatchChangeEvent array
+      added: added
+    @dispatchChangeEvent added
 
   ###*
     @param {*} object Object to remove.

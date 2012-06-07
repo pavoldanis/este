@@ -27,6 +27,13 @@ suite 'este.mvc.Collection', ->
       collection = new Collection json, Model
       assert.instanceOf collection.at(0), Model
 
+    test 'should dispatch add event with models, not jsons', (done) ->
+      collection = new Collection null, Model
+      goog.events.listenOnce collection, 'add', (e) ->
+        assert.instanceOf e.added[0], Model
+        done()
+      collection.add a: 1
+
   suite 'add and remove', ->
     test 'should work', ->
       assert.equal collection.getLength(), 0
