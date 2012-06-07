@@ -1,4 +1,5 @@
 ###*
+  Inspired from Modernizr
   este.userAgent.propagateSupport 'overflowScrolling'
   document.title = goog.dom.classes.has document.documentElement, 'support-overflow-scrolling'
 ###

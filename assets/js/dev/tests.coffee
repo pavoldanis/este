@@ -25,14 +25,6 @@ getTestFiles = ->
     return if testFilePath.slice(-8) != '_test.js'
     filePath = testFilePath.slice(0, -8) + '.js'
     files[filePath] = testFilePath 
-  getDirectoryFiles 'assets/js/tracker', (testFilePath) ->
-    return if testFilePath.slice(-8) != '_test.js'
-    filePath = testFilePath.slice(0, -8) + '.js'
-    files[filePath] = testFilePath 
-  getDirectoryFiles 'assets/js/mobile', (testFilePath) ->
-    return if testFilePath.slice(-8) != '_test.js'
-    filePath = testFilePath.slice(0, -8) + '.js'
-    files[filePath] = testFilePath 
   files
 
 ###*

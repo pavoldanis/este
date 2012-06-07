@@ -15,11 +15,11 @@ goog.require 'goog.uri.utils'
 
 ###*
   @param {Object} routes
-  @param {boolean} forceHash If true, este.History will degrade to hash even if html5history is supported
+  @param {boolean=} forceHash If true, este.History will degrade to hash even if html5history is supported
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.mvc.Router = (@routes, forceHash) ->
+este.mvc.Router = (@routes, forceHash = false) ->
   @history = new este.History forceHash
   @handler = new goog.events.EventHandler @
   @tapEventHandler = new este.events.TapEventHandler document.body, @targetFilter

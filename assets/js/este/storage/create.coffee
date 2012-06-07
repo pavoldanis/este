@@ -7,11 +7,11 @@ goog.require 'goog.storage.mechanism.mechanismfactory'
 goog.require 'goog.storage.Storage'
 
 ###*
-  @param {string} storageKey
+  @param {string} key
   @return {goog.storage.Storage}
 ###
-este.storage.create = (storageKey) ->
-  mechanism = goog.storage.mechanism.mechanismfactory.create storageKey
+este.storage.create = (key) ->
+  mechanism = goog.storage.mechanism.mechanismfactory.create 'este::' + key
   `mechanism = /** @type {goog.storage.mechanism.Mechanism} */ (mechanism)`
   return null if !mechanism
   new goog.storage.Storage mechanism

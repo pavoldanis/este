@@ -6,6 +6,7 @@
     - closure templates for items needs object with array property
 
   todo
+    add optional type.. update tojson etc.
     find, sort, filter
 ###
 
@@ -48,12 +49,7 @@ goog.scope ->
     @param {*} object Object to add.
   ###
   _::add = (object) ->
-    @array.push object
-    object.setParentEventTarget @ if object instanceof goog.events.EventTarget
-    @dispatchEvent
-      type: _.EventType.ADD
-      added: [object]
-    @dispatchChangeEvent object
+    @addMany [object]
     return
 
   ###*
@@ -78,7 +74,7 @@ goog.scope ->
     @dispatchEvent
       type: _.EventType.REMOVE
       removed: [object]
-    @dispatchChangeEvent object
+    @dispatchChangeEvent [object]
     true
 
   ###*
@@ -107,7 +103,6 @@ goog.scope ->
     @removeMany toRemove
 
   _::dispatchChangeEvent = (items) ->
-    items = [items] if !goog.isArray items
     @dispatchEvent
       type: _.EventType.CHANGE
       items: items

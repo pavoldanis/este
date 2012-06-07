@@ -1,5 +1,8 @@
 ###*
   @fileoverview Model with attributes and schema.
+
+  todo
+    clientId for rendering... consider
   
   Why not plain objects
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/

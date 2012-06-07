@@ -2,7 +2,7 @@
 	"folders":
 	[
 		{
-			"path": "/Users/daniel/dev/este",
+			"path": "/Users/este/dev/este",
 			"file_exclude_patterns": [
 				"assets/js/app/*.js",
 				"assets/js/dev/*.js",

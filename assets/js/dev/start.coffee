@@ -2,10 +2,7 @@
   node assets/js/dev/start
 
   todo
-    proc trva kompilace vsech soy tak nekonecne dlouho?
-    add param for test (changed file)
-    mobile-template auto recompilation
-    .css and .js ghost files after .styl and .coffee deletion
+    deletion .css and .js ghost files after .styl and .coffee deletion
 ###
 
 fs = require 'fs'
@@ -23,8 +20,7 @@ Command =
     --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
     --root_with_prefix=\"assets/js/dev ../../../dev\"
     --root_with_prefix=\"assets/js/este ../../../este\"
-    --root_with_prefix=\"assets/js/tracker ../../../tracker\"
-    --root_with_prefix=\"assets/js/mobile ../../../mobile\"
+    --root_with_prefix=\"assets/js/app ../../../app\"
     > assets/js/deps.js"
   tests: tests.run
   stylus: "stylus --compress assets/css/"
@@ -38,9 +34,9 @@ start = ->
   runServer()
 
   # todo: refactor
-  fs.watchFile 'mobile-template.html', watchOptions, (curr, prev) ->
+  fs.watchFile 'app-template.html', watchOptions, (curr, prev) ->
     return if curr.mtime <= prev.mtime
-    exec "node assets/js/dev/build mobile --html"
+    exec "node assets/js/dev/build app --html"
 
   commands = (value for key, value of Command)
 
@@ -145,7 +141,7 @@ runServer = ->
   server = http.createServer (request, response) ->
     filePath = '.' + request.url
     # still needed?
-    filePath = './mobile.htm' if filePath is './'
+    filePath = './app.htm' if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
     extname = pathModule.extname filePath
     contentType = 'text/html'
@@ -163,7 +159,7 @@ runServer = ->
       #   response.writeHead 404
       #   response.end()
       #   return
-      filePath = './mobile.html' if !exists
+      filePath = './app.html' if !exists
       fs.readFile filePath, (error, content) ->
         if error
           response.writeHead 500

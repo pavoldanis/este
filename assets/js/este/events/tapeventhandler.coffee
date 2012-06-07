@@ -9,15 +9,13 @@
   - servers as general click handler for mobile and desktop both
   
   todo
-    desktop mousedown/up/click with states also..
-    consider version without scroll trick, try to compute els
-    abs. position...
-
-  todo taphighlight
-    consider another name
     thing about tapstart on success tap
-    and how to prevent taphighlight on button (url not changed)
-    data-button does not work in this case
+    desktop mousedown/up/click with states
+
+  desired behaviour
+    mousedown after 100ms -> highlight
+    drag removes highlight
+    tap highlight (a ten zustava.. stejne jako instapaper)
 
 ###
 goog.provide 'este.events.TapEventHandler'
@@ -36,7 +34,11 @@ goog.require 'goog.math.Coordinate'
 este.events.TapEventHandler = (@element, @targetFilter = null) ->
   goog.base @
   @handler = new goog.events.EventHandler @
-  if goog.userAgent.MOBILE
+  # touchstart for old iphones slowdown scrolling, iOS >= 4.25 should be fine
+  # see http://www.somegeekintn.com/blog/2012/01/ios-release-mobile-safari-version-table/
+  # 4.25 looks like 3GS+ devices
+  # todo, check android
+  if goog.userAgent.MOBILE && (!este.mobile.iosVersion || este.mobile.iosVersion >= 4.25)
     if @element.tagName == 'BODY'
       scrollElement = window
     else
