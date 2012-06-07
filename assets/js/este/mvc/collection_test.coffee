@@ -8,8 +8,14 @@ suite 'este.mvc.Collection', ->
     collection = new Collection
 
   suite 'constructor', ->
-    test 'should optionally allow inject data', ->
-      #assert.ok false
+    test 'should optionally allow inject json data', ->
+      json = [
+        a: 1
+      ,
+        b: 2
+      ]
+      collection = new Collection json
+      assert.deepEqual collection.toJson(), json
 
   suite 'add and remove', ->
     test 'should work', ->
