@@ -3,6 +3,7 @@ suite 'este.mvc.Collection', ->
   # todo: addMany
 
   Collection = este.mvc.Collection
+  Model = este.mvc.Model
   collection = null
 
   setup ->
@@ -34,6 +35,20 @@ suite 'este.mvc.Collection', ->
       assert.isTrue addCalled
       assert.isTrue changeCalled
       assert.deepEqual added, [1]
+
+  suite 'addMany', ->
+    test 'should fire add, change events', ->
+      addCalled = changeCalled = false
+      added = null
+      goog.events.listenOnce collection, 'add', (e) ->
+        added = e.added
+        addCalled = true
+      goog.events.listenOnce collection, 'change', ->
+        changeCalled = true
+      collection.addMany [1, 2]
+      assert.isTrue addCalled
+      assert.isTrue changeCalled
+      assert.deepEqual added, [1, 2]
 
   suite 'remove', ->
     test 'should fire remove, change events', ->
@@ -69,7 +84,7 @@ suite 'este.mvc.Collection', ->
       assert.deepEqual collection.toJson(), [1]
 
   suite 'bubbling events', ->
-    test 'from inner model should work', ->
+    test 'from inner collection should work', ->
       called = 0
       innerCollection = new Collection
       collection.add innerCollection
@@ -80,6 +95,19 @@ suite 'este.mvc.Collection', ->
       collection.remove innerCollection
       assert.equal called, 2
       innerCollection.add 1
+      assert.equal called, 2
+
+    test 'from inner model should work', ->
+      called = 0
+      innerModel = new Model
+      collection.add innerModel
+      goog.events.listen collection, 'change', (e) ->
+        called++
+      innerModel.set '1', 1
+      assert.equal called, 1
+      collection.remove innerModel
+      assert.equal called, 2
+      innerModel.set '1', 2
       assert.equal called, 2
       
 
