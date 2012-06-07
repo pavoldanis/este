@@ -125,11 +125,12 @@ goog.scope ->
     @array.length
 
   ###*
-    Returns shallow copy.
+    Serialize into JSON.
     @return {Array}
   ###
   _::toJson = ->
-    @array.slice 0
+    return @array.slice 0 if !@model
+    item.toJson() for item in @array
 
   ###*
     Clear collection.

@@ -18,7 +18,7 @@ suite 'este.mvc.Collection', ->
       assert.deepEqual collection.toJson(), json
 
   suite 'model property', ->
-    test 'should wrap json', ->
+    test 'should wrap json (meta test included)', ->
       Child = -> Model.apply @, arguments
       goog.inherits Child, Model
       Child::schema = c: meta: -> 'fok'
@@ -39,6 +39,28 @@ suite 'este.mvc.Collection', ->
         assert.instanceOf e.added[0], Model
         done()
       collection.add a: 1
+
+    test 'toJson should serialize model', ->
+      Child = -> Model.apply @, arguments
+      goog.inherits Child, Model
+      Child::schema = c: meta: -> 'fok'
+      json = [
+        id: 0
+        a: 'aa'
+      ,
+        id: 1
+        b: 'bb'
+      ]
+      collection = new Collection json, Child
+      assert.deepEqual collection.toJson(), [
+        id: 0
+        a: 'aa'
+        c: 'fok'
+      ,
+        id: 1
+        b: 'bb'
+        c: 'fok'
+      ]
 
   suite 'add and remove', ->
     test 'should work', ->
