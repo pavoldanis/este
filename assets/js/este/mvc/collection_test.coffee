@@ -19,13 +19,19 @@ suite 'este.mvc.Collection', ->
 
   suite 'model property', ->
     test 'should wrap json', ->
+      Child = -> Model.apply @, arguments
+      goog.inherits Child, Model
+      Child::schema = c: meta: -> 'fok'
       json = [
         a: 1
       ,
         b: 2
       ]
-      collection = new Collection json, Model
-      assert.instanceOf collection.at(0), Model
+      collection = new Collection json, Child
+      assert.instanceOf collection.at(0), Child
+      assert.equal collection.at(0).get('a'), 1
+      assert.equal collection.at(1).get('b'), 2
+      assert.equal collection.at(0).get('c'), 'fok'
 
     test 'should dispatch add event with models, not jsons', (done) ->
       collection = new Collection null, Model

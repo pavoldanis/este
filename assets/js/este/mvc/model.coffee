@@ -67,6 +67,7 @@ goog.require 'este.mvc.validators'
 ###
 este.mvc.Model = (opt_attrs) ->
   @attrs = {}
+  @schema ?= {}
   @set opt_attrs if opt_attrs
   goog.base @
   @set 'id', goog.string.getRandomString() if !@get('id')?
@@ -112,7 +113,7 @@ goog.scope ->
     @type {Object}
     @protected
   ###
-  _::schema = {}
+  _::schema
 
   ###*
     @type {*}
