@@ -1,7 +1,5 @@
 suite 'este.mvc.Collection', ->
 
-  # todo: addMany
-
   Collection = este.mvc.Collection
   Model = este.mvc.Model
   collection = null
