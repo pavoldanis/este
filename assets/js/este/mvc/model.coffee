@@ -209,14 +209,20 @@ goog.scope ->
 
   ###*
     Returns shallow copy.
+    @param {boolean=} noMetas
     @return {Object}
   ###
-  _::toJson = ->
+  _::toJson = (noMetas) ->
     object = {}
     for key, value of @attrs
       origKey = key.substring 1
       newValue = @get origKey
       object[origKey] = newValue
+    return object if noMetas
+    for key, value of @schema
+      meta = value['meta']
+      continue if !meta
+      object[key] = meta @
     object
 
   return

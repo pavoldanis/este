@@ -56,11 +56,26 @@ suite 'este.mvc.Model', ->
       assert.strictEqual model.get('firstName'), 'Pepa'
 
   suite 'toJson', ->
-    test 'should return attributes json', ->
+    test 'with true and without attrs should return just id', ->
+      model = new Person
+      json = model.toJson true
+      attrs = 'id': json.id
+      assert.deepEqual json, attrs
+
+    test 'with true and without attrs should return just id', ->
+      model = new Person
+      json = model.toJson()
+      attrs =
+        'id': json.id
+        'name': 'undefined undefined'
+      assert.deepEqual json, attrs
+    
+    test 'should return setted attributes json and metas', ->
       json = model.toJson()
       attrs =
         'firstName': 'Joe'
         'lastName': 'Satriani'
+        'name': 'Joe Satriani'
         'age': 55
         'id': json.id
       assert.deepEqual json, attrs
