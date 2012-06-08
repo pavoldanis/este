@@ -12,7 +12,7 @@ goog.require 'goog.events.EventTarget'
 
 ###*
   @param {Array=} opt_array
-  @param {Function=} model
+  @param {function(new:este.mvc.Model, Object=)=} model
   @constructor
   @extends {goog.events.EventTarget}
 ###
@@ -42,7 +42,7 @@ goog.scope ->
   _::array
 
   ###*
-    @type {Function}
+    @type {?function(new:este.mvc.Model, Object=)}
     @protected
   ###
   _::model
