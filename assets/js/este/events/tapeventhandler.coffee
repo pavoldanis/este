@@ -158,10 +158,7 @@ goog.scope ->
     @enableTouchMoveEndEvents false
     setTimeout =>
       return if @scrolled
-      #@dispatchTapEvent _.EventType.TAPSTART, target
-      #setTimeout =>
       @dispatchTapEvent _.EventType.TAP, target
-      #, 1
     , @touchEndTimeout
 
   _::onClick = (e) ->
