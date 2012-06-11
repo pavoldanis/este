@@ -58,9 +58,15 @@ goog.scope ->
   _::handler_
 
   ###*
-    @param {string} pathname
+    @type {boolean}
   ###
-  _::setPathname = (pathname) ->
+  _::preventNextNavigate = false
+
+  ###*
+    @param {string} pathname
+    @param {boolean=} preventNextNavigate
+  ###
+  _::setPathname = (pathname, @preventNextNavigate = false) ->
     @history_.setToken pathname
 
   ###*
@@ -76,6 +82,9 @@ goog.scope ->
     @param {goog.events.BrowserEvent} e
   ###
   _::onNavigate = (e) ->
+    if @preventNextNavigate
+      @preventNextNavigate = false
+      return
     @dispatchEvent e
 
   ###*
