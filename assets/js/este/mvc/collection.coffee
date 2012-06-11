@@ -12,7 +12,7 @@ goog.require 'goog.events.EventTarget'
 
 ###*
   @param {Array=} opt_array
-  @param {function(new:este.mvc.Model, Object=)=} model
+  @param {Function=} model
   @constructor
   @extends {goog.events.EventTarget}
 ###
@@ -42,7 +42,7 @@ goog.scope ->
   _::array
 
   ###*
-    @type {?function(new:este.mvc.Model, Object=)}
+    @type {Function}
     @protected
   ###
   _::model
@@ -136,7 +136,28 @@ goog.scope ->
     Clear collection.
   ###
   _::clear = ->
-    @removeMany @array.slice 0   
+    @removeMany @array.slice 0
+
+  ###*
+    Find item
+    @param {Function} fn
+    @return {*}
+  ###
+  _::find = (fn) ->
+    for item in @array
+      return item if fn item
+    return
+
+  ###*
+    Find item by Id
+    @param {*} id
+    @return {*}
+  ###
+  _::findById = (id) ->
+    for item in @array
+      itemId = if @model then item.get('id') else item.id
+      return item if itemId == id
+    return
 
   return
 

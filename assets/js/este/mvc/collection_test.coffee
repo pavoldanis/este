@@ -2,10 +2,16 @@ suite 'este.mvc.Collection', ->
 
   Collection = este.mvc.Collection
   Model = este.mvc.Model
+  Child = null
   collection = null
 
   setup ->
     collection = new Collection
+
+  arrangeChildType = ->
+    Child = -> Model.apply @, arguments
+    goog.inherits Child, Model
+    Child::schema = c: meta: -> 'fok'
 
   suite 'constructor', ->
     test 'should optionally allow inject json data', ->
@@ -19,9 +25,7 @@ suite 'este.mvc.Collection', ->
 
   suite 'model property', ->
     test 'should wrap json (meta test included)', ->
-      Child = -> Model.apply @, arguments
-      goog.inherits Child, Model
-      Child::schema = c: meta: -> 'fok'
+      arrangeChildType()
       json = [
         a: 1
       ,
@@ -41,9 +45,7 @@ suite 'este.mvc.Collection', ->
       collection.add a: 1
 
     test 'toJson should serialize model', ->
-      Child = -> Model.apply @, arguments
-      goog.inherits Child, Model
-      Child::schema = c: meta: -> 'fok'
+      arrangeChildType()
       json = [
         id: 0
         a: 'aa'
@@ -192,7 +194,50 @@ suite 'este.mvc.Collection', ->
       assert.equal called, 2
       innerModel.set '1', 2
       assert.equal called, 2
+
+  suite 'find', ->
+    test 'should find item', ->
+      collection.addMany [
+        a: 1
+      ,
+        b: 2
+      ]
+      found = collection.find (item) -> item.a == 1
+      assert.deepEqual found, a: 1
+      found = collection.find (item) -> item.b == 2
+      assert.deepEqual found, b: 2
+      found = collection.find (item) -> item.b == 3
+      assert.isUndefined found
       
+  suite 'findById', ->
+    test 'should find item by id', ->
+      collection.addMany [
+        id: 1
+      ,
+        id: 2
+      ]
+      found = collection.findById 1
+      assert.deepEqual found, id: 1
+      found = collection.findById 2
+      assert.deepEqual found, id: 2
+      found = collection.findById 3
+      assert.isUndefined found
+
+    test 'should find typed item by id', ->
+      arrangeChildType()
+      Child::schema = {}
+      json = [
+        id: 1
+      ,
+        id: 2
+      ]
+      collection = new Collection json, Child
+      found = collection.findById 1
+      assert.deepEqual found.toJson(), id: 1
+      found = collection.findById 2
+      assert.deepEqual found.toJson(), id: 2
+      found = collection.findById 3
+      assert.isUndefined found
 
 
 
