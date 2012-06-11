@@ -39,10 +39,10 @@
   joe.set 'lastName', 'Satch'
   joe.get 'lastName'
   
-  # returns whole object
-  joe.get()
   # modify complex object
   joe.get('items').add 'foo'
+
+  set and validate
 
   todo
     validation and its messages with locals aka "#{prop} can not be blank"
@@ -127,10 +127,14 @@ goog.scope ->
 
   ###*
     Returns model's attribute.
-    @param {string} key
+    @param {string|Array.<string>} key
     @return {*}
   ###
   _::get = (key) ->
+    if typeof key != 'string'
+      object = {}
+      object[k] = @get k for k in key
+      return object
     value = @attrs[_.getKey(key)]
     meta = @schema[key]?['meta']
     return meta @ if meta
@@ -143,7 +147,7 @@ goog.scope ->
     models state, a change event will be triggered.
     @param {Object|string} object Object of key value pairs or string key.
     @param {*=} opt_value value or nothing.
-    @return {boolean} true if successful.
+    @return {boolean} true if any attribute changed
   ###
   _::set = (object, opt_value) ->
     object = _.getObject object, opt_value
@@ -174,7 +178,7 @@ goog.scope ->
     changes
 
   ###*
-    @param {Object} object
+    @param {Object} object key is attr, value is its value
     @return {Object}
   ###
   _::getErrors = (object) ->
@@ -210,6 +214,7 @@ goog.scope ->
 
   ###*
     Returns shallow copy.
+    hmm, should be called after isValid ok, otherwise it returns unvalid result
     @param {boolean=} noMetas
     @return {Object}
   ###
@@ -221,9 +226,19 @@ goog.scope ->
       object[origKey] = newValue
     return object if noMetas
     for key, value of @schema
-      meta = value['meta']
+      meta = value?['meta']
       continue if !meta
       object[key] = meta @
     object
+
+  ###*
+    Check valid state and set errors.
+    @return {boolean}
+  ###
+  _::isValid = ->
+    keys = (attr for attr, def of @schema when def?['validators'])
+    `var values = /** @type {Object} */ (this.get(keys))`
+    @errors = @getErrors values
+    goog.object.isEmpty @errors
 
   return

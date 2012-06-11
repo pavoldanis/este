@@ -11,7 +11,7 @@ suite 'este.mvc.Model', ->
       'set': (name) -> goog.string.trim name
     'lastName':
       'validators':
-        'required': (value) -> goog.string.trim(value).length
+        'required': (value) -> value && goog.string.trim(value).length
     'name':
       'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
     'age':
@@ -54,6 +54,12 @@ suite 'este.mvc.Model', ->
       model.set 'age': 35, 'firstName': 'Pepa'
       assert.strictEqual model.get('age'), 35
       assert.strictEqual model.get('firstName'), 'Pepa'
+
+  suite 'get', ->
+    test 'should accept array and return object', ->
+      assert.deepEqual model.get(['age', 'firstName']),
+        'age': 55
+        'firstName': 'Joe'
 
   suite 'toJson', ->
     test 'with true and without attrs should return just id', ->
@@ -136,7 +142,7 @@ suite 'este.mvc.Model', ->
       assert.equal model.get('name'), 'Joe Satriani'
 
   suite 'validation', ->
-    test 'should fulfil errors', ->
+    test 'should fulfil errors and prevent attr change', ->
       model.set 'lastName', ''
       assert.deepEqual model.errors,
         'lastName':
@@ -154,10 +160,21 @@ suite 'este.mvc.Model', ->
       model.remove 'inner', innerModel
       innerModel.set 'name', 'foo'
       assert.equal called, 2
-      
+
+  suite 'isValid', ->
+    test 'should use scheme validators in set method', ->
+      assert.isTrue model.isValid(), 'model is valid'
+      assert.isFalse model.set 'lastName', ''
+      assert.isTrue model.isValid(), 'set will not set invalid state'
+
+    test 'should use scheme validators in constructor too', ->
+      model = new Person
+      assert.isFalse model.isValid()
+      assert.isTrue model.set 'lastName', 'fok'
+      assert.isTrue model.isValid()
 
 
 
 
 
-      
+
