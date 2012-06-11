@@ -100,6 +100,9 @@ goog.scope ->
     @protected
   ###
   _::onTap = (e) ->
+    # anchors sucks, therefore we use any element with custom attr instead
+    # such quasi anchor will not interfere with native behaviour
+    # data-hrefs can be nested (anchors cant)
     href = e.target.getAttribute 'data-href'
     pathname =  goog.uri.utils.getPath href
     return if !pathname
@@ -113,11 +116,14 @@ goog.scope ->
     @history.setPathname pathname
 
   _::targetFilter = (node) ->
-    goog.dom.getAncestor node, (item) ->
-      # todo: consider a better solution (without explicit data-button attribute)
-      return false if !item.hasAttribute || item.hasAttribute 'data-button'
-      return item.hasAttribute 'data-href'
+    isButton = false
+    filteredNode = goog.dom.getAncestor node, (item) ->
+      return false if !item.hasAttribute
+      isButton = true if item.hasAttribute 'data-button'
+      item.hasAttribute 'data-href'
     , true
+    return null if isButton
+    filteredNode
 
   ###*
     @protected
