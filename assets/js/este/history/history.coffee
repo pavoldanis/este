@@ -9,6 +9,7 @@ goog.require 'goog.history.Html5History'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.dom'
+goog.require 'este.mobile'
 
 ###*
   @param {boolean} forceHash If true, este.History will degrade to hash even if html5history is supported
@@ -18,6 +19,8 @@ goog.require 'goog.dom'
 este.History = (forceHash) ->
   goog.base @
   @html5historyIsSupported = !forceHash && goog.history.Html5History.isSupported();
+  if este.mobile.iosVersion && este.mobile.iosVersion < 5
+    @html5historyIsSupported = false
   if @html5historyIsSupported
     @history_ = new goog.history.Html5History
     @history_.setUseFragment false
