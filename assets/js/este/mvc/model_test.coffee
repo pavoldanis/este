@@ -161,10 +161,17 @@ suite 'este.mvc.Model', ->
       innerModel.set 'name', 'foo'
       assert.equal called, 2
 
+  suite 'errors', ->
+    test 'should works across sets', ->
+      model.set 'lastName', ''
+      assert.deepEqual model.errors, {lastName: {required: true}}
+      assert.equal model.get('lastName'), 'Satriani'
+
   suite 'isValid', ->
     test 'should use scheme validators in set method', ->
       assert.isTrue model.isValid(), 'model is valid'
       assert.isFalse model.set 'lastName', ''
+      assert.equal model.get('lastName'), 'Satriani'
       assert.isTrue model.isValid(), 'set will not set invalid state'
 
     test 'should use scheme validators in constructor too', ->
@@ -172,6 +179,23 @@ suite 'este.mvc.Model', ->
       assert.isFalse model.isValid()
       assert.isTrue model.set 'lastName', 'fok'
       assert.isTrue model.isValid()
+
+  suite 'set object', ->
+    test 'should set valid keys despite there is one invalid', ->
+      assert.equal model.get('firstName'), 'Joe'
+      model.set
+        firstName: 'Pepa'
+        lastName: ''
+      assert.equal model.get('firstName'), 'Pepa'
+
+  #suite ''
+  # nemeli by se prepisovat errory?
+  # mam errror s name.. 
+  # pokud nastavuju neco jinyho.. musi zustat
+  # pokud nastavuju name.. musi se prepsat.. (odebrat)
+  # pak mi pojede editview errors proti setterum v construktoru atd.
+  # nebo definovat, ze errors se vztahuji k poslednimu set
+  # next issue: selze li jeden set, nenastavi se zadnej..
 
 
 

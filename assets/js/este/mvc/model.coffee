@@ -1,6 +1,6 @@
 ###*
   @fileoverview Model with attributes and schema.
-
+  
   todo
     clientId for rendering... consider
   
@@ -43,6 +43,7 @@
   joe.get('items').add 'foo'
 
   set and validate
+    todo
 
   todo
     validation and its messages with locals aka "#{prop} can not be blank"
@@ -68,6 +69,7 @@ goog.require 'este.mvc.validators'
 este.mvc.Model = (opt_attrs) ->
   @attrs = {}
   @schema ?= {}
+  @errors = {}
   @set opt_attrs if opt_attrs
   goog.base @
   @set 'id', goog.string.getRandomString() if !@get('id')?
@@ -121,6 +123,7 @@ goog.scope ->
   _::id
 
   ###*
+    ex. name: {required: true}
     @type {Object}
   ###
   _::errors
@@ -144,7 +147,8 @@ goog.scope ->
 
   ###*
     Set attribute or hash of attributes. If any of the attributes change the
-    models state, a change event will be triggered.
+    models state, change event will be triggered.
+    Invalid values are not setted. Errors are stored in errror property.
     @param {Object|string} object Object of key value pairs or string key.
     @param {*=} opt_value value or nothing.
     @return {boolean} true if any attribute changed
@@ -154,7 +158,8 @@ goog.scope ->
     changes = @getChanges object
     return false if goog.object.isEmpty changes
     @errors = @getErrors changes
-    return false if !goog.object.isEmpty @errors
+    changes = goog.object.filter changes, (value, key) => !@errors[key]
+    return false if goog.object.isEmpty changes
     for key, value of changes
       @attrs[_.getKey(key)] = value
       continue if !(value instanceof goog.events.EventTarget)
@@ -232,7 +237,6 @@ goog.scope ->
     object
 
   ###*
-    Check valid state and set errors.
     @return {boolean}
   ###
   _::isValid = ->
