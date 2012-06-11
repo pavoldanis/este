@@ -239,6 +239,16 @@ suite 'este.mvc.Collection', ->
       found = collection.findById 3
       assert.isUndefined found
 
+  suite 'add typed object into typed collection', ->
+    test 'should work', ->
+      arrangeChildType()
+      collection = new Collection {}, Child
+      child = new Child
+      child.set 'a', 1
+      collection.add child
+      assert.instanceOf collection.at(0), Child
+      assert.equal collection.at(0).get('a'), 1
+
 
 
 

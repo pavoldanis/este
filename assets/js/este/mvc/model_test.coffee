@@ -187,15 +187,7 @@ suite 'este.mvc.Model', ->
         firstName: 'Pepa'
         lastName: ''
       assert.equal model.get('firstName'), 'Pepa'
-
-  #suite ''
-  # nemeli by se prepisovat errory?
-  # mam errror s name.. 
-  # pokud nastavuju neco jinyho.. musi zustat
-  # pokud nastavuju name.. musi se prepsat.. (odebrat)
-  # pak mi pojede editview errors proti setterum v construktoru atd.
-  # nebo definovat, ze errors se vztahuji k poslednimu set
-  # next issue: selze li jeden set, nenastavi se zadnej..
+  
 
 
 

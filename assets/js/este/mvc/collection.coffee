@@ -60,7 +60,7 @@ goog.scope ->
   _::addMany = (array) ->
     added = []
     for item in array
-      item = if @model then new @model item else item
+      item = new @model item if @model && !(item instanceof @model)
       added.push item
       item.setParentEventTarget @ if item instanceof goog.events.EventTarget
     @array.push.apply @array, added
