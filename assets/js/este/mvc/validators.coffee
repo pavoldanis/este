@@ -14,6 +14,6 @@ goog.scope ->
     @return {boolean}
   ###
   _.required = (value) ->
-    !!goog.string.trim(value).length 
+    value != null && !!goog.string.trim(value).length 
   
   return
