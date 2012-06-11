@@ -148,6 +148,26 @@ este.string.subs = (str, object) ->
     object[name] ? ''
 
 ###*
+  Replaces expressions {prop} in string with property values
+  of given object; if a property is not found, returns null
+
+  @param {string} str
+  @param {Object} object
+  @return {string?}
+###
+este.string.subsOrNull = (str, object) ->
+  missingProperty = false
+  replaced = str.replace /\\?\{([^{}]+)\}/g, (match, name) ->
+    return match.slice 1 if match.charAt(0) == '\\'
+    value = object[name]
+    if !value
+      missingProperty = true
+    ''
+  return replaced if !missingProperty
+  null
+
+
+###*
   @param {string} str
   @param {number} size
   @return {Array.<string>}
