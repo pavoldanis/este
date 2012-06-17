@@ -47,7 +47,9 @@ este.events.TapEventHandler = (@element, @targetFilter = null) ->
       listen(@element, 'touchstart', @onTouchStart).
       listen(scrollElement, 'scroll', @onScroll)
   else
-    @handler.listen @element, 'click', @onClick
+    @handler.
+      listen(@element, 'mousedown', @onMouseDown).
+      listen(@element, 'click', @onClick)
   return
 
 goog.inherits este.events.TapEventHandler, goog.events.EventTarget
@@ -161,7 +163,12 @@ goog.scope ->
       @dispatchTapEvent _.EventType.TAP, target
     , @touchEndTimeout
 
+  _::onMouseDown = (e) ->
+    @dispatchTapEvent _.EventType.TAPSTART, e.target
+
   _::onClick = (e) ->
+    # cant be, it would be invisible change..
+    #@dispatchTapEvent _.EventType.TAPEND, e.target
     @dispatchTapEvent _.EventType.TAP, e.target
 
   _::onScroll = ->
