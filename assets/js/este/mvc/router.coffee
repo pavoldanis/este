@@ -113,7 +113,7 @@ goog.scope ->
   ###
   _::setPathname = (pathname) ->
     pathname = _.normalize pathname
-    @history.setPathname pathname
+    @history.setToken pathname
 
   _::targetFilter = (node) ->
     isButton = false
@@ -135,7 +135,7 @@ goog.scope ->
     todo: consider try finally dispatching
   ###
   _::dispatchMatchedRouter = ->
-    pathname = '/' + _.normalize @history.getPathname()
+    pathname = '/' + _.normalize @history.getToken()
     # chrome for some reason dispatches popstate on page load
     return if @lastPathname? && @lastPathname == pathname
     @lastPathname = pathname
@@ -151,7 +151,7 @@ goog.scope ->
       args = match.slice 1
       args.push =>
         # todo: refactor
-        pathname = '/' + _.normalize @history.getPathname()
+        pathname = '/' + _.normalize @history.getToken()
         !!pathname.match regex
       callback.apply null, args
       matched = true
