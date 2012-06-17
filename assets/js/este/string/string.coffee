@@ -160,9 +160,10 @@ este.string.subsOrNull = (str, object) ->
   replaced = str.replace /\\?\{([^{}]+)\}/g, (match, name) ->
     return match.slice 1 if match.charAt(0) == '\\'
     value = object[name]
-    if !value
+    if !value?
       missingProperty = true
-    ''
+      return ''
+    value
   return replaced if !missingProperty
   null
 
@@ -196,12 +197,3 @@ este.string.chunkToObject = (str, size) ->
       index: i
       total: chunked.length
     }
-
-
-
-
-
-
-
-
-

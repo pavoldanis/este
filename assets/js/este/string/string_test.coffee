@@ -11,6 +11,19 @@ suite 'este.string', ->
       str = string.subs 'foo{foo}, {bla}', foo: 1, bla: 2
       assert.equal str, 'foo1, 2'
 
+  suite 'subsOrNull', ->
+    test 'should replace array', ->
+      str = string.subsOrNull 'foo{0}.. {1}', [1, 2]
+      assert.equal str, 'foo1.. 2'
+
+    test 'should replace array', ->
+      str = string.subsOrNull 'foo.. {prop}', {}
+      assert.isNull str
+
+    test 'should replace array', ->
+      str = string.subsOrNull 'foo.. {prop}', {prop:'value'}
+      assert.equal str, 'foo.. value'
+
   suite 'chunk', ->
     chunked = null
     arrange = (str) ->
@@ -60,7 +73,6 @@ suite 'este.string', ->
       assert.equal chunked[1].text, 'o'
       assert.equal chunked[1].index, 1
       assert.equal chunked[1].total, 2
-
 
 
 
