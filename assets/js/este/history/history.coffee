@@ -10,21 +10,23 @@ goog.require 'goog.events.EventTarget'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.dom'
 goog.require 'este.mobile'
+goog.require 'este.history.TokenTransformer'
 
 ###*
   @param {boolean} forceHash If true, este.History will degrade to hash even if html5history is supported
+  @param {string=} pathPrefix
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.History = (forceHash) ->
+este.History = (forceHash, @pathPrefix = '/') ->
   goog.base @
   @html5historyIsSupported = !forceHash && goog.history.Html5History.isSupported();
   if este.mobile.iosVersion && este.mobile.iosVersion < 5
     @html5historyIsSupported = false
   if @html5historyIsSupported
-    @history_ = new goog.history.Html5History
+    @history_ = new goog.history.Html5History undefined, new este.history.TokenTransformer()
     @history_.setUseFragment false
-    #@history_.setPathPrefix rootUri
+    @history_.setPathPrefix @pathPrefix
   else
     # for some reason, hidden input created in history via doc.write does't work
     `var hiddenInput = /** @type {HTMLInputElement} */ (goog.dom.createDom('input', {style: 'display: none'}))`
@@ -63,18 +65,29 @@ goog.scope ->
   _::preventNextNavigate = false
 
   ###*
-    @param {string} pathname
+    @type {string}
+  ###
+  _::pathPrefix = ''
+
+  ###*
+    @param {string} token
     @param {boolean=} preventNextNavigate
   ###
-  _::setPathname = (pathname, @preventNextNavigate = false) ->
-    @history_.setToken pathname
+  _::setToken = (token, @preventNextNavigate = false) ->
+    @history_.setToken token
+
+  ###*
+    @return {boolean}
+  ###
+  _::isHtml5HistorySupported = ->
+    @html5historyIsSupported
 
   ###*
     @return {string}
   ###
-  _::getPathname = ->
+  _::getToken = ->
     if @html5historyIsSupported
-      window.location['pathname']
+      @history_.getToken()
     else
       window.location['hash']
 
