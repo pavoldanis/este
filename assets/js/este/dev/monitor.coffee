@@ -51,14 +51,27 @@ goog.scope ->
   _::decorateInternal = (element) ->
     goog.base @, 'decorateInternal', element
     @monitor = @dom_.createDom 'div'
-      'style': 'font-size: 10px; position: fixed; right: 10px; bottom: 10px; background-color: #eee; color: #000; padding: .7em;'
-    @left = @monitor.appendChild @dom_.createDom 'span', id: 'devlog'
-    @right = @monitor.appendChild @dom_.createDom 'span'
+      # absolute instead of fixed, because obsolete mobile devices
+      'style': 'font-size: 10px; position: absolute; z-index: 9999999999999; opacity: .8; max-width: 100%; right: 10px; bottom: 0; background-color: #eee; color: #000; padding: .7em;'
+    @left = @monitor.appendChild @dom_.createDom 'div'
+      'style': 'word-break: break-word;'
+      'id': 'devlog'
+    @right = @monitor.appendChild @dom_.createDom 'div'
     element.appendChild @monitor
     @timer = setInterval =>
       @right.innerHTML = '| ' + goog.events.getTotalListenerCount()
-    , 100
+    , 500
     return
+
+  _::enterDocument = ->
+    goog.base @, 'enterDocument'
+    @getHandler().
+      listen(window, 'scroll', @onWindowScroll)
+    return
+
+  _::onWindowScroll = (e) ->
+    bottom = -@dom_.getDocumentScroll().y
+    @monitor.style.bottom = (bottom + 10) + 'px'
 
   ###*
     @inheritDoc
