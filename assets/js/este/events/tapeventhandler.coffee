@@ -38,7 +38,13 @@ este.events.TapEventHandler = (@element, @targetFilter = null) ->
   # see http://www.somegeekintn.com/blog/2012/01/ios-release-mobile-safari-version-table/
   # 4.25 looks like 3GS+ devices
   # todo, check android
-  if goog.userAgent.MOBILE && (!este.mobile.iosVersion || este.mobile.iosVersion >= 4.25)
+
+  # change: este.mobile.iosVersion changed from  >= 4.25 to >= 5
+  # because versions < 5 has many bugs
+  # for example 4.3.2 does not fire touchstart on search input field
+  # or autofocus does not work (focus in click hander is workaround) etc.
+  
+  if goog.userAgent.MOBILE && (!este.mobile.iosVersion || este.mobile.iosVersion >= 5)
     if @element.tagName == 'BODY'
       scrollElement = window
     else
@@ -156,19 +162,20 @@ goog.scope ->
   _::onTouchEnd = (e) ->
     target = e.target
     clearTimeout @touchStartTimer
-    @dispatchTapEvent _.EventType.TAPEND, target
     @enableTouchMoveEndEvents false
     setTimeout =>
+      @dispatchTapEvent _.EventType.TAPEND, target
       return if @scrolled
       @dispatchTapEvent _.EventType.TAP, target
     , @touchEndTimeout
 
   _::onMouseDown = (e) ->
-    @dispatchTapEvent _.EventType.TAPSTART, e.target
+    target = e.target
+    @dispatchTapEvent _.EventType.TAPSTART, target
+    goog.events.listenOnce target.ownerDocument, 'mouseup', =>
+      @dispatchTapEvent _.EventType.TAPEND, target
 
   _::onClick = (e) ->
-    # cant be, it would be invisible change..
-    #@dispatchTapEvent _.EventType.TAPEND, e.target
     @dispatchTapEvent _.EventType.TAP, e.target
 
   _::onScroll = ->
