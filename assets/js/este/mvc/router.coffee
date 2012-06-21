@@ -14,12 +14,12 @@ goog.require 'este.events.TapEventHandler'
 goog.require 'goog.uri.utils'
 
 ###*
-  @param {Object} routes
+  @param {Object=} routes
   @param {boolean=} forceHash If true, este.History will degrade to hash even if html5history is supported
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.mvc.Router = (@routes, forceHash = false) ->
+este.mvc.Router = (@routes = {}, forceHash = false) ->
   @history = new este.History forceHash
   @handler = new goog.events.EventHandler @
   @tapEventHandler = new este.events.TapEventHandler document.body, @targetFilter
@@ -28,7 +28,6 @@ este.mvc.Router = (@routes, forceHash = false) ->
     listen(@tapEventHandler, 'tapend', @onTapEnd).
     listen(@tapEventHandler, 'tap', @onTap).
     listen(@history, 'navigate', @onNavigate)
-  @dispatchMatchedRouter()
   return
 
 goog.inherits este.mvc.Router, goog.events.EventTarget
