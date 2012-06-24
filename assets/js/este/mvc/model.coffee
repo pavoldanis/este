@@ -231,17 +231,19 @@ goog.scope ->
     _.getKey(key) of @attributes
 
   ###*
-    todo: add boolean return
     @param {string} key
+    @return {boolean} true if removed
   ###
   _::remove = (key) ->
     _key = _.getKey key
+    return false if !(_key of @attributes)
     value = @attributes[_key]
     value.setParentEventTarget null if value instanceof goog.events.EventTarget
     delete @attributes[_key]
     changed = {}
     changed[key] = value
     @dispatchChangeEvent changed
+    true
 
   ###*
     Returns shallow copy.

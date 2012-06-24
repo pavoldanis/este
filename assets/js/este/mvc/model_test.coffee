@@ -113,9 +113,18 @@ suite 'este.mvc.Model', ->
 
   suite 'remove', ->
     test 'should work', ->
+      assert.isFalse person.has 'fok'
+      assert.isFalse person.remove 'fok'
+
       assert.isTrue person.has 'age'
-      person.remove 'age'
+      assert.isTrue person.remove 'age'
       assert.isFalse person.has 'age'
+
+    test 'should call setParentEventTarget null on removed EventTargets', ->
+      target = new goog.events.EventTarget
+      person.set 'foo', target
+      person.remove 'foo'
+      assert.isNull target.getParentEventTarget()
 
   suite 'schema', ->
     suite 'set', ->
