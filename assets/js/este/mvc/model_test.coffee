@@ -6,78 +6,92 @@ suite 'este.mvc.Model', ->
 
   goog.inherits Person, este.mvc.Model
 
+  trimSetter = (value) -> goog.string.trim value || ''
+  requiredValidator = (value) -> value && goog.string.trim(value).length
+
   Person::schema = 
     'firstName':
-      'set': (name) -> goog.string.trim name
+      'set': trimSetter
+      'validators':
+        'required': requiredValidator
     'lastName':
       'validators':
-        'required': (value) -> value && goog.string.trim(value).length
+        'required': requiredValidator
     'name':
       'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
     'age':
       'get': (age) -> Number age
 
   attrs = null
-  model = null
+  person = null
 
   setup ->
     attrs =
       'firstName': 'Joe'
       'lastName': 'Satriani'
       'age': 55
-    model = new Person attrs
+    person = new Person attrs
 
   suite 'constructor', ->
     test 'should assign id', ->
-      model = new Person
-      assert.isString model.get 'id'
+      person = new Person
+      assert.isString person.get 'id'
 
     test 'should not override id', ->
-      model = new Person id: 'foo'
-      assert.equal model.get('id'), 'foo'
+      person = new Person id: 'foo'
+      assert.equal person.get('id'), 'foo'
 
     test 'should create attributes', ->
-      model = new Person
-      assert.isUndefined model.get 'firstName'
+      person = new Person
+      assert.isUndefined person.get 'firstName'
 
     test 'should return passed attributes', ->
-      assert.strictEqual model.get('firstName'), 'Joe'
-      assert.strictEqual model.get('lastName'), 'Satriani'
-      assert.strictEqual model.get('age'), 55
+      assert.strictEqual person.get('firstName'), 'Joe'
+      assert.strictEqual person.get('lastName'), 'Satriani'
+      assert.strictEqual person.get('age'), 55
 
   suite 'set and get', ->
-    test 'should set attribute', ->
-      model.set 'age', 35
-      assert.strictEqual model.get('age'), 35
+    test 'should work for one attribute', ->
+      person.set 'age', 35
+      assert.strictEqual person.get('age'), 35
 
-    test 'should set attributes', ->
-      model.set 'age': 35, 'firstName': 'Pepa'
-      assert.strictEqual model.get('age'), 35
-      assert.strictEqual model.get('firstName'), 'Pepa'
+    test 'should work for attributes', ->
+      person.set 'age': 35, 'firstName': 'Pepa'
+      assert.strictEqual person.get('age'), 35
+      assert.strictEqual person.get('firstName'), 'Pepa'
 
   suite 'get', ->
     test 'should accept array and return object', ->
-      assert.deepEqual model.get(['age', 'firstName']),
+      assert.deepEqual person.get(['age', 'firstName']),
         'age': 55
         'firstName': 'Joe'
 
+  suite 'set', ->
+    test 'should set valid keys, ignore invalids', ->
+      assert.equal person.get('firstName'), 'Joe'
+      person.set
+        firstName: 'Pepa'
+        lastName: ''
+      assert.equal person.get('firstName'), 'Pepa'
+      assert.equal person.get('lastName'), 'Satriani'
+
   suite 'toJson', ->
     test 'with true and without attrs should return just id', ->
-      model = new Person
-      json = model.toJson true
+      person = new Person
+      json = person.toJson true
       attrs = 'id': json.id
       assert.deepEqual json, attrs
 
     test 'with true and without attrs should return just id', ->
-      model = new Person
-      json = model.toJson()
+      person = new Person
+      json = person.toJson()
       attrs =
         'id': json.id
         'name': 'undefined undefined'
       assert.deepEqual json, attrs
     
     test 'should return setted attributes json and metas', ->
-      json = model.toJson()
+      json = person.toJson()
       attrs =
         'firstName': 'Joe'
         'lastName': 'Satriani'
@@ -88,108 +102,107 @@ suite 'este.mvc.Model', ->
 
   suite 'has', ->
     test 'should work', ->
-      assert.isTrue model.has 'age'
-      assert.isFalse model.has 'fooBlaBlaFoo'
+      assert.isTrue person.has 'age'
+      assert.isFalse person.has 'fooBlaBlaFoo'
     
     test 'should work even for keys which are defined on Object.prototype.', ->
-      assert.isFalse model.has 'toString'
-      assert.isFalse model.has 'constructor'
-      assert.isFalse model.has '__proto__'
+      assert.isFalse person.has 'toString'
+      assert.isFalse person.has 'constructor'
+      assert.isFalse person.has '__proto__'
       # etc. from Object.prototype
 
   suite 'remove', ->
     test 'should work', ->
-      assert.isTrue model.has 'age'
-      model.remove 'age'
-      assert.isFalse model.has 'age'
+      assert.isTrue person.has 'age'
+      person.remove 'age'
+      assert.isFalse person.has 'age'
 
   suite 'schema', ->
-    
     suite 'set', ->
       test 'should work as formater before set', ->
-        model.set 'firstName', '  whitespaces '
-        assert.equal model.get('firstName'), 'whitespaces'
+        person.set 'firstName', '  whitespaces '
+        assert.equal person.get('firstName'), 'whitespaces'
 
     suite 'get', ->
       test 'should work as formater after get', ->
-        model.set 'age', '1d23'
-        assert.isNumber model.get 'age'
+        person.set 'age', '1d23'
+        assert.isNumber person.get 'age'
 
   suite 'change event', ->
     test 'should be dispached if value change', (done) ->
-      goog.events.listenOnce model, 'change', (e) ->
-        assert.deepEqual e.attrs,
+      goog.events.listenOnce person, 'change', (e) ->
+        assert.deepEqual e.changed,
           age: 'foo'
         done()
-      model.set 'age', 'foo'
+      person.set 'age', 'foo'
 
     test 'should not be dispached if value hasnt changed', ->
       called = false
-      goog.events.listenOnce model, 'change', (e) ->
+      goog.events.listenOnce person, 'change', (e) ->
         called = true
-      model.set 'age', 55
+      person.set 'age', 55
       assert.isFalse called
 
     test 'should be dispached if value is removed', ->
       called = false
-      goog.events.listenOnce model, 'change', (e) ->
+      goog.events.listenOnce person, 'change', (e) ->
         called = true
-      model.remove 'age'
+      person.remove 'age'
       assert.isTrue called
 
   suite 'meta', ->
-    test 'should defined meta attribute', ->
-      assert.equal model.get('name'), 'Joe Satriani'
-
-  suite 'validation', ->
-    test 'should fulfil errors and prevent attr change', ->
-      model.set 'lastName', ''
-      assert.deepEqual model.errors,
-        'lastName':
-          'required': true
-      assert.equal model.get('lastName'), 'Satriani'
+    test 'should define meta attribute', ->
+      assert.equal person.get('name'), 'Joe Satriani'
 
   suite 'bubbling events', ->
     test 'from inner model should work', ->
       called = 0
       innerModel = new Person
-      model.set 'inner', innerModel
-      goog.events.listen model, 'change', (e) ->
+      person.set 'inner', innerModel
+      goog.events.listen person, 'change', (e) ->
         called++
       innerModel.set 'name', 'foo'
-      model.remove 'inner', innerModel
+      person.remove 'inner', innerModel
       innerModel.set 'name', 'foo'
       assert.equal called, 2
 
   suite 'errors', ->
-    test 'should works across sets', ->
-      model.set 'lastName', ''
-      assert.deepEqual model.errors, {lastName: {required: true}}
-      assert.equal model.get('lastName'), 'Satriani'
+    suite 'set', ->
+      test 'should return correct errors', ->
+        errors = person.set()
+        assert.isNull errors
 
-  suite 'isValid', ->
-    test 'should use scheme validators in set method', ->
-      assert.isTrue model.isValid(), 'model is valid'
-      assert.isFalse model.set 'lastName', ''
-      assert.equal model.get('lastName'), 'Satriani'
-      assert.isTrue model.isValid(), 'set will not set invalid state'
+        errors = person.set 'firstName', null
+        assert.deepEqual errors,
+          firstName: required: true
+        assert.equal person.get('firstName'), 'Joe' 
 
-    test 'should use scheme validators in constructor too', ->
-      model = new Person
-      assert.isFalse model.isValid()
-      assert.isTrue model.set 'lastName', 'fok'
-      assert.isTrue model.isValid()
+        errors = person.set 'firstName', 'Pepa'
+        assert.deepEqual errors, null
 
-  suite 'set object', ->
-    test 'should set valid keys despite there is one invalid', ->
-      assert.equal model.get('firstName'), 'Joe'
-      model.set
-        firstName: 'Pepa'
-        lastName: ''
-      assert.equal model.get('firstName'), 'Pepa'
-  
+        errors = person.set 'firstName': 'Pepa', 'lastName': 'Zdepa'
+        assert.deepEqual errors, null
 
+        errors = person.set 'firstName': null, 'lastName': null
+        assert.deepEqual errors,
+          firstName: required: true
+          lastName: required: true
 
+    suite 'validate', ->
+      test 'should return correct errors', ->
+        errors = person.validate()
+        assert.isNull errors
+
+        person = new Person
+        errors = person.validate()
+        assert.deepEqual errors,
+          firstName: required: true
+          lastName: required: true
+
+        person.set 'firstName', 'Pepa'
+        errors = person.validate()
+        assert.deepEqual errors,
+          lastName: required: true
 
 
 

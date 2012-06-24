@@ -1,53 +1,69 @@
 ###*
   @fileoverview Model with attributes and schema.
   
-  todo
-    clientId for rendering... consider
-  
-  Why not plain objects
+  Why not plain objects?
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
     - reusable setters, getters, and validators (=schema)
     - strings are fine for uncompiled properties from DOM and server
 
-  Person = (firstName, lastName, age) ->
-    goog.base @,
-      'firstName': firstName
-      'lastName': lastName
-      'age': age
-    return
+  Example
+    Person = (firstName, lastName, age) ->
+      goog.base @,
+        'firstName': firstName
+        'lastName': lastName
+        'age': age
+      return
+    
+    Person::schema = 
+      'firstName':
+        'set': este.mvc.setters.trim
+        'validators':
+          'required': este.mvc.validators.required
+      'lastName':
+        'set': este.mvc.setters.trim
+        'validators':
+          'required': este.mvc.validators.required
+      'name':
+        'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
+      'age':
+        'get': (age) -> Number age
 
-  # how to inherit schema? deepmix old one with new one
-  Person::schema = 
-    'firstName':
-      'set': este.mvc.setters.trim
-    'lastName':
-      'validators':
-        'required': este.mvc.validators.required
-    'name':
-      'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
-    'age':
-      'get': (age) -> Number age
+  How validation works.
+    - invalid values are not set
+    - there are methods with validation: set and validate
+    - both of them returns errors or null
+    - set method validates only passed values
+    - validate method use all defined validators
+    - errors object example
+        name:
+          required: true
 
-  joe = new Person 'Joe', 'Satriani', 55
+  Validation example
+    # new objects or object from JSON
+    joe = new Person json
+    errors = joe.validate()
+    alert goog.object.getKeys errors if errors
 
-  goog.events.listen joe, 'change', (e) ->
-    for key, value in e.attributes
-      switch key
-        when 'firstName'
-          cookie.set key, value
+    # modify existing object
+    errors = joe.set json
+    alert goog.object.getKeys errors if errors
 
-  joe.set 'lastName', 'Satch'
-  joe.get 'lastName'
-  
-  # modify complex object
-  joe.get('items').add 'foo'
+  Change event example
+    joe = new Person 'Joe', 'Satriani', 55
+    goog.events.listen joe, 'change', (e) ->
+      if 'firstName' of e.changed
+        cookie.set key, value
+    joe.set 'firstName', 'Pepa'
 
-  set and validate
-    todo
+  Tips
+    - modify complex object
+      joe.get('items').add 'foo'
+    - 'inherit' schema?
+      Use goog.object.extend.
 
   todo
     validation and its messages with locals aka "#{prop} can not be blank"
-    model.bind 'firstName', (firstName) -> ..
+    consider model.bind 'firstName', (firstName) -> ..
 ###
 
 goog.provide 'este.mvc.Model'
@@ -62,17 +78,16 @@ goog.require 'este.mvc.setters'
 goog.require 'este.mvc.validators'
 
 ###*
-  @param {Object=} opt_attrs
+  @param {Object=} json
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.mvc.Model = (opt_attrs) ->
-  @attrs = {}
-  @schema ?= {}
-  @errors = {}
-  @set opt_attrs if opt_attrs
+este.mvc.Model = (json = {}) ->
   goog.base @
-  @set 'id', goog.string.getRandomString() if !@get('id')?
+  @attributes = {}
+  @schema ?= {}
+  json['id'] ?= goog.string.getRandomString()
+  @setInternal json
   return
 
 goog.inherits este.mvc.Model, goog.events.EventTarget
@@ -109,24 +124,13 @@ goog.scope ->
     @type {Object}
     @protected
   ###
-  _::attrs
+  _::attributes
 
   ###*
     @type {Object}
     @protected
   ###
   _::schema
-
-  ###*
-    @type {*}
-  ###
-  _::id
-
-  ###*
-    ex. name: {required: true}
-    @type {Object}
-  ###
-  _::errors
 
   ###*
     Returns model's attribute.
@@ -138,7 +142,7 @@ goog.scope ->
       object = {}
       object[k] = @get k for k in key
       return object
-    value = @attrs[_.getKey(key)]
+    value = @attributes[_.getKey(key)]
     meta = @schema[key]?['meta']
     return meta @ if meta
     get = @schema[key]?.get
@@ -146,61 +150,85 @@ goog.scope ->
     value
 
   ###*
-    Set attribute or hash of attributes. If any of the attributes change the
-    models state, change event will be triggered.
-    Invalid values are not setted. Errors are stored in errror property.
+    set 'prop', value or set 'prop': 'value'.
+    Invalid values are ignored.
+    Dispatch change event with changed property, if any.
+    Returns errors object.
     @param {Object|string} object Object of key value pairs or string key.
     @param {*=} opt_value value or nothing.
-    @return {boolean} true if any attribute changed
+    @return {Object} errors object, ex. name: required: true if error
   ###
   _::set = (object, opt_value) ->
     object = _.getObject object, opt_value
     changes = @getChanges object
-    return false if goog.object.isEmpty changes
-    @errors = @getErrors changes
-    changes = goog.object.filter changes, (value, key) => !@errors[key]
-    return false if goog.object.isEmpty changes
-    for key, value of changes
-      @attrs[_.getKey(key)] = value
-      continue if !(value instanceof goog.events.EventTarget)
-      value.setParentEventTarget @
-    @dispatchEvent
-      type: _.EventType.CHANGE
-      attrs: changes
-    true
+    return null if !changes
+    errors = @getErrors changes
+    if errors
+      changes = goog.object.filter changes, (value, key) -> !errors[key]
+    if !goog.object.isEmpty changes
+      @setInternal changes
+      @dispatchChangeEvent changes
+    errors
 
   ###*
     @param {Object} object
+    @protected
+  ###
+  _::setInternal = (object) ->
+    for key, value of object
+      @attributes[_.getKey(key)] = value
+      continue if !(value instanceof goog.events.EventTarget)
+      value.setParentEventTarget @
+    return
+
+  ###*
+    todo: optimize value changed comparison
+    @param {Object} object
     @return {Object}
+    @protected
   ###
   _::getChanges = (object) ->
-    changes = {}
+    changes = null
     for key, value of object
       set = @schema[key]?.set
       value = set value if set
       continue if este.json.stringify(value) == este.json.stringify @get key
+      changes ?= {}
       changes[key] = value
     changes
 
   ###*
     @param {Object} object key is attr, value is its value
     @return {Object}
+    @protected
   ###
   _::getErrors = (object) ->
-    errors = {}
+    errors = null
     for key, value of object
-      for name, validator of @schema[key]?['validators'] || {}
+      validators = @schema[key]?['validators']
+      continue if !validators
+      for name, validator of validators
         continue if validator value
+        errors ?= {}
         errors[key] ?= {}
         errors[key][name] = true
     errors
+
+  ###*
+    @param {Object} changed
+    @protected
+  ###
+  _::dispatchChangeEvent = (changed) ->
+    @dispatchEvent
+      type: _.EventType.CHANGE
+      changed: changed
 
   ###*
     @param {string} key
     @return {boolean}
   ###
   _::has = (key) ->
-    _.getKey(key) of @attrs
+    _.getKey(key) of @attributes
 
   ###*
     todo: add boolean return
@@ -208,28 +236,25 @@ goog.scope ->
   ###
   _::remove = (key) ->
     _key = _.getKey key
-    value = @attrs[_key]
+    value = @attributes[_key]
     value.setParentEventTarget null if value instanceof goog.events.EventTarget
-    delete @attrs[_key]
-    attrs = {}
-    attrs[key] = value
-    @dispatchEvent
-      type: _.EventType.CHANGE
-      attrs: attrs
+    delete @attributes[_key]
+    changed = {}
+    changed[key] = value
+    @dispatchChangeEvent changed
 
   ###*
     Returns shallow copy.
-    hmm, should be called after isValid ok, otherwise it returns unvalid result
-    @param {boolean=} noMetas
+    @param {boolean=} withoutMetas
     @return {Object}
   ###
-  _::toJson = (noMetas) ->
+  _::toJson = (withoutMetas = false) ->
     object = {}
-    for key, value of @attrs
+    for key, value of @attributes
       origKey = key.substring 1
       newValue = @get origKey
       object[origKey] = newValue
-    return object if noMetas
+    return object if withoutMetas
     for key, value of @schema
       meta = value?['meta']
       continue if !meta
@@ -237,12 +262,12 @@ goog.scope ->
     object
 
   ###*
-    @return {boolean}
+    @return {Object} errors object, ex. name: required: true if error
   ###
-  _::isValid = ->
-    keys = (attr for attr, def of @schema when def?['validators'])
-    `var values = /** @type {Object} */ (this.get(keys))`
-    @errors = @getErrors values
-    goog.object.isEmpty @errors
+  _::validate = ->
+    keys = (key for key, value of @schema when value?['validators'])
+    values = @get keys
+    `values = /** @type {Object} */ (values)`
+    @getErrors values
 
   return
