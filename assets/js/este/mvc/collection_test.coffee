@@ -1,5 +1,7 @@
 suite 'este.mvc.Collection', ->
 
+  # todo: sort compare tests
+
   Collection = este.mvc.Collection
   Model = este.mvc.Model
   Child = null
@@ -64,7 +66,7 @@ suite 'este.mvc.Collection', ->
         c: 'fok'
       ]
 
-  suite 'add and remove', ->
+  suite 'add, remove and getLength', ->
     test 'should work', ->
       assert.equal collection.getLength(), 0
       collection.add 1
@@ -248,6 +250,92 @@ suite 'este.mvc.Collection', ->
       collection.add child
       assert.instanceOf collection.at(0), Child
       assert.equal collection.at(0).get('a'), 1
+
+  suite 'clear', ->
+    test 'should works', ->
+      count = 0
+      collection = new Collection
+      collection.add 1
+      collection.add 2
+      goog.events.listenOnce collection, 'change', -> count++
+      goog.events.listenOnce collection, 'remove', -> count++
+      collection.clear()
+      assert.equal count, 2
+      assert.isUndefined collection.at 0
+      assert.isUndefined collection.at 1
+
+  # todo: consider fix this backbonesness ->
+  # Collections with comparator functions will not automatically re-sort if you
+  # later change model attributes, so you may wish to call sort after changing
+  # model attributes that would affect the order.
+  suite 'sorting', ->
+    suite 'default compare', ->
+      test 'should work with numbers', ->
+        collection.add 3, 2, 1
+        assert.deepEqual collection.toJson(), [1, 2, 3]
+
+      test 'should work with strings', ->
+        collection.add 'c', 'b', 'a'
+        assert.deepEqual collection.toJson(), ['a', 'b', 'c']
+        collection.remove 'a'
+        assert.deepEqual collection.toJson(), ['b', 'c']
+
+    suite 'sort', ->
+      test 'should fire change event', (done) ->
+        goog.events.listenOnce collection, 'change', (e) ->
+          done() 
+        collection.sort()
+
+      suite 'by', ->
+        test 'before should work', ->
+          collection.sort by: (item) -> item.id
+          collection.add id: 3
+          collection.add id: 1
+          collection.add id: 2
+          assert.deepEqual collection.toJson(), [{id: 1}, {id: 2}, {id: 3}]
+
+        test 'before should not(!) work', ->
+          collection.sort by: null
+          collection.add id: 3
+          collection.add id: 2
+          collection.add id: 1
+          assert.deepEqual collection.toJson(), [{id: 3}, {id: 2}, {id: 1}]
+
+        test 'after should work', ->
+          collection.add id: 3
+          collection.add id: 1
+          collection.add id: 2
+          collection.sort by: (item) -> item.id
+          assert.deepEqual collection.toJson(), [{id: 1}, {id: 2}, {id: 3}]
+
+      # todo
+      # suite 'compare', ->
+
+      suite 'reversed', ->
+        test 'before should work', ->
+          collection.sort
+            by: (item) -> item.id
+            reversed: true
+          collection.add id: 3
+          collection.add id: 1
+          collection.add id: 2
+          assert.deepEqual collection.toJson(), [{id: 3}, {id: 2}, {id: 1}]
+
+        test 'after should work', ->
+          collection.add id: 'c'
+          collection.add id: 'a'
+          collection.add id: 'b'
+          collection.sort
+            by: (item) -> item.id
+            reversed: true
+          assert.deepEqual collection.toJson(), [{id: 'c'}, {id: 'b'}, {id: 'a'}]
+
+
+  # suite 'filter', ->
+  #   test 'should work', ->
+  #     collection.filter (item) -> 
+
+
 
 
 
