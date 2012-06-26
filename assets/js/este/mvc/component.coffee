@@ -5,7 +5,7 @@
 goog.provide 'este.mvc.Component'
 
 goog.require 'goog.ui.Component'
-goog.require 'goog.dom.forms'
+goog.require 'este.dom'
 goog.require 'goog.object'
 
 ###*
@@ -38,11 +38,7 @@ goog.scope ->
   _::onFormSubmit_ = (e) ->
     e.preventDefault()
     target = e.target
-    object = goog.dom.forms.getFormDataMap(target).toObject()
-    # we do not want single item array values
-    object = goog.object.map object, (v, k) ->
-      return v[0] if goog.isArray(v) && v.length == 1
-      v
+    object = este.dom.serializeForm target
     @onFormSubmit target, object
     
   ###*

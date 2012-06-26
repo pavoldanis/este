@@ -6,6 +6,8 @@ goog.provide 'este.dom'
 
 goog.require 'goog.dom'
 goog.require 'goog.string'
+goog.require 'goog.dom.forms'
+goog.require 'goog.object'
 
 `
 /**
@@ -421,6 +423,32 @@ goog.scope ->
           return true
       node = node.parentNode
     false
+
+  ###*
+    @param {Element} form
+    @return {Object}
+  ###
+  _.serializeForm = (form) ->
+    `form = /** @type {HTMLFormElement} */ (form)`
+    object = goog.dom.forms.getFormDataMap(form).toObject()
+    # we do not want single item array values
+    goog.object.map object, (v, k) ->
+      return v[0] if goog.isArray(v) && v.length == 1
+      v
+
+  ###*
+    todo:
+      get element (parents) dompath
+      if retrieve localStored dompath (window.location involved)
+        unlisten previous listeners
+        restore states
+      register events to store fields state
+        store states into localStorage
+
+    @param {Element} element
+  ###
+  _.fieldsState = (element) ->
+
 
   return
 
