@@ -1,6 +1,6 @@
 How to use it
 
-  Install Node.js, Java, Python
+  Install Node.js, Java, Python.
   npm install -g mocha
   npm install -g stylus
   npm install -g coffee-script
