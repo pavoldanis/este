@@ -6,9 +6,9 @@ What's that?
 
 How to use it
   Install Node.js, Java, Python.
+  npm install -g coffee-script
   npm install -g mocha
   npm install -g stylus
-  npm install -g coffee-script
   Clone.
   Update submodule to get last Closure Library version.
   Sublimetext install: todo
