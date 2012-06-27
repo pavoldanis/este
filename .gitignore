@@ -13,6 +13,7 @@ assets/js/*.js
 !*.coffee
 !*.soy
 !assets/js/dev/soyutils_usegoog.js
+!assets/js/dev/start.js
 # Except all files in Google closure library
 !assets/js/google-closure/**/*
 #
