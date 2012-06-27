@@ -1,3 +1,9 @@
+What is it?
+  It's my beloved development stack. Run one script, to compile Coffeescript,
+  Stylus, Soy templates, update deps.js, run insanely fast unit tests, on file
+  change (cmd-s). One console output for all these nice tools.
+  Tested on Mac and Win.
+
 How to use it
 
   Install Node.js, Java, Python.
