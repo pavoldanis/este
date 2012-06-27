@@ -7,10 +7,11 @@ goog.require 'goog.ui.Component'
 goog.require 'app.listing.templates'
 
 ###*
+  @param {app.listing.Model} model
   @constructor
   @extends {goog.ui.Component}
 ###
-app.listing.View = ->
+app.listing.View = (@model) ->
   goog.base @
   return
 
@@ -20,20 +21,17 @@ goog.scope ->
   `var _ = app.listing.View`
 
   ###*
+    @type {app.listing.Model}
+  ###
+  _::model
+
+  ###*
     @inheritDoc
   ###
   _::createDom = ->
     element = @dom_.createDom 'h1', 'example'
     element.innerHTML = app.listing.templates.list
-      items: [
-        id: 1
-        text: 'Ahoj'
-        title: 'Ahoj'
-      ,
-        id: 2
-        text: 'Světe'
-        title: 'Světe'
-      ]
+      items: @model.getItems()
     @setElementInternal element
     return
 
@@ -56,11 +54,6 @@ goog.scope ->
 
   _::onClick = (e) ->
     @dispatchEvent 'componentclick'
-
-  ###*
-    @desc Not all selects were selected.
-  ###
-  _.MSG_PLEASE_CHOOSE = goog.getMsg 'Prosím vyberte: '
 
   return
 

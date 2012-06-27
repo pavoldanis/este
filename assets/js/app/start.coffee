@@ -1,18 +1,21 @@
 goog.provide 'app.start'
 
 goog.require 'este.dev.Monitor.create'
+goog.require 'app.listing.Model.create'
 goog.require 'app.listing.View'
 
 app.start = ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
+  model = app.listing.Model.create()
+
   # rendering example
-  view1 = new app.listing.View
+  view1 = new app.listing.View model
   view1.render document.body
 
   # decoration example
-  view2 = new app.listing.View
+  view2 = new app.listing.View model
   view2.decorate document.body
 
   # custom events test

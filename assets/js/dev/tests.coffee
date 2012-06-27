@@ -20,11 +20,11 @@ getDeps = ->
 ###
 getTestFiles = ->
   files = {}
-  # todo: use all js except closure..
-  getDirectoryFiles 'assets/js/este', (testFilePath) ->
+  getDirectoryFiles 'assets/js', (testFilePath) ->
+    return if testFilePath.indexOf('google-closure') > -1
     return if testFilePath.slice(-8) != '_test.js'
     filePath = testFilePath.slice(0, -8) + '.js'
-    files[filePath] = testFilePath 
+    files[filePath] = testFilePath
   files
 
 ###*
