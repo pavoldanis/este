@@ -14,22 +14,6 @@ pathModule = require 'path'
 watchOptions =
   interval: 10
 
-Command =
-  coffee: "coffee --compile --bare --output assets/js assets/js"
-  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py
-    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
-    --root_with_prefix=\"assets/js/dev ../../../dev\"
-    --root_with_prefix=\"assets/js/este ../../../este\"
-    --root_with_prefix=\"assets/js/app ../../../app\"
-    > assets/js/deps.js"
-  tests: tests.run
-  stylus: "stylus --compress assets/css/"
-  # extreme slow!
-  # soy: "find ./assets/js/ -name \"*.soy\" 
-  #   -exec java -jar assets/js/dev/SoyToJsSrcCompiler.jar 
-  #   --shouldProvideRequireSoyNamespaces --shouldGenerateJsdoc 
-  #   --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js' {} \\;"
-  
 start = ->
   runServer()
 
@@ -65,12 +49,7 @@ start = ->
         ]
       when '.soy'
         commands = [
-          "java -jar assets/js/dev/SoyToJsSrcCompiler.jar
-            --shouldProvideRequireSoyNamespaces
-            --shouldGenerateJsdoc
-            --codeStyle concat
-            --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
-            #{path}"    
+          getSoyCommand path
         ]
 
     return if !commands
@@ -171,6 +150,28 @@ runServer = ->
       
   server.listen 8000
 
+getSoyCommand = (path) ->
+  "java -jar assets/js/dev/SoyToJsSrcCompiler.jar
+    --shouldProvideRequireSoyNamespaces
+    --shouldGenerateJsdoc
+    --codeStyle concat
+    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
+    #{path}"    
+
+Command =
+  coffee: "coffee --compile --bare --output assets/js assets/js"
+  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py
+    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
+    --root_with_prefix=\"assets/js/dev ../../../dev\"
+    --root_with_prefix=\"assets/js/este ../../../este\"
+    --root_with_prefix=\"assets/js/app ../../../app\"
+    > assets/js/deps.js"
+  tests: tests.run
+  stylus: "stylus --compress assets/css/"
+
+soyPaths = (path for path in getPaths('assets') when endsWith(path, '.soy'))
+for soyPath, i in soyPaths
+  Command['soy' + i] = [getSoyCommand(soyPath)]
 
 start()
 

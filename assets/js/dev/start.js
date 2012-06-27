@@ -6,7 +6,7 @@
     deletion .css and .js ghost files after .styl and .coffee deletion
 */
 
-var Command, clearScreen, endsWith, exec, fs, getPaths, http, pathModule, runCommands, runServer, start, tests, watchOptions, watchPaths;
+var Command, clearScreen, endsWith, exec, fs, getPaths, getSoyCommand, http, i, path, pathModule, runCommands, runServer, soyPath, soyPaths, start, tests, watchOptions, watchPaths, _i, _len;
 
 fs = require('fs');
 
@@ -20,13 +20,6 @@ pathModule = require('path');
 
 watchOptions = {
   interval: 10
-};
-
-Command = {
-  coffee: "coffee --compile --bare --output assets/js assets/js",
-  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"    --root_with_prefix=\"assets/js/dev ../../../dev\"    --root_with_prefix=\"assets/js/este ../../../este\"    --root_with_prefix=\"assets/js/app ../../../app\"    > assets/js/deps.js",
-  tests: tests.run,
-  stylus: "stylus --compress assets/css/"
 };
 
 start = function() {
@@ -69,7 +62,7 @@ start = function() {
         commands = ["stylus --compress " + path];
         break;
       case '.soy':
-        commands = ["java -jar assets/js/dev/SoyToJsSrcCompiler.jar            --shouldProvideRequireSoyNamespaces            --shouldGenerateJsdoc            --codeStyle concat            --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js            " + path];
+        commands = [getSoyCommand(path)];
     }
     if (!commands) {
       return;
@@ -212,5 +205,34 @@ runServer = function() {
   });
   return server.listen(8000);
 };
+
+getSoyCommand = function(path) {
+  return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + path;
+};
+
+Command = {
+  coffee: "coffee --compile --bare --output assets/js assets/js",
+  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"    --root_with_prefix=\"assets/js/dev ../../../dev\"    --root_with_prefix=\"assets/js/este ../../../este\"    --root_with_prefix=\"assets/js/app ../../../app\"    > assets/js/deps.js",
+  tests: tests.run,
+  stylus: "stylus --compress assets/css/"
+};
+
+soyPaths = (function() {
+  var _i, _len, _ref, _results;
+  _ref = getPaths('assets');
+  _results = [];
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    path = _ref[_i];
+    if (endsWith(path, '.soy')) {
+      _results.push(path);
+    }
+  }
+  return _results;
+})();
+
+for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
+  soyPath = soyPaths[i];
+  Command['soy' + i] = [getSoyCommand(soyPath)];
+}
 
 start();
