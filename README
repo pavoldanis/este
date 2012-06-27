@@ -5,7 +5,7 @@ What's that?
   change (cmd-s). One console output for all these wonderful tools. Tested on
   mac and win.
 
-How to use it
+How to use it?
 
   Install Node.js, Java, Python.
   npm install -g coffee-script
