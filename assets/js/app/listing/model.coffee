@@ -18,7 +18,7 @@ goog.scope ->
     @return {app.listing.Model}
   ###
   _.create = ->
-    new _
+    new _ [1, 2]
 
   ###*
     @param {Array.<number>}
