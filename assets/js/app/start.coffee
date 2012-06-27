@@ -1,27 +1,30 @@
 goog.provide 'app.start'
 
-# list of este components, to enforce advanced mode compilation checks
-goog.require 'este.ui.OOPLightbox'
-goog.require 'este.events.Delegation'
-goog.require 'este.ui.Resizer'
-goog.require 'este.ui.InvisibleOverlay'
-goog.require 'este.ui.Lightbox'
-goog.require 'este.dev.Monitor'
-goog.require 'este.mobile'
-goog.require 'este.json'
-goog.require 'este.net.ChunkedJsonp'
-goog.require 'este.net.ChunkedPixelRequest'
-# goog.require 'este.oop.Collection'
-# goog.require 'este.oop.Model'
-goog.require 'este.string'
-#goog.require 'este.ui.courseDate.create'
-goog.require 'este.mvc.Model'
-goog.require 'este.mvc.Collection'
+goog.require 'este.dev.Monitor.create'
+goog.require 'app.listing.View'
 
 app.start = ->
-  alert 'start'
-  #este.dev.Monitor.create()
-  #este.ui.courseDate.create()
+  if goog.DEBUG
+    este.dev.Monitor.create()
+
+  # rendering example
+  view1 = new app.listing.View
+  view1.render document.body
+
+  # decoration example
+  view2 = new app.listing.View
+  view2.decorate document.body
+
+  # custom events test
+  goog.events.listen view1, 'componentclick', (e) ->
+    alert 'component1 clicked'
+    alert 'now it will be disposed, and removed from the dom, because it was rendered'
+    view1.dispose()
+
+  goog.events.listen view2, 'componentclick', (e) ->
+    alert 'component1 clicked'
+    alert 'now it will be disposed, but will stay in dom, because it was decorated'
+    view2.dispose()
 
 # ensures the symbol will be visible after compiler renaming.
 goog.exportSymbol 'app.start', app.start
