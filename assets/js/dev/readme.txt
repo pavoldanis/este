@@ -1,7 +1,7 @@
 How to use it
-	Clone
+	Clone.
 	Update submodule.
-	Run node assets/js/dev/start from /assets.
+	Run 'node assets/js/dev/start' from /assets.
 
 	node assets/js/dev/start
 		- will start server
@@ -21,7 +21,7 @@ Install
 	Sublimetext install: todo
 
 Traps
-	You dont have installed Python.
+	You dont have installed Python or Java.
 
 	Access to protected property... from Compiler
 	You probably forget to add doc comment:
