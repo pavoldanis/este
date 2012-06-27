@@ -1,0 +1,35 @@
+How to use it
+	Clone.
+	Update submodule.
+	Run 'node assets/js/dev/start' from /assets.
+
+	node assets/js/dev/start
+		- will start server
+		- watch coffee and stylus files
+		- updates deps.js
+		- run tests
+
+	node assets/js/dev/build app
+		- will compile app
+		- you can use --html, --one, --stage options
+
+Install
+	install NodeJS, Java, Python
+	npm install -g mocha
+	npm install -g stylus
+	npm install -g coffee-script
+	Sublimetext install: todo
+
+Traps
+	You dont have installed Python or Java.
+
+	Access to protected property... from Compiler
+	You probably forget to add doc comment:
+	###*
+		@override
+	###
+	Do not forget asterisk.
+
+How to update libs
+	Closure compiler is not submodule. Download it here.
+	http://code.google.com/p/closure-compiler/downloads/list
