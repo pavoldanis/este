@@ -1,4 +1,8 @@
 How to use it
+	Clone
+	Update submodule.
+	Run node assets/js/dev/start from /assets.
+
 	node assets/js/dev/start
 		- will start server
 		- watch coffee and stylus files
@@ -15,9 +19,6 @@ Install
 	npm install -g stylus
 	npm install -g coffee-script
 	Sublimetext install: todo
-
-TODO
-	Přidat k tomu návod, co vše je třeba pro rozjetí. (instalace node, coffe, stylusu, chai, mocha globalne (možná to předělat na lokální node moduly).
 
 Traps
 	You dont have installed Python.
