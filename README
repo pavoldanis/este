@@ -27,3 +27,17 @@ Scripts
   node assets/js/dev/build app
     - will compile app
     - --one, --html, --stage options (todo)
+
+Ok. I got it, what's next?
+  Take a look at the app. It does almost nothing. But TodoMVC is in process.
+  In the meantime, you can see what este.mvc namespace contains yet.
+  Namespaces in assets/js, app is obvious, dev is development scripts, este
+  is my personal everything-i-consider-as-reusable library. You or your company
+  should have your own shared-wisdom-persisted library.
+
+Near future
+  localization example
+  TodoMVC mobile version.
+  two-way databinding
+
+
