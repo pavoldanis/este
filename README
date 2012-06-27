@@ -17,7 +17,7 @@ How to use it
 
 Scripts
   node assets/js/dev/start
-    - will start simple server
+    - start simple server
     - watch and compile stylus files
     - watch and compile soy templates
     - watch and compile coffee files
@@ -25,19 +25,25 @@ Scripts
       - then run tests
 
   node assets/js/dev/build app
-    - will compile app
+    - compile app
     - --one, --html, --stage options (todo)
 
 Ok. I got it, what's next?
   Take a look at the app. It does almost nothing. But TodoMVC is in process.
   In the meantime, you can see what este.mvc namespace contains yet.
-  Namespaces in assets/js, app is obvious, dev is development scripts, este
-  is my personal everything-i-consider-as-reusable library. You or your company
-  should have your own shared-wisdom-persisted library.
+
+este.mvc
+  Model, collection, simple router. (todo: link to examples)
+
+Namespaces
+  Namespaces in assets/js. App is obvious, dev are development scripts, este
+  is my personal everything-i-consider-as-reusable library. You, or your
+  company, should definitely have own persisted-shared-wisdom library too.
 
 Near future
   localization example
-  TodoMVC mobile version.
+  TodoMVC, mobile version ,)
+  validations
   two-way databinding
 
 
