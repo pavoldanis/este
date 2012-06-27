@@ -56,7 +56,7 @@ build = (project, flags) ->
   fileName = project
   fileName += '_dev' if debug
   command = "
-    assets/js/google-closure/closure/bin/build/closurebuilder.py
+    python assets/js/google-closure/closure/bin/build/closurebuilder.py
       --root=assets/js/google-closure
       --root=assets/js/dev
       --root=assets/js/este

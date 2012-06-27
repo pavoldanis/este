@@ -16,6 +16,7 @@ assets/js/*.js
 !assets/js/dev/start.js
 # Except all files in Google closure library
 !assets/js/google-closure/**/*
+!assets/js/dev/node_modules/chai
 #
 # Other common files
 app.html

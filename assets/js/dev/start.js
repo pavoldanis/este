@@ -3,10 +3,7 @@
   node assets/js/dev/start
 
   todo
-    proc trva kompilace vsech soy tak nekonecne dlouho?
-    add param for test (changed file)
-    mobile-template auto recompilation
-    .css and .js ghost files after .styl and .coffee deletion
+    deletion .css and .js ghost files after .styl and .coffee deletion
 */
 
 var Command, clearScreen, endsWith, exec, fs, getPaths, http, pathModule, runCommands, runServer, start, tests, watchOptions, watchPaths;
@@ -27,20 +24,19 @@ watchOptions = {
 
 Command = {
   coffee: "coffee --compile --bare --output assets/js assets/js",
-  deps: "assets/js/google-closure/closure/bin/build/depswriter.py    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"    --root_with_prefix=\"assets/js/dev ../../../dev\"    --root_with_prefix=\"assets/js/este ../../../este\"    --root_with_prefix=\"assets/js/tracker ../../../tracker\"    --root_with_prefix=\"assets/js/mobile ../../../mobile\"    > assets/js/deps.js",
+  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"    --root_with_prefix=\"assets/js/dev ../../../dev\"    --root_with_prefix=\"assets/js/este ../../../este\"    --root_with_prefix=\"assets/js/app ../../../app\"    > assets/js/deps.js",
   tests: tests.run,
-  stylus: "stylus --compress assets/css/",
-  soy: "find ./assets/js/ -name \"*.soy\"     -exec java -jar assets/js/dev/SoyToJsSrcCompiler.jar     --shouldProvideRequireSoyNamespaces --shouldGenerateJsdoc     --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js' {} \\;"
+  stylus: "stylus --compress assets/css/"
 };
 
 start = function() {
   var commands, key, onPathChange, value;
   runServer();
-  fs.watchFile('mobile-template.html', watchOptions, function(curr, prev) {
+  fs.watchFile('app-template.html', watchOptions, function(curr, prev) {
     if (curr.mtime <= prev.mtime) {
       return;
     }
-    return exec("node assets/js/dev/build mobile --html");
+    return exec("node assets/js/dev/build app --html");
   });
   commands = (function() {
     var _results;
@@ -73,7 +69,7 @@ start = function() {
         commands = ["stylus --compress " + path];
         break;
       case '.soy':
-        commands = ["java -jar assets/js/dev/SoyToJsSrcCompiler.jar            --shouldProvideRequireSoyNamespaces            --shouldGenerateJsdoc            --codeStyle concat            --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js'            " + path];
+        commands = ["java -jar assets/js/dev/SoyToJsSrcCompiler.jar            --shouldProvideRequireSoyNamespaces            --shouldGenerateJsdoc            --codeStyle concat            --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js            " + path];
     }
     if (!commands) {
       return;
@@ -177,7 +173,7 @@ runServer = function() {
     var contentType, extname, filePath;
     filePath = '.' + request.url;
     if (filePath === './') {
-      filePath = './mobile.htm';
+      filePath = './app.htm';
     }
     if (filePath.indexOf('?') !== -1) {
       filePath = filePath.split('?')[0];
@@ -197,9 +193,9 @@ runServer = function() {
       case '.gif':
         contentType = 'image/gif';
     }
-    return pathModule.exists(filePath, function(exists) {
+    return fs.exists(filePath, function(exists) {
       if (!exists) {
-        filePath = './mobile.html';
+        filePath = './app.html';
       }
       return fs.readFile(filePath, function(error, content) {
         if (error) {

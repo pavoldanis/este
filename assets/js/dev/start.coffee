@@ -16,7 +16,7 @@ watchOptions =
 
 Command =
   coffee: "coffee --compile --bare --output assets/js assets/js"
-  deps: "assets/js/google-closure/closure/bin/build/depswriter.py
+  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py
     --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
     --root_with_prefix=\"assets/js/dev ../../../dev\"
     --root_with_prefix=\"assets/js/este ../../../este\"
@@ -25,10 +25,10 @@ Command =
   tests: tests.run
   stylus: "stylus --compress assets/css/"
   # extreme slow!
-  soy: "find ./assets/js/ -name \"*.soy\" 
-    -exec java -jar assets/js/dev/SoyToJsSrcCompiler.jar 
-    --shouldProvideRequireSoyNamespaces --shouldGenerateJsdoc 
-    --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js' {} \\;"
+  # soy: "find ./assets/js/ -name \"*.soy\" 
+  #   -exec java -jar assets/js/dev/SoyToJsSrcCompiler.jar 
+  #   --shouldProvideRequireSoyNamespaces --shouldGenerateJsdoc 
+  #   --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js' {} \\;"
   
 start = ->
   runServer()
@@ -69,7 +69,7 @@ start = ->
             --shouldProvideRequireSoyNamespaces
             --shouldGenerateJsdoc
             --codeStyle concat
-            --outputPathFormat '{INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js'
+            --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
             #{path}"    
         ]
 
@@ -79,6 +79,7 @@ start = ->
     return
 
 clearScreen = ->
+  # todo: fix in windows
   # clear screen
   `process.stdout.write('\033[2J')`
   # set cursor position
@@ -154,7 +155,7 @@ runServer = ->
         contentType = 'image/png'
       when '.gif'
         contentType = 'image/gif'
-    pathModule.exists filePath, (exists) ->
+    fs.exists filePath, (exists) ->
       # if !exists
       #   response.writeHead 404
       #   response.end()

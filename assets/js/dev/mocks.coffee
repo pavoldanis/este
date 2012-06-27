@@ -1,4 +1,4 @@
-global.assert = require('/usr/local/lib/node_modules/chai').assert
+global.assert = require('chai').assert
 
 ###
 	DOM stub (almost). Would be better to not have a mock, but Google Closure
