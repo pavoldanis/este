@@ -33,7 +33,7 @@ Ok. I got it, what's next?
   In the meantime, you can see what este.mvc namespace contains yet.
 
 este.mvc
-  Model, collection, simple router. (todo: link to examples)
+  Model, collection, simple router (todo: link to examples).
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
@@ -41,8 +41,8 @@ Namespaces
   company, should definitely have own persisted-shared-wisdom library too.
 
 Near future
-  localization example
   TodoMVC, mobile version ,)
+  localization example
   validations
   two-way databinding
 
