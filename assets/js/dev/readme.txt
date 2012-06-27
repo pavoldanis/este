@@ -1,35 +1,23 @@
 How to use it
-	Clone.
-	Update submodule.
-	Run 'node assets/js/dev/start' from /assets.
 
-	node assets/js/dev/start
-		- will start server
-		- watch coffee and stylus files
-		- updates deps.js
-		- run tests
-
-	node assets/js/dev/build app
-		- will compile app
-		- you can use --html, --one, --stage options
-
-Install
-	install NodeJS, Java, Python
+	Install Node.js, Java, Python
 	npm install -g mocha
 	npm install -g stylus
 	npm install -g coffee-script
+	Clone.
+	Update submodule to get last Closure Library version.
 	Sublimetext install: todo
+	
+	Run 'node assets/js/dev/start' from assets directory.
 
-Traps
-	You dont have installed Python or Java.
+	node assets/js/dev/start
+		- will start simple server
+		- watch and compile stylus files
+		- watch and compile soy templates
+		- watch and compile coffee files
+			- then updates deps.js
+			- then run tests
 
-	Access to protected property... from Compiler
-	You probably forget to add doc comment:
-	###*
-		@override
-	###
-	Do not forget asterisk.
-
-How to update libs
-	Closure compiler is not submodule. Download it here.
-	http://code.google.com/p/closure-compiler/downloads/list
+	node assets/js/dev/build app
+		- will compile app
+		- --one, --html, --stage options (todo)
