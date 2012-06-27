@@ -15,7 +15,7 @@ How to use it
     git submodule update
   Sublimetext install: todo
   type 'node assets/js/dev/start' in console from project root
-  start creating something beautiful
+  build something beautiful
 
 Scripts
   node assets/js/dev/start
