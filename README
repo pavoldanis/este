@@ -1,4 +1,4 @@
-What is it?
+What's that?
   It's my beloved development stack. Run one script, to compile Coffeescript,
   Stylus, Soy templates, update deps.js, run insanely fast unit tests, on file
   change (cmd-s). One console output for all these wonderful tools. Tested on
