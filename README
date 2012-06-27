@@ -36,7 +36,7 @@ Ok. I got it, what's next?
   namespace contains.
 
 este.mvc
-  Model, collection, simple router (todo: link to examples).
+  Model, collection, simple router (todo: link to examples). Wait for TodoMVC.
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
