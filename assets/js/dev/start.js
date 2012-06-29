@@ -6,7 +6,7 @@
     deletion .css and .js ghost files after .styl and .coffee deletion
 */
 
-var Command, clearScreen, endsWith, exec, fs, getPaths, getSoyCommand, http, i, path, pathModule, runCommands, runServer, soyPath, soyPaths, start, tests, watchOptions, watchPaths, _i, _len;
+var Commands, clearScreen, endsWith, exec, fs, getPaths, getSoyCommand, http, i, path, pathModule, runCommands, runCommandsAsyncTimer, runServer, soyPath, soyPaths, start, tests, watchOptions, watchPaths, _i, _len;
 
 fs = require('fs');
 
@@ -34,8 +34,8 @@ start = function() {
   commands = (function() {
     var _results;
     _results = [];
-    for (key in Command) {
-      value = Command[key];
+    for (key in Commands) {
+      value = Commands[key];
       _results.push(value);
     }
     return _results;
@@ -56,7 +56,7 @@ start = function() {
     commands = null;
     switch (pathModule.extname(path)) {
       case '.coffee':
-        commands = ["coffee --compile --bare " + path, Command.deps, Command.tests];
+        commands = ["coffee --compile --bare " + path, Commands.deps, Commands.tests];
         break;
       case '.styl':
         commands = ["stylus --compress " + path];
@@ -134,6 +134,8 @@ endsWith = function(str, suffix) {
   return l >= 0 && str.indexOf(suffix, l) === l;
 };
 
+runCommandsAsyncTimer = null;
+
 runCommands = function(commands, callback) {
   var command, onExec;
   if (callback == null) {
@@ -155,6 +157,11 @@ runCommands = function(commands, callback) {
   };
   if (typeof command === 'function') {
     command(onExec);
+  } else if (command.timeout) {
+    clearTimeout(runCommandsAsyncTimer);
+    runCommandsAsyncTimer = setTimeout(function() {
+      return exec(command.command, onExec);
+    }, command.timeout);
   } else {
     exec(command, onExec);
   }
@@ -210,9 +217,12 @@ getSoyCommand = function(path) {
   return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + path;
 };
 
-Command = {
+Commands = {
   coffee: "coffee --compile --bare --output assets/js assets/js",
-  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"    --root_with_prefix=\"assets/js/dev ../../../dev\"    --root_with_prefix=\"assets/js/este ../../../este\"    --root_with_prefix=\"assets/js/app ../../../app\"    > assets/js/deps.js",
+  deps: {
+    timeout: 2000,
+    command: "python assets/js/google-closure/closure/bin/build/depswriter.py      --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"      --root_with_prefix=\"assets/js/dev ../../../dev\"      --root_with_prefix=\"assets/js/este ../../../este\"      --root_with_prefix=\"assets/js/app ../../../app\"      > assets/js/deps.js"
+  },
   tests: tests.run,
   stylus: "stylus --compress assets/css/"
 };
@@ -232,7 +242,7 @@ soyPaths = (function() {
 
 for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
   soyPath = soyPaths[i];
-  Command['soy' + i] = [getSoyCommand(soyPath)];
+  Commands['soy' + i] = [getSoyCommand(soyPath)];
 }
 
 start();

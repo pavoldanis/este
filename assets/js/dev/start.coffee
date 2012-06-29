@@ -3,6 +3,7 @@
 
   todo
     deletion .css and .js ghost files after .styl and .coffee deletion
+
 ###
 
 fs = require 'fs'
@@ -16,13 +17,14 @@ watchOptions =
 
 start = ->
   runServer()
+  #dsfd
 
   # todo: refactor
   fs.watchFile 'app-template.html', watchOptions, (curr, prev) ->
     return if curr.mtime <= prev.mtime
     exec "node assets/js/dev/build app --html"
 
-  commands = (value for key, value of Command)
+  commands = (value for key, value of Commands)
 
   runCommands commands, (success) ->
     if success
@@ -40,8 +42,8 @@ start = ->
       when '.coffee'
         commands = [
           "coffee --compile --bare #{path}"
-          Command.deps
-          Command.tests
+          Commands.deps
+          Commands.tests
         ]
       when '.styl'
         commands = [
@@ -98,6 +100,7 @@ endsWith = (str, suffix) ->
   l = str.length - suffix.length
   l >= 0 && str.indexOf(suffix, l) == l
   
+runCommandsAsyncTimer = null  
 runCommands = (commands, callback) ->
   callback ?= ->
   if !commands.length
@@ -113,6 +116,11 @@ runCommands = (commands, callback) ->
     runCommands commands, callback
   if typeof command == 'function'
     command onExec
+  else if command.timeout
+    clearTimeout runCommandsAsyncTimer
+    runCommandsAsyncTimer = setTimeout ->
+      exec command.command, onExec
+    , command.timeout
   else
     exec command, onExec
   return
@@ -158,20 +166,24 @@ getSoyCommand = (path) ->
     --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
     #{path}"    
 
-Command =
+Commands =
   coffee: "coffee --compile --bare --output assets/js assets/js"
-  deps: "python assets/js/google-closure/closure/bin/build/depswriter.py
-    --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
-    --root_with_prefix=\"assets/js/dev ../../../dev\"
-    --root_with_prefix=\"assets/js/este ../../../este\"
-    --root_with_prefix=\"assets/js/app ../../../app\"
-    > assets/js/deps.js"
+  deps:
+    # workaround for fast cmd-s and F5 development
+    timeout: 2000
+    command: "python assets/js/google-closure/closure/bin/build/depswriter.py
+      --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
+      --root_with_prefix=\"assets/js/dev ../../../dev\"
+      --root_with_prefix=\"assets/js/este ../../../este\"
+      --root_with_prefix=\"assets/js/app ../../../app\"
+      > assets/js/deps.js"
   tests: tests.run
   stylus: "stylus --compress assets/css/"
 
+# compile all soy templates on start
 soyPaths = (path for path in getPaths('assets') when endsWith(path, '.soy'))
 for soyPath, i in soyPaths
-  Command['soy' + i] = [getSoyCommand(soyPath)]
+  Commands['soy' + i] = [getSoyCommand(soyPath)]
 
 start()
 
