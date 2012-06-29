@@ -63,7 +63,7 @@ Near future
 Change Log
 
   06/29/12 23:54:46 UTC
-    
+    faster coffeescript compilation (closure desp are async now)
 
 
 
