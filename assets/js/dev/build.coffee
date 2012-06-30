@@ -55,6 +55,7 @@ build = (project, flags) ->
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
   fileName = project
   fileName += '_dev' if debug
+  # --root=assets/js/dev because soy templates namespace
   command = "
     python assets/js/google-closure/closure/bin/build/closurebuilder.py
       --root=assets/js/google-closure

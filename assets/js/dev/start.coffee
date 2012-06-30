@@ -1,5 +1,5 @@
 ###
-  node assets/js/dev/start
+  https://github.com/Steida/este
 
   todo
     deletion .css and .js ghost files after .styl and .coffee deletion
@@ -12,17 +12,21 @@ tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
 
+project = process.argv[2]
+
 watchOptions =
   interval: 10
 
+buildTemplate = ->
+  exec "node assets/js/dev/build #{project} --html"
+
 start = ->
   runServer()
-  #dsfd
 
-  # todo: refactor
-  fs.watchFile 'app-template.html', watchOptions, (curr, prev) ->
+  buildTemplate()
+  fs.watchFile "#{project}-template.html", watchOptions, (curr, prev) ->
     return if curr.mtime <= prev.mtime
-    exec "node assets/js/dev/build app --html"
+    buildTemplate()
 
   commands = (value for key, value of Commands)
 
@@ -128,11 +132,11 @@ runCommands = (commands, callback) ->
 runServer = ->
   server = http.createServer (request, response) ->
     filePath = '.' + request.url
-    # still needed?
-    filePath = './app.htm' if filePath is './'
+    filePath = "./#{project}.htm" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
     extname = pathModule.extname filePath
     contentType = 'text/html'
+    
     switch extname
       when '.js'
         contentType = 'text/javascript'
@@ -142,12 +146,12 @@ runServer = ->
         contentType = 'image/png'
       when '.gif'
         contentType = 'image/gif'
+    
     fs.exists filePath, (exists) ->
-      # if !exists
-      #   response.writeHead 404
-      #   response.end()
-      #   return
-      filePath = './app.html' if !exists
+      # because uri like /product/123 has to be handled by HTML5 pushState
+      if !exists
+        filePath = "./#{project}.html"
+
       fs.readFile filePath, (error, content) ->
         if error
           response.writeHead 500
@@ -169,18 +173,20 @@ getSoyCommand = (path) ->
 Commands =
   coffee: "coffee --compile --bare --output assets/js assets/js"
   deps:
-    # workaround for fast cmd-s and F5 development
+    # Depswriter.py deletes deps.js and restore it after several hundreds ms.
+    # That's no-go for fast cmd-s, f5 development.
+    # 2s timeout seems to be fine.
     timeout: 2000
     command: "python assets/js/google-closure/closure/bin/build/depswriter.py
       --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
       --root_with_prefix=\"assets/js/dev ../../../dev\"
       --root_with_prefix=\"assets/js/este ../../../este\"
-      --root_with_prefix=\"assets/js/app ../../../app\"
+      --root_with_prefix=\"assets/js/#{project} ../../../#{project}\"
       > assets/js/deps.js"
   tests: tests.run
   stylus: "stylus --compress assets/css/"
 
-# compile all soy templates on start
+# compile all soy templates onstart
 soyPaths = (path for path in getPaths('assets') when endsWith(path, '.soy'))
 for soyPath, i in soyPaths
   Commands['soy' + i] = [getSoyCommand(soyPath)]

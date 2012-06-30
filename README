@@ -13,7 +13,7 @@ How to use it?
   npm install -g coffee-script
   npm install -g mocha
   npm install -g stylus
-  Clone.
+  Clone repository.
   Update Closure submodule.
     git submodule init
     git submodule update
@@ -23,8 +23,8 @@ How to use it?
 
 Scripts
 
-  node assets/js/dev/start
-    - start simple server
+  node assets/js/dev/start app
+    - start simple server, app.html as "index.html"
     - watch and compile stylus files
     - watch and compile soy templates
     - watch and compile coffee files
@@ -62,8 +62,10 @@ Near future
 
 Change Log
 
-  06/29/12 23:54:46 UTC
-    faster coffeescript compilation (closure desp are async now)
+  06/30/12
+    [change] - start.js needs project parameter (same as build.js)
+    [bugfix] start.js compiles xy-template.html files on start
+    [improvement] faster *.coffee compilation (closure desp are async now)
 
 
 
