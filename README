@@ -1,14 +1,12 @@
 Este - Google Closure-based project boilerplate
 
 What's that?
-
   It's my beloved development stack. Run one script, to compile Coffeescript,
   Stylus, Soy templates, update deps.js, run insanely fast unit tests, on file
   change (cmd-s). One console output for all these wonderful tools. Tested on
   mac and win.
 
 How to use it?
-
   Install Node.js, Java, Python.
   npm install -g coffee-script
   npm install -g mocha
@@ -22,7 +20,6 @@ How to use it?
   Build something beautiful.
 
 Scripts
-
   node assets/js/dev/start app
     - start simple server, app.html as "index.html"
     - watch and compile stylus files
@@ -36,7 +33,6 @@ Scripts
     - --one, --html, --stage options (todo)
 
 Ok. I got it, what's next?
-
   Take a look at the app. It does almost nothing. Just define app structure,
   namespacing (by features ftw), how component uses templates, custom events,
   compilation into one über small file. This is just the beginning. TodoMVC
@@ -44,25 +40,24 @@ Ok. I got it, what's next?
   namespace contains.
 
 este.mvc
-
-  Model, collection, simple router (todo: link to examples). Wait for TodoMVC.
+  Model, collection, simple router (todo: link to examples).
+  Stay tunned for TodoMVC mobile and offline first edition.
 
 Namespaces
-
   Namespaces in assets/js. App is obvious, dev are development scripts, este
   is my personal everything-i-consider-as-reusable library. You, or your
   company, should definitely have own persisted-shared-wisdom library too.
 
 Near future
-
   TodoMVC (mobile version)
   app localization
   neat validations
   two-way databinding
 
 Change Log
-
   06/30/12
+    [improvement]
+      deps.js is defined for all assets/js subdirectories (aka namespace)
     [change, improvement]
       start.js needs project parameter (same as build.js)
     [bugfix]
