@@ -1,4 +1,4 @@
-Este - Google Closure-based project boilerplate
+Este - Google Closure based project boilerplate
 
 What's that?
   It's my beloved development stack. Run one script, to compile Coffeescript,
@@ -58,7 +58,7 @@ Change Log
   06/30/12
     [improvement]
       deps.js are defined for all assets/js namespace
-    [change, improvement]
+    [breakingchange]
       start.js needs project parameter (same as build.js)
     [bugfix]
       start.js compiles xy-template.html files on start

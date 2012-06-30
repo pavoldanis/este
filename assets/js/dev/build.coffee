@@ -61,7 +61,7 @@ build = (project, flags) ->
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
 
   fileName = project
-  fileName += '_dev' if debug
+  fileName += '_debug' if debug
   
   command = "
     python assets/js/google-closure/closure/bin/build/closurebuilder.py
@@ -90,13 +90,13 @@ prepareIndexHtml = ->
   if deploy
     scripts = """
       <script src='/assets/js/#{project}.js?build=#{timestamp}'></script>
-      """
+    """
   else
     scripts = """
       <script src='/assets/js/google-closure/closure/goog/base.js'></script>
         <script src='/assets/js/deps.js'></script>
         <script src='/assets/js/#{project}/start.js'></script>
-        """
+    """
   index = index.replace '###CLOSURESCRIPTS###', scripts
   index = index.replace /###BUILD_TIMESTAMP###/g, timestamp
   index = index.replace /###CONFIG_START###/g, ''

@@ -31,7 +31,7 @@ start = ->
 
   runCommands commands, (success) ->
     if success
-      console.log 'Ready!'
+      console.log 'Ready.'
       watchPaths onPathChange
       return
     console.log 'Something is wrong.'

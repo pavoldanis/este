@@ -49,7 +49,7 @@ start = function() {
   })();
   runCommands(commands, function(success) {
     if (success) {
-      console.log('Ready!');
+      console.log('Ready.');
       watchPaths(onPathChange);
       return;
     }
