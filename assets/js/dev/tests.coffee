@@ -108,7 +108,3 @@ exports.run = (callback) ->
   files = getAllFiles depsFiles, testFiles
   command = 'mocha --colors --timeout 20 --ui tdd --reporter min ' + files.join ' '
   exec command, callback
-
-
-
-

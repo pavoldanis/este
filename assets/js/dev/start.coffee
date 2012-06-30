@@ -12,7 +12,7 @@
     --deploy    - compile project-template.html with one script
 
   todo
-    delete .css and .js files on start
+    consider: delete .css and .js files on start
     speedup depswritter (rewrite into nodejs)
     group soy templates compilation into one task
 ###
@@ -52,10 +52,12 @@ Commands =
       #{depsNamespaces}
       > assets/js/deps.js"
   mochaTests: tests.run
-  stylusStyles: "stylus --compress assets/css/"
+  stylusStyles: (callback) ->
+    paths = getPaths 'assets', ['.styl']
+    command = "stylus --compress #{paths.join ' '}"
+    exec command, callback
 
 start = ->
-  # todo: runServer and buildAndWatch as fn commands.. needs callback
   runServer()
   buildAndWatchProjectTemplate()
   addSoyTemplatesCompileCommands()
@@ -105,7 +107,7 @@ runServer = ->
     return
       
   server.listen 8000
-  console.log 'Server started.'
+  console.log 'Server is listening at http://localhost:8000/'
 
 buildAndWatchProjectTemplate = ->
   build = ->
@@ -120,7 +122,7 @@ buildAndWatchProjectTemplate = ->
 
 addSoyTemplatesCompileCommands = ->
   soyPaths = getPaths 'assets', ['.soy']
-  Commands['soyTemplate' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
+  Commands['soyTemplate ' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
 
 getPaths = (directory, extensions, includeDirs) ->
   paths = []
@@ -228,6 +230,3 @@ runCommands = (commands, onComplete) ->
   return
 
 start()
-
-# 'stylus --compress --include assets/js/este/demos/css/* assets/css/*'
-# 'stylus --compress assets/js/este/demos/css/*'

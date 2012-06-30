@@ -13,7 +13,7 @@
     --deploy    - compile project-template.html with one script
 
   todo
-    delete .css and .js files on start
+    consider: delete .css and .js files on start
     speedup depswritter (rewrite into nodejs)
     group soy templates compilation into one task
 */
@@ -80,7 +80,12 @@ Commands = {
     command: "python assets/js/google-closure/closure/bin/build/depswriter.py      " + depsNamespaces + "      > assets/js/deps.js"
   },
   mochaTests: tests.run,
-  stylusStyles: "stylus --compress assets/css/"
+  stylusStyles: function(callback) {
+    var command, paths;
+    paths = getPaths('assets', ['.styl']);
+    command = "stylus --compress " + (paths.join(' '));
+    return exec(command, callback);
+  }
 };
 
 start = function() {
@@ -142,7 +147,7 @@ runServer = function() {
     });
   });
   server.listen(8000);
-  return console.log('Server started.');
+  return console.log('Server is listening at http://localhost:8000/');
 };
 
 buildAndWatchProjectTemplate = function() {
@@ -171,7 +176,7 @@ addSoyTemplatesCompileCommands = function() {
   _results = [];
   for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
     soyPath = soyPaths[i];
-    _results.push(Commands['soyTemplate' + i] = getSoyCommand(soyPath));
+    _results.push(Commands['soyTemplate ' + i] = getSoyCommand(soyPath));
   }
   return _results;
 };
