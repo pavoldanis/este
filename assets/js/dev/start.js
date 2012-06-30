@@ -49,11 +49,11 @@ start = function() {
   })();
   runCommands(commands, function(success) {
     if (success) {
-      console.log('ok');
-    } else {
-      console.log('error');
+      console.log('Ready!');
+      watchPaths(onPathChange);
+      return;
     }
-    return watchPaths(onPathChange);
+    return console.log('Something is wrong.');
   });
   return onPathChange = function(path, dir) {
     if (dir) {

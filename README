@@ -57,7 +57,7 @@ Near future
 Change Log
   06/30/12
     [improvement]
-      deps.js is defined for all assets/js subdirectories (aka namespace)
+      deps.js are defined for all assets/js namespace
     [change, improvement]
       start.js needs project parameter (same as build.js)
     [bugfix]

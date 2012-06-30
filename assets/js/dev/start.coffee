@@ -31,10 +31,11 @@ start = ->
 
   runCommands commands, (success) ->
     if success
-      console.log 'ok'
-    else
-      console.log 'error'
-    watchPaths onPathChange
+      console.log 'Ready!'
+      watchPaths onPathChange
+      return
+    console.log 'Something is wrong.'
+    # todo: terminate process
 
   onPathChange = (path, dir) ->
     if dir
@@ -147,7 +148,7 @@ runServer = ->
         contentType = 'image/gif'
     
     fs.exists filePath, (exists) ->
-      # because uri like /product/123 has to be handled by HTML5 pushState
+      # because uri like /product/123 will be handled by HTML5 pushState
       if !exists
         filePath = "./#{project}.html"
 
