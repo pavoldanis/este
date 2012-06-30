@@ -2,14 +2,16 @@
 	"folders":
 	[
 		{
-			"path": "/Users/este/dev/este",
+			"path": ".",
+			"folder_exclude_patterns": ["build"],
 			"file_exclude_patterns": [
 				"assets/js/app/*.js",
 				"assets/js/dev/*.js",
 				"assets/js/este/*.js",
 				"assets/js/deps.js",
-				"assets/css/*.css",
-				"assets/js/este/demos/css/*.css"
+				// to bad that ! notation, same as gitignore, does not work
+				// "assets/**/*.js",
+				"assets/*.css"
 			]
 		}
 	]
