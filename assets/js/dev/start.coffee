@@ -13,7 +13,6 @@
 
   todo
     consider: delete .css and .js files on start
-    speedup depswritter (rewrite into nodejs)
     group soy templates compilation into one task
 ###
 
@@ -44,13 +43,9 @@ depsNamespaces = do ->
 
 Commands =
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
-  closureDeps:
-    # depswriter.py deletes deps.js and restore it after several hundreds ms.
-    # no-go for fast cmd-s, f5 development. 2s timeout seems to be fine.
-    timeout: 2000
-    command: "python assets/js/google-closure/closure/bin/build/depswriter.py
-      #{depsNamespaces}
-      > assets/js/deps.js"
+  closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
+    #{depsNamespaces}
+    > assets/js/deps.js"
   mochaTests: tests.run
   stylusStyles: (callback) ->
     paths = getPaths 'assets', ['.styl']
@@ -220,11 +215,6 @@ runCommands = (commands, onComplete) ->
   
   if typeof command == 'function'
     command onExec
-  else if command.timeout
-    clearTimeout runCommandsAsyncTimer
-    runCommandsAsyncTimer = setTimeout ->
-      exec command.command, onExec
-    , command.timeout
   else
     exec command, onExec
   return

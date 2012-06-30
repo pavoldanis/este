@@ -14,7 +14,6 @@
 
   todo
     consider: delete .css and .js files on start
-    speedup depswritter (rewrite into nodejs)
     group soy templates compilation into one task
 */
 
@@ -75,10 +74,7 @@ depsNamespaces = (function() {
 
 Commands = {
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
-  closureDeps: {
-    timeout: 2000,
-    command: "python assets/js/google-closure/closure/bin/build/depswriter.py      " + depsNamespaces + "      > assets/js/deps.js"
-  },
+  closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   mochaTests: tests.run,
   stylusStyles: function(callback) {
     var command, paths;
@@ -306,11 +302,6 @@ runCommands = function(commands, onComplete) {
   };
   if (typeof command === 'function') {
     command(onExec);
-  } else if (command.timeout) {
-    clearTimeout(runCommandsAsyncTimer);
-    runCommandsAsyncTimer = setTimeout(function() {
-      return exec(command.command, onExec);
-    }, command.timeout);
   } else {
     exec(command, onExec);
   }
