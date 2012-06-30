@@ -1,5 +1,15 @@
+###*
+  @fileoverview
+
+  todo
+    move build into start, no realtime compilation, probably key press in console..
+    strip closure loggers too
+    CI
+###
+
 fs = require 'fs'
 {exec} = require 'child_process'
+pathModule = require 'path'
 
 project = process.argv[2]
 
@@ -20,6 +30,15 @@ onlyhtml = '--onlyhtml' in process.argv
 
 start = Date.now()
 
+jsSubdirs = do ->
+  for path in fs.readdirSync 'assets/js'
+    continue if !fs.statSync("assets/js/#{path}").isDirectory()
+    path
+
+depsNamespaces = do ->
+  namespaces = ("--root=assets/js/#{dir} " for dir in jsSubdirs)
+  namespaces.join ''
+
 ###*
   @param {string} directory
   @param {Function} callback
@@ -35,10 +54,6 @@ getDirectoryFiles = (directory, callback) ->
       getDirectoryFiles filePath, callback
   return
 
-endsWith = (str, suffix) ->
-  l = str.length - suffix.length
-  l >= 0 && str.indexOf(suffix, l) == l
-
 build = (project, flags) ->
   # flags are defined here http://goo.gl/hQ3yS
   if debug
@@ -50,7 +65,7 @@ build = (project, flags) ->
     jsFiles = []
     getDirectoryFiles 'assets/js', (path) ->
       return if path.indexOf('google-closure') > -1
-      jsFiles.push path if endsWith path, '.js'
+      jsFiles.push path if pathModule.extname(path) == '.js'
     for jsFile in jsFiles
       source = fs.readFileSync jsFile, 'utf8'
       continue if source.indexOf('this.logger_.') == -1
@@ -65,10 +80,7 @@ build = (project, flags) ->
   
   command = "
     python assets/js/google-closure/closure/bin/build/closurebuilder.py
-      --root=assets/js/google-closure
-      --root=assets/js/dev
-      --root=assets/js/este
-      --root=assets/js/#{project}
+      #{depsNamespaces}
       --namespace=\"#{project}.start\"
       --output_mode=compiled
       --compiler_jar=assets/js/dev/compiler.jar

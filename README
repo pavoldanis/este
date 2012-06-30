@@ -15,22 +15,28 @@ How to use it?
   Update Closure submodule.
     git submodule init
     git submodule update
-  Sublimetext install: todo
+  Ensure you know these Sublimetext packages:
+    Package Control (must have)
+    Clipboard History
+    CoffeeScript
+    JsFormat
+    SoyTemplate
+    Stylus
   Type 'node assets/js/dev/start app' in console from project root.
   Build something beautiful.
 
 Scripts
   node assets/js/dev/start app
-    - start simple server, app.html as "index.html"
-    - watch and compile stylus files
+    - start simple server
+    - watch and compile stylus styles
     - watch and compile soy templates
-    - watch and compile coffee files
-      - then updates deps.js
+    - watch and compile coffee scripts
       - then run tests
+      - then updates deps.js
 
   node assets/js/dev/build app
     - compile app
-    - --one, --html, --stage options (todo)
+    - --debug, --deploy, --onlyhtml options (todo)
 
 Ok. I got it, what's next?
   Take a look at the app. It does almost nothing. Just define app structure,
@@ -49,19 +55,29 @@ Namespaces
   company, should definitely have own persisted-shared-wisdom library too.
 
 Near future
+  Github project page
+  Demos
   TodoMVC (mobile version)
-  app localization
-  neat validations
+  localization
+  validations
   two-way databinding
 
 Change Log
   06/30/12
     [improvement]
-      deps.js are defined for all assets/js namespace
-    [breakingchange]
-      start.js needs project parameter (same as build.js)
-    [bugfix]
-      start.js compiles xy-template.html files on start
+      start script
+        refactored and speeded up
+        documentation
+        onfilechange unit testing is faster
+        debug option, detail time durations for each command 
+        deps.js is defined for all assets/js subdirectories
+    [breaking]
+      start script
+        needs project parameter, ex. node assets/js/dev/start app
+        
+
+    [fix]
+      start script compiles xy-template.html files on start
     [improvement]
       faster *.coffee compilation (closure desp are async now)
 

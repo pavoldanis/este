@@ -1,8 +1,20 @@
-###
-  https://github.com/Steida/este
+###*
+  @fileoverview https://github.com/Steida/este.
+
+  Features
+    compile and watch CoffeeScript, Stylus, Soy, project-template.html
+    update Google Closure deps.js
+    run and watch *_test.coffee unit tests
+    run simple NodeJS development server
+
+  Options
+    --debug     - shows time durations
+    --deploy    - compile project-template.html with one script
 
   todo
-    deletion .css and .js ghost files after .styl and .coffee deletion
+    delete .css and .js files on start
+    speedup depswritter (rewrite into nodejs)
+    group soy templates compilation into one task
 ###
 
 fs = require 'fs'
@@ -12,121 +24,52 @@ http = require 'http'
 pathModule = require 'path'
 
 project = process.argv[2]
+debug = '--debug' in process.argv
+deploy = '--deploy' in process.argv
+startTime = Date.now()
+booting = true
 
 watchOptions =
   interval: 10
 
-buildTemplate = ->
-  exec "node assets/js/dev/build #{project} --html"
+jsSubdirs = do ->
+  for path in fs.readdirSync 'assets/js'
+    continue if !fs.statSync("assets/js/#{path}").isDirectory()
+    path
+
+depsNamespaces = do ->
+  namespaces = for dir in jsSubdirs
+    "--root_with_prefix=\"assets/js/#{dir} ../../../#{dir}\" "
+  namespaces.join ''
+
+Commands =
+  coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
+  closureDeps:
+    # depswriter.py deletes deps.js and restore it after several hundreds ms.
+    # no-go for fast cmd-s, f5 development. 2s timeout seems to be fine.
+    timeout: 2000
+    command: "python assets/js/google-closure/closure/bin/build/depswriter.py
+      #{depsNamespaces}
+      > assets/js/deps.js"
+  mochaTests: tests.run
+  stylusStyles: "stylus --compress assets/css/"
 
 start = ->
+  # todo: runServer and buildAndWatch as fn commands.. needs callback
   runServer()
-
-  buildTemplate()
-  fs.watchFile "#{project}-template.html", watchOptions, (curr, prev) ->
-    return if curr.mtime <= prev.mtime
-    buildTemplate()
-
-  commands = (value for key, value of Commands)
-
-  runCommands commands, (success) ->
+  buildAndWatchProjectTemplate()
+  addSoyTemplatesCompileCommands()
+  
+  runCommands Commands, (success, commandName, command) ->
     if success
-      console.log 'Ready.'
+      console.log "Everything's fine, happy coding!",
+        "#{(Date.now() - startTime) / 1000}ms"
+      booting = false
       watchPaths onPathChange
       return
-    console.log 'Something is wrong.'
+    console.log "Error: #{commandName} -> #{command}"
     # todo: terminate process
 
-  onPathChange = (path, dir) ->
-    if dir
-      watchPaths onPathChange
-      return
-    commands = null
-    switch pathModule.extname path
-      when '.coffee'
-        commands = [
-          "coffee --compile --bare #{path}"
-          Commands.deps
-          Commands.tests
-        ]
-      when '.styl'
-        commands = [
-          "stylus --compress #{path}"
-        ]
-      when '.soy'
-        commands = [
-          getSoyCommand path
-        ]
-
-    return if !commands
-    clearScreen()
-    runCommands commands
-    return
-
-clearScreen = ->
-  # todo: fix in windows
-  # clear screen
-  `process.stdout.write('\033[2J')`
-  # set cursor position
-  `process.stdout.write('\033[1;3H')`
-
-watchPaths = (callback) ->
-  paths = getPaths 'assets'
-  for path in paths
-    continue if watchPaths['$' + path]
-    watchPaths['$' + path] = true
-    do (path) ->
-      if path.indexOf('.') > -1
-        fs.watchFile path, watchOptions, (curr, prev) ->
-          # prevents changes on unrelated paths
-          if curr.mtime > prev.mtime
-            callback path, false
-      else
-        fs.watch path, watchOptions, ->
-          callback path, true
-  return
-
-getPaths = (directory) ->
-  paths = []
-  files = fs.readdirSync directory
-  for file in files
-    path = directory + '/' + file
-    continue if path.indexOf('js/google-closure') > -1
-    continue if endsWith path, '.DS_Store'
-    continue if endsWith path, '.js'
-    paths.push path
-    stats = fs.statSync path
-    if stats.isDirectory()
-      paths.push.apply paths, getPaths path
-  paths
-
-endsWith = (str, suffix) ->
-  l = str.length - suffix.length
-  l >= 0 && str.indexOf(suffix, l) == l
-  
-runCommandsAsyncTimer = null  
-runCommands = (commands, callback) ->
-  callback ?= ->
-  if !commands.length
-    callback true
-    return
-  command = commands[0]
-  commands = commands.slice 1
-  onExec = (err, stdout, stderr) ->
-    if err
-      console.log stderr
-      callback false
-      return
-    runCommands commands, callback
-  if typeof command == 'function'
-    command onExec
-  else if command.timeout
-    clearTimeout runCommandsAsyncTimer
-    runCommandsAsyncTimer = setTimeout ->
-      exec command.command, onExec
-    , command.timeout
-  else
-    exec command, onExec
   return
 
 runServer = ->
@@ -159,8 +102,40 @@ runServer = ->
           return
         response.writeHead 200, 'Content-Type': contentType
         response.end content, 'utf-8'
+    return
       
   server.listen 8000
+  console.log 'Server started.'
+
+buildAndWatchProjectTemplate = ->
+  build = ->
+    command = "node assets/js/dev/build #{project} --onlyhtml"
+    command += ' --deploy' if deploy
+    exec command
+    console.log "#{project}-template.html compiled." 
+  build()
+  fs.watchFile "#{project}-template.html", watchOptions, (curr, prev) ->
+    return if curr.mtime <= prev.mtime
+    build()
+
+addSoyTemplatesCompileCommands = ->
+  soyPaths = getPaths 'assets', ['.soy']
+  Commands['soyTemplate' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
+
+getPaths = (directory, extensions, includeDirs) ->
+  paths = []
+  files = fs.readdirSync directory
+  for file in files
+    path = directory + '/' + file
+    # ignored directories
+    continue if path.indexOf('/google-closure') > -1
+    continue if path.indexOf('/node_modules') > -1
+    if fs.statSync(path).isDirectory()
+      paths.push path if includeDirs
+      paths.push.apply paths, getPaths path, extensions, includeDirs
+    else
+      paths.push path if pathModule.extname(path) in extensions
+  paths
 
 getSoyCommand = (path) ->
   "java -jar assets/js/dev/SoyToJsSrcCompiler.jar
@@ -168,27 +143,89 @@ getSoyCommand = (path) ->
     --shouldGenerateJsdoc
     --codeStyle concat
     --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
-    #{path}"    
+    #{path}"
 
-Commands =
-  coffee: "coffee --compile --bare --output assets/js assets/js"
-  deps:
-    # depswriter.py deletes deps.js and restore it after several hundreds ms.
-    # no-go for fast cmd-s, f5 development. 2s timeout seems to be fine.
-    timeout: 2000
-    command: "python assets/js/google-closure/closure/bin/build/depswriter.py
-      --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
-      --root_with_prefix=\"assets/js/dev ../../../dev\"
-      --root_with_prefix=\"assets/js/este ../../../este\"
-      --root_with_prefix=\"assets/js/#{project} ../../../#{project}\"
-      > assets/js/deps.js"
-  tests: tests.run
-  stylus: "stylus --compress assets/css/"
+# slower watchFile, because http://nodejs.org/api/fs.html#fs_caveats
+# todo: wait for fix
+watchPaths = (callback) ->
+  paths = getPaths 'assets', ['.coffee', '.styl', '.soy'], true
+  for path in paths
+    continue if watchPaths['$' + path]
+    watchPaths['$' + path] = true
+    do (path) ->
+      if path.indexOf('.') > -1
+        fs.watchFile path, watchOptions, (curr, prev) ->
+          # prevents changes on unrelated paths
+          if curr.mtime > prev.mtime
+            callback path, false
+      else
+        fs.watch path, watchOptions, ->
+          callback path, true
+  return
 
-# compile all soy templates onstart
-soyPaths = (path for path in getPaths('assets') when endsWith(path, '.soy'))
-for soyPath, i in soyPaths
-  Commands['soy' + i] = [getSoyCommand(soyPath)]
+onPathChange = (path, dir) ->
+  if dir
+    watchPaths onPathChange
+    return
+
+  commands = {}
+  switch pathModule.extname path
+    when '.coffee'
+      commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
+      # tests first, they have to be as fast as possible
+      commands["mochaTests"] = Commands.mochaTests
+      # closure deps needs almost 2s
+      commands["closureDeps"] = Commands.closureDeps
+    when '.styl'
+      commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
+    when '.soy'
+      commands["soyTemplate: #{path}"] = getSoyCommand path
+    else
+      return
+
+  clearScreen()
+  runCommands commands
+
+clearScreen = ->
+  # todo: fix in windows
+  # clear screen
+  `process.stdout.write('\033[2J')`
+  # set cursor position
+  `process.stdout.write('\033[1;3H')`
+
+runCommandsAsyncTimer = null
+
+runCommands = (commands, onComplete) ->
+  for name, command of commands
+    break
+  
+  if !command
+    onComplete true if onComplete
+    return
+  
+  commandStartTime = Date.now()
+  nextCommands = {}
+  nextCommands[k] = v for k, v of commands when k != name
+  
+  onExec = (err, stdout, stderr) ->
+    if err
+      console.log stderr
+      onComplete false, name, command if onComplete
+      return
+    if booting || debug
+      console.log name, "#{(Date.now() - commandStartTime) / 1000}ms"
+    runCommands nextCommands, onComplete
+  
+  if typeof command == 'function'
+    command onExec
+  else if command.timeout
+    clearTimeout runCommandsAsyncTimer
+    runCommandsAsyncTimer = setTimeout ->
+      exec command.command, onExec
+    , command.timeout
+  else
+    exec command, onExec
+  return
 
 start()
 
