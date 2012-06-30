@@ -3,7 +3,6 @@
 
   todo
     deletion .css and .js ghost files after .styl and .coffee deletion
-
 ###
 
 fs = require 'fs'
@@ -173,9 +172,8 @@ getSoyCommand = (path) ->
 Commands =
   coffee: "coffee --compile --bare --output assets/js assets/js"
   deps:
-    # Depswriter.py deletes deps.js and restore it after several hundreds ms.
-    # That's no-go for fast cmd-s, f5 development.
-    # 2s timeout seems to be fine.
+    # depswriter.py deletes deps.js and restore it after several hundreds ms.
+    # no-go for fast cmd-s, f5 development. 2s timeout seems to be fine.
     timeout: 2000
     command: "python assets/js/google-closure/closure/bin/build/depswriter.py
       --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"

@@ -2,15 +2,21 @@ fs = require 'fs'
 {exec} = require 'child_process'
 
 project = process.argv[2]
-debug = '--dev' in process.argv
-one = '--one' in process.argv
-stage = '--stage' in process.argv
-html = '--html' in process.argv
 
-# todo: WHITESPACE_ONLY debug
-# output_wrapper
-# app.start() instead of window.onload =
-# "{REPLACE:\"CONFIG_MAGIC_h0b2wekd\"} bez uvozovek
+###
+  Compile scripts with '--formatting=PRETTY_PRINT --debug=true'.
+###
+debug = '--debug' in process.argv
+
+###
+  Compile [project]-template.html for deployment.
+###
+deploy = '--deploy' in process.argv
+
+###
+  Compile just [project]-template.html.
+###
+onlyhtml = '--onlyhtml' in process.argv
 
 start = Date.now()
 
@@ -53,9 +59,10 @@ build = (project, flags) ->
 
   if flags
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
+
   fileName = project
   fileName += '_dev' if debug
-  # --root=assets/js/dev because soy templates namespace
+  
   command = "
     python assets/js/google-closure/closure/bin/build/closurebuilder.py
       --root=assets/js/google-closure
@@ -72,6 +79,7 @@ build = (project, flags) ->
       --compiler_flags=\"--js=assets/js/deps.js\"
       #{flagsText}
       > assets/js/#{fileName}.js"
+
   exec command, (err, stdout, stderr) ->
     console.log stderr
     console.log "#{(Date.now() - start) / 1000}ms"
@@ -79,7 +87,7 @@ build = (project, flags) ->
 prepareIndexHtml = ->
   timestamp = (+new Date()).toString 36
   index = fs.readFileSync "./#{project}-template.html", 'utf8'
-  if one
+  if deploy
     scripts = """
       <script src='/assets/js/#{project}.js?build=#{timestamp}'></script>
       """
@@ -97,24 +105,7 @@ prepareIndexHtml = ->
 
 prepareIndexHtml()
 
-if !html
-
-  if stage
-    commands = [
-      'coffee --compile --bare --output assets/js assets/js'
-      "assets/js/google-closure/closure/bin/build/depswriter.py
-        --root_with_prefix=\"assets/js/google-closure ../../../google-closure\"
-        --root_with_prefix=\"assets/js/este ../../../este\"
-        --root_with_prefix=\"assets/js/#{project} ../../../#{project}\"
-        > assets/js/deps.js"
-    ]
-    for command in commands
-      exec command, (err, stdout, stderr) ->
-        console.log stdout
-        console.log stderr if err
-    build project
-    return
-
+if !onlyhtml
   if debug
     build project, '--formatting=PRETTY_PRINT --debug=true'
   else

@@ -63,9 +63,12 @@ Near future
 Change Log
 
   06/30/12
-    [change] - start.js needs project parameter (same as build.js)
-    [bugfix] start.js compiles xy-template.html files on start
-    [improvement] faster *.coffee compilation (closure desp are async now)
+    [change, improvement]
+      start.js needs project parameter (same as build.js)
+    [bugfix]
+      start.js compiles xy-template.html files on start
+    [improvement]
+      faster *.coffee compilation (closure desp are async now)
 
 
 

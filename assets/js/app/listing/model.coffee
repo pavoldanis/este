@@ -21,7 +21,7 @@ goog.scope ->
     new _ [1, 2]
 
   ###*
-    @param {Array.<number>}
+    @type {Array.<number>}
     @protected
   ###
   _::numbers
