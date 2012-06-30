@@ -1,3 +1,7 @@
+###*
+  @fileoverview Just silly demo. Stay tunned for TodoMVC demo.
+###
+
 goog.provide 'app.start'
 
 goog.require 'este.dev.Monitor.create'

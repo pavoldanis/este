@@ -25,12 +25,12 @@ suite 'app.listing.Model', ->
       # assert
       assert.deepEqual items, [
         id: 1
-        text: 'Ahoj'
-        title: 'Ahoj'
+        text: 'mini'
+        title: 'mini'
       ,
         id: 2
-        text: 'Světe'
-        title: 'Světe'
+        text: 'mal'
+        title: 'mal'
       ]
 
     test 'should use just two first numbers', ->
@@ -43,10 +43,10 @@ suite 'app.listing.Model', ->
       # assert
       assert.deepEqual items, [
         id: 1
-        text: 'Ahoj'
-        title: 'Ahoj'
+        text: 'mini'
+        title: 'mini'
       ,
         id: 2
-        text: 'Světe'
-        title: 'Světe'
+        text: 'mal'
+        title: 'mal'
       ]

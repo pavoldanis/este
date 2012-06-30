@@ -34,12 +34,12 @@ goog.scope ->
       switch number
         when 1
           id: 1
-          text: 'Ahoj'
-          title: 'Ahoj'
+          text: 'mini'
+          title: 'mini'
         when 2
           id: 2
-          text: 'Světe'
-          title: 'Světe'
+          text: 'mal'
+          title: 'mal'
 
   return
 

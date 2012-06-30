@@ -40,7 +40,7 @@ goog.scope ->
   ###
   _::decorateInternal = (element) ->
     goog.base @, 'decorateInternal', element
-    element.style.border = 'solid 1px red'
+    #element.style.border = 'solid 1px red'
     return
 
   ###*
