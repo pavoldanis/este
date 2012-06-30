@@ -74,8 +74,6 @@ Change Log
     [breaking]
       start script
         needs project parameter, ex. node assets/js/dev/start app
-        
-
     [fix]
       start script compiles xy-template.html files on start
     [improvement]
