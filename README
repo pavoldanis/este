@@ -16,8 +16,8 @@ How to use it?
   Update Closure submodule.
     git submodule init
     git submodule update
-      (todo: consider npm json)
-  Consider using these Sublimetext packages:
+      (todo: npm dev deps)
+  Good to know Sublimetext packages:
     Package Control (must have)
     Clipboard History
     CoffeeScript
