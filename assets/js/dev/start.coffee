@@ -29,7 +29,9 @@ startTime = Date.now()
 booting = true
 
 watchOptions =
-  interval: 10
+  # 10  -> cpu at 30 %
+  # 100 -> cpu at 4 %
+  interval: 100
 
 jsSubdirs = do ->
   for path in fs.readdirSync 'assets/js'
