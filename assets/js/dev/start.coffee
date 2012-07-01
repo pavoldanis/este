@@ -29,8 +29,8 @@ startTime = Date.now()
 booting = true
 
 watchOptions =
-  # 10  -> cpu at 30 %
-  # 100 -> cpu at 4 %
+  # 10  -> cpu 30%
+  # 100 -> cpu 4%
   interval: 100
 
 jsSubdirs = do ->

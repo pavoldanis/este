@@ -47,12 +47,12 @@ Ok. I got it, what's next?
 
 este.mvc
   Model, collection, simple router (todo: link to examples).
-  Stay tunned for TodoMVC mobile and offline first edition.
+  Stay tunned for TodoMVC, mobile and offline first, edition.
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
   is my personal everything-i-consider-as-reusable library. You, or your
-  company, should definitely have own persisted-shared-wisdom library too.
+  company, should maintain your own persisted-shared-wisdom library too.
 
 Near future
   Github project page
