@@ -34,7 +34,7 @@ Ok. I got it, what's next?
   In the meantime, see what este.mvc namespace contains yet.
 
 este.mvc
-  Model, collection, simple router.., todo: examples, docs, etc.
+  Model, collection, router.., todo: examples, docs, etc.
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
@@ -52,12 +52,13 @@ Near future
 Change Log
   07/01/12
     [breaking]
-      one script to rule them all
+      one script to rule them all!
         no 'node assets/js/dev/build app' endless typing anymore
         just 'node run app' ftw
         or..
         'node run app --deploy'
         'node run app --deploy --debug'
+        see assets/js/dev/run.coffee docs
       
     [improvement]
       default este sublime project file
