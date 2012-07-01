@@ -17,7 +17,7 @@ How to use it?
     git submodule init
     git submodule update
       (todo: npm dev deps)
-  Good to know Sublimetext packages:
+  Install Sublime Text and these must-have packages:
     Package Control (must have)
     Clipboard History
     CoffeeScript
