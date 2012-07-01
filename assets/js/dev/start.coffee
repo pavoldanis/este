@@ -53,7 +53,7 @@ Commands =
     exec command, callback
 
 start = ->
-  runServer()
+  startServer()
   buildAndWatchProjectTemplate()
   addSoyTemplatesCompileCommands()
   
@@ -69,7 +69,7 @@ start = ->
 
   return
 
-runServer = ->
+startServer = ->
   server = http.createServer (request, response) ->
     filePath = '.' + request.url
     filePath = "./#{project}.htm" if filePath is './'
@@ -86,6 +86,8 @@ runServer = ->
         contentType = 'image/png'
       when '.gif'
         contentType = 'image/gif'
+      when '.jpg', '.jpeg'
+        contentType = 'image/jpeg'
     
     fs.exists filePath, (exists) ->
       # because uri like /product/123 will be handled by HTML5 pushState
@@ -117,7 +119,7 @@ buildAndWatchProjectTemplate = ->
 
 addSoyTemplatesCompileCommands = ->
   soyPaths = getPaths 'assets', ['.soy']
-  Commands['soyTemplate ' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
+  Commands['soyTemplate' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
 
 getPaths = (directory, extensions, includeDirs) ->
   paths = []

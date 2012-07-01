@@ -17,7 +17,7 @@
     group soy templates compilation into one task
 */
 
-var Commands, addSoyTemplatesCompileCommands, booting, buildAndWatchProjectTemplate, clearScreen, debug, deploy, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, pathModule, project, runCommands, runCommandsAsyncTimer, runServer, start, startTime, tests, watchOptions, watchPaths,
+var Commands, addSoyTemplatesCompileCommands, booting, buildAndWatchProjectTemplate, clearScreen, debug, deploy, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, pathModule, project, runCommands, runCommandsAsyncTimer, start, startServer, startTime, tests, watchOptions, watchPaths,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -85,7 +85,7 @@ Commands = {
 };
 
 start = function() {
-  runServer();
+  startServer();
   buildAndWatchProjectTemplate();
   addSoyTemplatesCompileCommands();
   runCommands(Commands, function(success, commandName, command) {
@@ -99,7 +99,7 @@ start = function() {
   });
 };
 
-runServer = function() {
+startServer = function() {
   var server;
   server = http.createServer(function(request, response) {
     var contentType, extname, filePath;
@@ -124,6 +124,10 @@ runServer = function() {
         break;
       case '.gif':
         contentType = 'image/gif';
+        break;
+      case '.jpg':
+      case '.jpeg':
+        contentType = 'image/jpeg';
     }
     fs.exists(filePath, function(exists) {
       if (!exists) {
@@ -172,7 +176,7 @@ addSoyTemplatesCompileCommands = function() {
   _results = [];
   for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
     soyPath = soyPaths[i];
-    _results.push(Commands['soyTemplate ' + i] = getSoyCommand(soyPath));
+    _results.push(Commands['soyTemplate' + i] = getSoyCommand(soyPath));
   }
   return _results;
 };
