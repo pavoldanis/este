@@ -2,18 +2,33 @@
   @fileoverview https://github.com/Steida/este.
 
   Features
-    compile and watch CoffeeScript, Stylus, Soy, project-template.html
+    compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
-    run and watch *_test.coffee unit tests
+    run and watch [*]_test.coffee unit tests
     run simple NodeJS development server
 
-  Options
-    --debug     - shows time durations
-    --deploy    - compile project-template.html with one script
+  Workflow
+    'node run app'
+      to start app development
+    
+    'node run app --deploy'
+      build scripts with closure compiler
+      [project].html will use one compiled script
+      goog.DEBUG == false (code using that will be stripped)
 
-  todo
+    'node run app --deploy --debug'
+      use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
+      goog.DEBUG == true
+
+    'node run app --showdurations'
+      if you are curious how much time each compilation took
+
+  Todo
+    fix too much cmd-s's errors
     consider: delete .css and .js files on start
     group soy templates compilation into one task
+    strip closure loggers too
+    CI
 ###
 
 fs = require 'fs'
@@ -22,12 +37,14 @@ tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
 
-project = process.argv[2]
-debug = '--debug' in process.argv
-deploy = '--deploy' in process.argv
+options =
+  project: null
+  showdurations: false
+  debug: false
+  deploy: false
+
 startTime = Date.now()
 booting = true
-
 watchOptions =
   # 10  -> cpu 30%
   # 100 -> cpu 4%
@@ -43,38 +60,81 @@ depsNamespaces = do ->
     "--root_with_prefix=\"assets/js/#{dir} ../../../#{dir}\" "
   namespaces.join ''
 
+buildNamespaces = do ->
+  namespaces = for dir in jsSubdirs
+    "--root=assets/js/#{dir} "
+  namespaces.join ''
+
 Commands =
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
     #{depsNamespaces}
     > assets/js/deps.js"
+  closureCompilation: (callback) ->
+    if options.debug
+      flags = '--formatting=PRETTY_PRINT --debug=true'
+    else
+      flags = '--define=goog.DEBUG=false'
+    flagsText = ''
+    flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
+    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
+      #{buildNamespaces}
+      --namespace=\"#{options.project}.start\"
+      --output_mode=compiled
+      --compiler_jar=assets/js/dev/compiler.jar
+      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"
+      --compiler_flags=\"--jscomp_warning=visibility\"
+      --compiler_flags=\"--warning_level=VERBOSE\"
+      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"
+      --compiler_flags=\"--js=assets/js/deps.js\"
+      #{flagsText}
+      > assets/js/#{options.project}.js"
+    exec command, callback
   mochaTests: tests.run
   stylusStyles: (callback) ->
     paths = getPaths 'assets', ['.styl']
     command = "stylus --compress #{paths.join ' '}"
     exec command, callback
 
-start = ->
+start = (args) ->
+  setOptions args
+  delete Commands.closureCompilation if !options.deploy
   startServer()
   buildAndWatchProjectTemplate()
   addSoyTemplatesCompileCommands()
   
-  runCommands Commands, (success, commandName, command) ->
-    if success
+  runCommands Commands, (errors) ->
+    if errors.length
+      commands = (error.name for error in errors).join ', '
+      console.log """
+        Something's wrong with: #{commands}
+        Fixit, then press cmd-s."""
+      console.log error.stderr for error in errors
+
+    else
       console.log "Everything's fine, happy coding!",
         "#{(Date.now() - startTime) / 1000}ms"
-      booting = false
-      watchPaths onPathChange
-      return
-    console.log "Error: #{commandName} -> #{command}"
-    # todo: terminate process
+    booting = false
+    watchPaths onPathChange
 
+setOptions = (args) ->
+  while args.length
+    arg = args.shift()
+    switch arg
+      when '--debug'
+        options.debug = true
+      when '--showdurations'
+        options.showdurations = true
+      when '--deploy'
+        options.deploy = true
+      else
+        options.project = arg
   return
 
 startServer = ->
   server = http.createServer (request, response) ->
     filePath = '.' + request.url
-    filePath = "./#{project}.htm" if filePath is './'
+    filePath = "./#{options.project}.htm" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
     extname = pathModule.extname filePath
     contentType = 'text/html'
@@ -94,7 +154,7 @@ startServer = ->
     fs.exists filePath, (exists) ->
       # because uri like /product/123 will be handled by HTML5 pushState
       if !exists
-        filePath = "./#{project}.html"
+        filePath = "./#{options.project}.html"
 
       fs.readFile filePath, (error, content) ->
         if error
@@ -110,18 +170,31 @@ startServer = ->
 
 buildAndWatchProjectTemplate = ->
   build = ->
-    command = "node assets/js/dev/build #{project} --onlyhtml"
-    command += ' --deploy' if deploy
-    exec command
-    console.log "#{project}-template.html compiled." 
+    timestamp = Date.now().toString 36
+    if options.deploy
+      scripts = """
+        <script src='/assets/js/#{options.project}.js?build=#{timestamp}'></script>
+      """
+    else
+      scripts = """
+        <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+        <script src='/assets/js/deps.js'></script>
+        <script src='/assets/js/#{options.project}/start.js'></script>
+      """
+    file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
+    file = file.replace /###CLOSURESCRIPTS###/g, scripts
+    file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
+    fs.writeFileSync "./#{options.project}.html", file, 'utf8'
+    console.log "#{options.project}-template.html compiled." 
+  
   build()
-  fs.watchFile "#{project}-template.html", watchOptions, (curr, prev) ->
+  fs.watchFile "#{options.project}-template.html", watchOptions, (curr, prev) ->
     return if curr.mtime <= prev.mtime
     build()
 
 addSoyTemplatesCompileCommands = ->
   soyPaths = getPaths 'assets', ['.soy']
-  Commands['soyTemplate' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
+  Commands['soyTemplates' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
 
 getPaths = (directory, extensions, includeDirs) ->
   paths = []
@@ -175,8 +248,9 @@ onPathChange = (path, dir) ->
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
       # tests first, they have to be as fast as possible
       commands["mochaTests"] = Commands.mochaTests
-      # closure deps needs almost 2s
       commands["closureDeps"] = Commands.closureDeps
+      if options.deploy
+        commands["closureCompilation"] = Commands.closureCompilation
     when '.styl'
       commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
     when '.soy'
@@ -196,31 +270,49 @@ clearScreen = ->
 
 runCommandsAsyncTimer = null
 
-runCommands = (commands, onComplete) ->
+runCommands = (commands, onComplete, errors = []) ->
   for name, command of commands
     break
   
   if !command
-    onComplete true if onComplete
+    onComplete errors if onComplete
     return
+
+  if name == 'closureCompilation'
+    console.log 'Compiling scripts, wait pls...'
   
   commandStartTime = Date.now()
   nextCommands = {}
   nextCommands[k] = v for k, v of commands when k != name
-  
+
   onExec = (err, stdout, stderr) ->
-    if err
-      console.log stderr
-      onComplete false, name, command if onComplete
-      return
-    if booting || debug
+    if name == 'closureCompilation'
+      console.log 'done'
+
+    isError = !!err
+    # workaround: closure doesn't return err for warnings
+    isError = true if !isError && name == 'closureCompilation' &&
+      ~stderr?.indexOf ': WARNING -'
+
+    if isError
+      if booting
+        errors.push
+          name: name
+          command: command
+          stderr: stderr
+      else
+        console.log stderr
+        nextCommands = {}
+
+    if booting || options.showdurations
       console.log name, "#{(Date.now() - commandStartTime) / 1000}ms"
-    runCommands nextCommands, onComplete
+    runCommands nextCommands, onComplete, errors
   
   if typeof command == 'function'
     command onExec
   else
     exec command, onExec
+
   return
 
-start()
+exports.start = start

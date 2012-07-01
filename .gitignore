@@ -1,7 +1,8 @@
 .DS_Store
 este.sublime-workspace
 *.css
-# Ignore all files in dev,este,mobile and tracker
+# Ignore all files in dev, este, app
+# todo: ignored all js scripts except closure
 assets/js/dev/**/*
 assets/js/dev/*.js
 assets/js/este/**/*
@@ -13,7 +14,7 @@ assets/js/*.js
 !*.coffee
 !*.soy
 !assets/js/dev/soyutils_usegoog.js
-!assets/js/dev/start.js
+!assets/js/dev/run.js
 !assets/js/dev/tests.js
 # Except all files in Google closure library
 !assets/js/google-closure/**/*

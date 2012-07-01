@@ -5,13 +5,19 @@
 			"path": ".",
 			"folder_exclude_patterns": ["build"],
 			"file_exclude_patterns": [
+				// to bad gitignore !notation doesn't work
+				
+				// *.js we don't want to see because we have CoffeeScript
 				"assets/js/app/*.js",
 				"assets/js/dev/*.js",
 				"assets/js/este/*.js",
 				"assets/js/deps.js",
-				// to bad that ! notation, same as gitignore, does not work
-				// "assets/**/*.js",
-				"assets/*.css"
+
+				// *.css we don't want to see because we have Stylus
+				"assets/js/app/*.css",
+				"assets/js/dev/*.css",
+				"assets/js/este/*.css",
+				"assets/js/deps.js"
 			]
 		}
 	]

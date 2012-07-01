@@ -29,6 +29,9 @@ goog.scope ->
     @inheritDoc
   ###
   _::createDom = ->
+    if !goog.DEBUG
+      alert 'goog.DEBUG code is stripped during deploy compilation.'
+      
     element = @dom_.createDom 'h1', 'example'
     element.innerHTML = app.listing.templates.list
       items: @model.getItems()

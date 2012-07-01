@@ -3,21 +3,36 @@
   @fileoverview https://github.com/Steida/este.
 
   Features
-    compile and watch CoffeeScript, Stylus, Soy, project-template.html
+    compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
-    run and watch *_test.coffee unit tests
+    run and watch [*]_test.coffee unit tests
     run simple NodeJS development server
 
-  Options
-    --debug     - shows time durations
-    --deploy    - compile project-template.html with one script
+  Workflow
+    'node run app'
+      to start app development
+    
+    'node run app --deploy'
+      build scripts with closure compiler
+      [project].html will use one compiled script
+      goog.DEBUG == false (code using that will be stripped)
 
-  todo
+    'node run app --deploy --debug'
+      use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
+      goog.DEBUG == true
+
+    'node run app --showdurations'
+      if you are curious how much time each compilation took
+
+  Todo
+    fix too much cmd-s's errors
     consider: delete .css and .js files on start
     group soy templates compilation into one task
+    strip closure loggers too
+    CI
 */
 
-var Commands, addSoyTemplatesCompileCommands, booting, buildAndWatchProjectTemplate, clearScreen, debug, deploy, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, pathModule, project, runCommands, runCommandsAsyncTimer, start, startServer, startTime, tests, watchOptions, watchPaths,
+var Commands, addSoyTemplatesCompileCommands, booting, buildAndWatchProjectTemplate, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -30,11 +45,12 @@ http = require('http');
 
 pathModule = require('path');
 
-project = process.argv[2];
-
-debug = __indexOf.call(process.argv, '--debug') >= 0;
-
-deploy = __indexOf.call(process.argv, '--deploy') >= 0;
+options = {
+  project: null,
+  showdurations: false,
+  debug: false,
+  deploy: false
+};
 
 startTime = Date.now();
 
@@ -72,9 +88,39 @@ depsNamespaces = (function() {
   return namespaces.join('');
 })();
 
+buildNamespaces = (function() {
+  var dir, namespaces;
+  namespaces = (function() {
+    var _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = jsSubdirs.length; _i < _len; _i++) {
+      dir = jsSubdirs[_i];
+      _results.push("--root=assets/js/" + dir + " ");
+    }
+    return _results;
+  })();
+  return namespaces.join('');
+})();
+
 Commands = {
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
+  closureCompilation: function(callback) {
+    var command, flag, flags, flagsText, _i, _len, _ref;
+    if (options.debug) {
+      flags = '--formatting=PRETTY_PRINT --debug=true';
+    } else {
+      flags = '--define=goog.DEBUG=false';
+    }
+    flagsText = '';
+    _ref = flags.split(' ');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      flag = _ref[_i];
+      flagsText += "--compiler_flags=\"" + flag + "\" ";
+    }
+    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > assets/js/" + options.project + ".js";
+    return exec(command, callback);
+  },
   mochaTests: tests.run,
   stylusStyles: function(callback) {
     var command, paths;
@@ -84,19 +130,57 @@ Commands = {
   }
 };
 
-start = function() {
+start = function(args) {
+  setOptions(args);
+  if (!options.deploy) {
+    delete Commands.closureCompilation;
+  }
   startServer();
   buildAndWatchProjectTemplate();
   addSoyTemplatesCompileCommands();
-  runCommands(Commands, function(success, commandName, command) {
-    if (success) {
+  return runCommands(Commands, function(errors) {
+    var commands, error, _i, _len;
+    if (errors.length) {
+      commands = ((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = errors.length; _i < _len; _i++) {
+          error = errors[_i];
+          _results.push(error.name);
+        }
+        return _results;
+      })()).join(', ');
+      console.log("Something's wrong with: " + commands + "\nFixit, then press cmd-s.");
+      for (_i = 0, _len = errors.length; _i < _len; _i++) {
+        error = errors[_i];
+        console.log(error.stderr);
+      }
+    } else {
       console.log("Everything's fine, happy coding!", "" + ((Date.now() - startTime) / 1000) + "ms");
-      booting = false;
-      watchPaths(onPathChange);
-      return;
     }
-    return console.log("Error: " + commandName + " -> " + command);
+    booting = false;
+    return watchPaths(onPathChange);
   });
+};
+
+setOptions = function(args) {
+  var arg;
+  while (args.length) {
+    arg = args.shift();
+    switch (arg) {
+      case '--debug':
+        options.debug = true;
+        break;
+      case '--showdurations':
+        options.showdurations = true;
+        break;
+      case '--deploy':
+        options.deploy = true;
+        break;
+      default:
+        options.project = arg;
+    }
+  }
 };
 
 startServer = function() {
@@ -105,7 +189,7 @@ startServer = function() {
     var contentType, extname, filePath;
     filePath = '.' + request.url;
     if (filePath === './') {
-      filePath = "./" + project + ".htm";
+      filePath = "./" + options.project + ".htm";
     }
     if (filePath.indexOf('?') !== -1) {
       filePath = filePath.split('?')[0];
@@ -131,7 +215,7 @@ startServer = function() {
     }
     fs.exists(filePath, function(exists) {
       if (!exists) {
-        filePath = "./" + project + ".html";
+        filePath = "./" + options.project + ".html";
       }
       return fs.readFile(filePath, function(error, content) {
         if (error) {
@@ -153,16 +237,21 @@ startServer = function() {
 buildAndWatchProjectTemplate = function() {
   var build;
   build = function() {
-    var command;
-    command = "node assets/js/dev/build " + project + " --onlyhtml";
-    if (deploy) {
-      command += ' --deploy';
+    var file, scripts, timestamp;
+    timestamp = Date.now().toString(36);
+    if (options.deploy) {
+      scripts = "<script src='/assets/js/" + options.project + ".js?build=" + timestamp + "'></script>";
+    } else {
+      scripts = "<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
     }
-    exec(command);
-    return console.log("" + project + "-template.html compiled.");
+    file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
+    file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
+    file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
+    fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
+    return console.log("" + options.project + "-template.html compiled.");
   };
   build();
-  return fs.watchFile("" + project + "-template.html", watchOptions, function(curr, prev) {
+  return fs.watchFile("" + options.project + "-template.html", watchOptions, function(curr, prev) {
     if (curr.mtime <= prev.mtime) {
       return;
     }
@@ -176,7 +265,7 @@ addSoyTemplatesCompileCommands = function() {
   _results = [];
   for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
     soyPath = soyPaths[i];
-    _results.push(Commands['soyTemplate' + i] = getSoyCommand(soyPath));
+    _results.push(Commands['soyTemplates' + i] = getSoyCommand(soyPath));
   }
   return _results;
 };
@@ -250,6 +339,9 @@ onPathChange = function(path, dir) {
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
       commands["mochaTests"] = Commands.mochaTests;
       commands["closureDeps"] = Commands.closureDeps;
+      if (options.deploy) {
+        commands["closureCompilation"] = Commands.closureCompilation;
+      }
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "stylus --compress " + path;
@@ -271,17 +363,23 @@ clearScreen = function() {
 
 runCommandsAsyncTimer = null;
 
-runCommands = function(commands, onComplete) {
+runCommands = function(commands, onComplete, errors) {
   var command, commandStartTime, k, name, nextCommands, onExec, v;
+  if (errors == null) {
+    errors = [];
+  }
   for (name in commands) {
     command = commands[name];
     break;
   }
   if (!command) {
     if (onComplete) {
-      onComplete(true);
+      onComplete(errors);
     }
     return;
+  }
+  if (name === 'closureCompilation') {
+    console.log('Compiling scripts, wait pls...');
   }
   commandStartTime = Date.now();
   nextCommands = {};
@@ -292,17 +390,30 @@ runCommands = function(commands, onComplete) {
     }
   }
   onExec = function(err, stdout, stderr) {
-    if (err) {
-      console.log(stderr);
-      if (onComplete) {
-        onComplete(false, name, command);
-      }
-      return;
+    var isError;
+    if (name === 'closureCompilation') {
+      console.log('done');
     }
-    if (booting || debug) {
+    isError = !!err;
+    if (!isError && name === 'closureCompilation' && ~(stderr != null ? stderr.indexOf(': WARNING -') : void 0)) {
+      isError = true;
+    }
+    if (isError) {
+      if (booting) {
+        errors.push({
+          name: name,
+          command: command,
+          stderr: stderr
+        });
+      } else {
+        console.log(stderr);
+        nextCommands = {};
+      }
+    }
+    if (booting || options.showdurations) {
       console.log(name, "" + ((Date.now() - commandStartTime) / 1000) + "ms");
     }
-    return runCommands(nextCommands, onComplete);
+    return runCommands(nextCommands, onComplete, errors);
   };
   if (typeof command === 'function') {
     command(onExec);
@@ -311,4 +422,4 @@ runCommands = function(commands, onComplete) {
   }
 };
 
-start();
+exports.start = start;

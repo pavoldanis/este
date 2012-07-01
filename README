@@ -3,7 +3,7 @@ Este - Google Closure based project boilerplate
 What's that?
   It's my beloved development stack. Run one script, to compile Coffeescript,
   Stylus, Soy templates, update deps.js, run insanely fast unit tests, on file
-  change (cmd-s). One console output for all these wonderful tools. Tested on
+  change (cmd-s). One console output, for all these wonderful tools. Tested on
   mac and win.
 
 How to use it?
@@ -11,43 +11,30 @@ How to use it?
   npm install -g coffee-script
   npm install -g mocha
   npm install -g stylus
+    (todo: unglobalize, same as chai)
   Clone repository.
   Update Closure submodule.
     git submodule init
     git submodule update
-  Ensure you know these Sublimetext packages:
+      (todo: consider npm json)
+  Consider using these Sublimetext packages:
     Package Control (must have)
     Clipboard History
     CoffeeScript
     JsFormat
     SoyTemplate
     Stylus
-  Type 'node assets/js/dev/start app' in console from project root.
+  Type 'node run app' into console.
   Build something beautiful.
 
-Scripts
-  node assets/js/dev/start app
-    - start simple server
-    - watch and compile stylus styles
-    - watch and compile soy templates
-    - watch and compile coffee scripts
-      - then run tests
-      - then updates deps.js
-
-  node assets/js/dev/build app
-    - compile app
-    - --debug, --deploy, --onlyhtml options (todo)
-
 Ok. I got it, what's next?
-  Take a look at the app. It does almost nothing. Just define app structure,
-  namespacing (by features ftw), how component uses templates, custom events,
-  compilation into one über small file. This is just the beginning. TodoMVC
-  (mobile version) is in process. In the meantime, you can see what este.mvc
-  namespace contains.
+  Take a look at the app. It defines structure, namespacing (by features ftw),
+  how component uses templates, custom events, compilation into one über small
+  file. This is just the beginning. TodoMVC (mobile version) is in process.
+  In the meantime, see what este.mvc namespace contains yet.
 
 este.mvc
-  Model, collection, simple router (todo: link to examples).
-  Stay tunned for TodoMVC, mobile and offline first, edition.
+  Model, collection, simple router.., todo: examples, docs, etc.
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
@@ -64,6 +51,14 @@ Near future
 
 Change Log
   07/01/12
+    [breaking]
+      one script to rule them all
+        no 'node assets/js/dev/build app' endless typing anymore
+        just 'node run app' ftw
+        or..
+        'node run app --deploy'
+        'node run app --deploy --debug'
+      
     [improvement]
       default este sublime project file
 
@@ -75,11 +70,14 @@ Change Log
         onfilechange unit testing is faster
         debug option, detail time durations for each command 
         deps.js is defined for all assets/js subdirectories
+    
     [breaking]
       start script
-        needs project parameter, ex. node assets/js/dev/start app
+        needs project param, ex. node assets/js/dev/start app
+    
     [fix]
       start script compiles xy-template.html files on start
+    
     [improvement]
       faster *.coffee compilation (closure desp are async now)
 

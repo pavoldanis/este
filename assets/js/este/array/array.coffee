@@ -3,7 +3,6 @@
 ###
 
 goog.provide 'este.array'
-
 goog.require 'goog.array'
 
 ###*

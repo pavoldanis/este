@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Just silly demo. Stay tunned for TodoMVC demo.
+  @fileoverview Just silly demo. Stay tuned for TodoMVC demo.
 ###
 
 goog.provide 'app.start'
