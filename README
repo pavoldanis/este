@@ -18,12 +18,12 @@ How to use it?
     git submodule update
       (todo: npm dev deps)
   Install Sublime Text and these must-have packages:
-    Package Control (must have)
-    Clipboard History
+    Package Control
     CoffeeScript
-    JsFormat
-    SoyTemplate
     Stylus
+    SoyTemplate
+    Clipboard History
+    JsFormat
   Type 'node run app' into console.
   Build something beautiful.
 
