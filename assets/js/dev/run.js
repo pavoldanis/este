@@ -274,7 +274,9 @@ buildAndWatchProjectTemplate = function() {
     file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
     file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
     fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
-    return console.log("" + options.project + "-template.html compiled.");
+    if (booting || options.showdurations) {
+      return console.log("" + options.project + "-template.html compiled.");
+    }
   };
   build();
   return fs.watchFile("" + options.project + "-template.html", watchOptions, function(curr, prev) {
@@ -291,7 +293,7 @@ addSoyTemplatesCompileCommands = function() {
   _results = [];
   for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
     soyPath = soyPaths[i];
-    _results.push(Commands['soyTemplates' + i] = getSoyCommand(soyPath));
+    _results.push(Commands["soyTemplates[" + i + "]"] = getSoyCommand(soyPath));
   }
   return _results;
 };

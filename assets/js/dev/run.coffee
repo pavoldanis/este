@@ -208,7 +208,8 @@ buildAndWatchProjectTemplate = ->
     file = file.replace /###CLOSURESCRIPTS###/g, scripts
     file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
     fs.writeFileSync "./#{options.project}.html", file, 'utf8'
-    console.log "#{options.project}-template.html compiled." 
+    if booting || options.showdurations
+      console.log "#{options.project}-template.html compiled." 
   
   build()
   fs.watchFile "#{options.project}-template.html", watchOptions, (curr, prev) ->
@@ -217,7 +218,7 @@ buildAndWatchProjectTemplate = ->
 
 addSoyTemplatesCompileCommands = ->
   soyPaths = getPaths 'assets', ['.soy']
-  Commands['soyTemplates' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
+  Commands["soyTemplates[#{i}]"] = getSoyCommand(soyPath) for soyPath, i in soyPaths
 
 getPaths = (directory, extensions, includeDirs, enforceClosure) ->
   paths = []
