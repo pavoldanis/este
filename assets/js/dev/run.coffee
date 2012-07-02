@@ -20,13 +20,12 @@
       use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
-    'node run app --showdurations'
+    'node run app --verbose'
       if you are curious how much time each compilation took
 
   Todo
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
-    group soy templates compilation into one task
     strip asserts and throws too
     CI
 ###
@@ -39,16 +38,17 @@ pathModule = require 'path'
 
 options =
   project: null
-  showdurations: false
+  verbose: false
   debug: false
   deploy: false
 
 startTime = Date.now()
 booting = true
 watchOptions =
-  # 10  -> cpu 30%
-  # 100 -> cpu 4%
-  # fix once nodejs watch will work on mac
+  # 10  -> cpu at 30%
+  # 80  -> cpu at 10%
+  # 100 -> cpu at 4%
+  # todo: fix once nodejs fix watch on mac
   interval: 100
 
 jsSubdirs = do ->
@@ -66,7 +66,38 @@ buildNamespaces = do ->
     "--root=assets/js/#{dir} "
   namespaces.join ''
 
+###*
+  Commands for watchables.
+###
+
 Commands =
+  projectTemplate: (callback) ->
+    try
+      timestamp = Date.now().toString 36
+      if options.deploy
+        scripts = """
+          <script src='/assets/js/#{options.project}.js?build=#{timestamp}'></script>
+        """
+      else
+        scripts = """
+          <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+          <script src='/assets/js/deps.js'></script>
+          <script src='/assets/js/#{options.project}/start.js'></script>
+        """
+      file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
+      file = file.replace /###CLOSURESCRIPTS###/g, scripts
+      file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
+      # todo: what's that?
+      file = file.replace /###CONFIG_START###/g, ''
+      file = file.replace /###CONFIG_END###/g, ''
+      fs.writeFileSync "./#{options.project}.html", file, 'utf8'
+    
+    catch e
+      callback true, null, e.toString
+
+    finally
+      callback()
+
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
   
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
@@ -119,21 +150,23 @@ Commands =
     command = "stylus --compress #{paths.join ' '}"
     exec command, callback
 
+  soyTemplates: (callback) ->
+    soyPaths = getPaths 'assets', ['.soy']
+    command = getSoyCommand soyPaths
+    exec command, callback
+
 start = (args) ->
   setOptions args
   delete Commands.closureCompilation if !options.deploy
-  startServer()
-  buildAndWatchProjectTemplate()
-  addSoyTemplatesCompileCommands()
   
   runCommands Commands, (errors) ->
+    startServer()
     if errors.length
       commands = (error.name for error in errors).join ', '
       console.log """
         Something's wrong with: #{commands}
         Fixit, then press cmd-s."""
       console.log error.stderr for error in errors
-
     else
       console.log "Everything's fine, happy coding!",
         "#{(Date.now() - startTime) / 1000}ms"
@@ -146,8 +179,8 @@ setOptions = (args) ->
     switch arg
       when '--debug'
         options.debug = true
-      when '--showdurations'
-        options.showdurations = true
+      when '--verbose'
+        options.verbose = true
       when '--deploy'
         options.deploy = true
       else
@@ -191,35 +224,6 @@ startServer = ->
   server.listen 8000
   console.log 'Server is listening at http://localhost:8000/'
 
-buildAndWatchProjectTemplate = ->
-  build = ->
-    timestamp = Date.now().toString 36
-    if options.deploy
-      scripts = """
-        <script src='/assets/js/#{options.project}.js?build=#{timestamp}'></script>
-      """
-    else
-      scripts = """
-        <script src='/assets/js/google-closure/closure/goog/base.js'></script>
-        <script src='/assets/js/deps.js'></script>
-        <script src='/assets/js/#{options.project}/start.js'></script>
-      """
-    file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
-    file = file.replace /###CLOSURESCRIPTS###/g, scripts
-    file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
-    fs.writeFileSync "./#{options.project}.html", file, 'utf8'
-    if booting || options.showdurations
-      console.log "#{options.project}-template.html compiled." 
-  
-  build()
-  fs.watchFile "#{options.project}-template.html", watchOptions, (curr, prev) ->
-    return if curr.mtime <= prev.mtime
-    build()
-
-addSoyTemplatesCompileCommands = ->
-  soyPaths = getPaths 'assets', ['.soy']
-  Commands["soyTemplates[#{i}]"] = getSoyCommand(soyPath) for soyPath, i in soyPaths
-
 getPaths = (directory, extensions, includeDirs, enforceClosure) ->
   paths = []
   files = fs.readdirSync directory
@@ -235,18 +239,19 @@ getPaths = (directory, extensions, includeDirs, enforceClosure) ->
       paths.push path if pathModule.extname(path) in extensions
   paths
 
-getSoyCommand = (path) ->
+getSoyCommand = (paths) ->
   "java -jar assets/js/dev/SoyToJsSrcCompiler.jar
     --shouldProvideRequireSoyNamespaces
     --shouldGenerateJsdoc
     --codeStyle concat
     --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
-    #{path}"
+    #{paths.join ' '}"
 
 # slower watchFile, because http://nodejs.org/api/fs.html#fs_caveats
 # todo: wait for fix
 watchPaths = (callback) ->
   paths = getPaths 'assets', ['.coffee', '.styl', '.soy'], true
+  paths.push "#{options.project}-template.html"
   for path in paths
     continue if watchPaths['$' + path]
     watchPaths['$' + path] = true
@@ -268,6 +273,9 @@ onPathChange = (path, dir) ->
 
   commands = {}
   switch pathModule.extname path
+    when '.html'
+      if path == "#{options.project}-template.html"
+        commands['projectTemplate'] = Commands.projectTemplate
     when '.coffee'
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
       # tests first, they have to be as fast as possible
@@ -278,7 +286,7 @@ onPathChange = (path, dir) ->
     when '.styl'
       commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
     when '.soy'
-      commands["soyTemplate: #{path}"] = getSoyCommand path
+      commands["soyTemplate: #{path}"] = getSoyCommand [path]
     else
       return
 
@@ -328,7 +336,7 @@ runCommands = (commands, onComplete, errors = []) ->
         console.log stderr
         nextCommands = {}
 
-    if booting || options.showdurations
+    if booting || options.verbose
       console.log name, "#{(Date.now() - commandStartTime) / 1000}ms"
     runCommands nextCommands, onComplete, errors
   
