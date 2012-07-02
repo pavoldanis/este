@@ -106,7 +106,7 @@ Commands = {
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var command, flag, flags, flagsText, jsPath, processedScripts, source, _i, _j, _len, _len1, _ref, _ref1;
+    var command, flag, flags, flagsText, jsPath, preservedClosureScripts, source, _i, _j, _len, _len1, _ref, _ref1;
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
@@ -118,30 +118,30 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
-    processedScripts = [];
+    preservedClosureScripts = [];
     if (!options.debug) {
       _ref1 = getPaths('assets', ['.js'], false, true);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         jsPath = _ref1[_j];
         source = fs.readFileSync(jsPath, 'utf8');
-        if (source.indexOf('goog.DEBUG && this.logger_.') === -1) {
+        if (source.indexOf('this.logger_.') === -1) {
           continue;
         }
         if (jsPath.indexOf('google-closure/') !== -1) {
-          processedScripts.push({
+          preservedClosureScripts.push({
             jsPath: jsPath,
             source: source
           });
         }
-        source = source.replace(/this\.logger_\./g, 'goog.DEBUG && goog.DEBUG && this.logger_.');
+        source = source.replace(/this\.logger_\./g, 'goog.DEBUG && this.logger_.');
         fs.writeFileSync(jsPath, source, 'utf8');
       }
     }
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > assets/js/" + options.project + ".js";
     return exec(command, function() {
       var script, _k, _len2;
-      for (_k = 0, _len2 = processedScripts.length; _k < _len2; _k++) {
-        script = processedScripts[_k];
+      for (_k = 0, _len2 = preservedClosureScripts.length; _k < _len2; _k++) {
+        script = preservedClosureScripts[_k];
         fs.writeFileSync(script.jsPath, script.source, 'utf8');
       }
       return callback.apply(null, arguments);
