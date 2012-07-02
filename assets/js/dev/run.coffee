@@ -27,7 +27,7 @@
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
     group soy templates compilation into one task
-    strip closure loggers too
+    strip asserts and throws too
     CI
 ###
 
@@ -48,6 +48,7 @@ booting = true
 watchOptions =
   # 10  -> cpu 30%
   # 100 -> cpu 4%
+  # fix once nodejs watch will work on mac
   interval: 100
 
 jsSubdirs = do ->
@@ -67,16 +68,32 @@ buildNamespaces = do ->
 
 Commands =
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
+  
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
     #{depsNamespaces}
     > assets/js/deps.js"
+  
   closureCompilation: (callback) ->
     if options.debug
       flags = '--formatting=PRETTY_PRINT --debug=true'
     else
       flags = '--define=goog.DEBUG=false'
+    
     flagsText = ''
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
+
+    preservedClosureScripts = []
+    if !options.debug
+      for jsPath in getPaths 'assets', ['.js'], false, true
+        source = fs.readFileSync jsPath, 'utf8'
+        continue if source.indexOf('this.logger_.') == -1
+        # preserve google closure scripts
+        # we dont want to modify submodule
+        if jsPath.indexOf('google-closure/') != -1
+          preservedClosureScripts.push jsPath: jsPath, source: source
+        source = source.replace /this\.logger_\./g, 'goog.DEBUG && this.logger_.'
+        fs.writeFileSync jsPath, source, 'utf8'
+    
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
       #{buildNamespaces}
       --namespace=\"#{options.project}.start\"
@@ -89,8 +106,14 @@ Commands =
       --compiler_flags=\"--js=assets/js/deps.js\"
       #{flagsText}
       > assets/js/#{options.project}.js"
-    exec command, callback
+
+    exec command, ->
+      for script in preservedClosureScripts
+        fs.writeFileSync script.jsPath, script.source, 'utf8' 
+      callback.apply null, arguments
+
   mochaTests: tests.run
+
   stylusStyles: (callback) ->
     paths = getPaths 'assets', ['.styl']
     command = "stylus --compress #{paths.join ' '}"
@@ -196,17 +219,17 @@ addSoyTemplatesCompileCommands = ->
   soyPaths = getPaths 'assets', ['.soy']
   Commands['soyTemplates' + i] = getSoyCommand(soyPath) for soyPath, i in soyPaths
 
-getPaths = (directory, extensions, includeDirs) ->
+getPaths = (directory, extensions, includeDirs, enforceClosure) ->
   paths = []
   files = fs.readdirSync directory
   for file in files
     path = directory + '/' + file
     # ignored directories
-    continue if path.indexOf('/google-closure') > -1
+    continue if !enforceClosure && path.indexOf('google-closure/') > -1
     continue if path.indexOf('/node_modules') > -1
     if fs.statSync(path).isDirectory()
       paths.push path if includeDirs
-      paths.push.apply paths, getPaths path, extensions, includeDirs
+      paths.push.apply paths, getPaths path, extensions, includeDirs, enforceClosure
     else
       paths.push path if pathModule.extname(path) in extensions
   paths

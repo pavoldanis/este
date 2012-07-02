@@ -8,9 +8,14 @@ goog.require 'este.dev.Monitor.create'
 goog.require 'app.listing.Model.create'
 goog.require 'app.listing.View'
 
+goog.require 'goog.net.XhrIo'
+
 app.start = ->
   if goog.DEBUG
     este.dev.Monitor.create()
+
+  # just for test if all loggers were stripped
+  goog.net.XhrIo.send 'www.google.com'
 
   model = app.listing.Model.create()
 

@@ -28,7 +28,7 @@
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
     group soy templates compilation into one task
-    strip closure loggers too
+    strip asserts and throws too
     CI
 */
 
@@ -106,7 +106,7 @@ Commands = {
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var command, flag, flags, flagsText, _i, _len, _ref;
+    var command, flag, flags, flagsText, jsPath, processedScripts, source, _i, _j, _len, _len1, _ref, _ref1;
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
@@ -118,8 +118,34 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
+    processedScripts = [];
+    if (!options.debug) {
+      _ref1 = getPaths('assets', ['.js'], false, true);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        jsPath = _ref1[_j];
+        source = fs.readFileSync(jsPath, 'utf8');
+        if (source.indexOf('goog.DEBUG && this.logger_.') === -1) {
+          continue;
+        }
+        if (jsPath.indexOf('google-closure/') !== -1) {
+          processedScripts.push({
+            jsPath: jsPath,
+            source: source
+          });
+        }
+        source = source.replace(/this\.logger_\./g, 'goog.DEBUG && goog.DEBUG && this.logger_.');
+        fs.writeFileSync(jsPath, source, 'utf8');
+      }
+    }
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > assets/js/" + options.project + ".js";
-    return exec(command, callback);
+    return exec(command, function() {
+      var script, _k, _len2;
+      for (_k = 0, _len2 = processedScripts.length; _k < _len2; _k++) {
+        script = processedScripts[_k];
+        fs.writeFileSync(script.jsPath, script.source, 'utf8');
+      }
+      return callback.apply(null, arguments);
+    });
   },
   mochaTests: tests.run,
   stylusStyles: function(callback) {
@@ -270,14 +296,14 @@ addSoyTemplatesCompileCommands = function() {
   return _results;
 };
 
-getPaths = function(directory, extensions, includeDirs) {
+getPaths = function(directory, extensions, includeDirs, enforceClosure) {
   var file, files, path, paths, _i, _len, _ref;
   paths = [];
   files = fs.readdirSync(directory);
   for (_i = 0, _len = files.length; _i < _len; _i++) {
     file = files[_i];
     path = directory + '/' + file;
-    if (path.indexOf('/google-closure') > -1) {
+    if (!enforceClosure && path.indexOf('google-closure/') > -1) {
       continue;
     }
     if (path.indexOf('/node_modules') > -1) {
@@ -287,7 +313,7 @@ getPaths = function(directory, extensions, includeDirs) {
       if (includeDirs) {
         paths.push(path);
       }
-      paths.push.apply(paths, getPaths(path, extensions, includeDirs));
+      paths.push.apply(paths, getPaths(path, extensions, includeDirs, enforceClosure));
     } else {
       if (_ref = pathModule.extname(path), __indexOf.call(extensions, _ref) >= 0) {
         paths.push(path);
