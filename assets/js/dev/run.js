@@ -21,18 +21,17 @@
       use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
-    'node run app --showdurations'
+    'node run app --verbose'
       if you are curious how much time each compilation took
 
   Todo
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
-    group soy templates compilation into one task
     strip asserts and throws too
     CI
 */
 
-var Commands, addSoyTemplatesCompileCommands, booting, buildAndWatchProjectTemplate, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
+var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -47,7 +46,7 @@ pathModule = require('path');
 
 options = {
   project: null,
-  showdurations: false,
+  verbose: false,
   debug: false,
   deploy: false
 };
@@ -102,7 +101,33 @@ buildNamespaces = (function() {
   return namespaces.join('');
 })();
 
+/**
+  Commands for watchables.
+*/
+
+
 Commands = {
+  projectTemplate: function(callback) {
+    var file, scripts, timestamp;
+    try {
+      timestamp = Date.now().toString(36);
+      if (options.deploy) {
+        scripts = "<script src='/assets/js/" + options.project + ".js?build=" + timestamp + "'></script>";
+      } else {
+        scripts = "<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
+      }
+      file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
+      file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
+      file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
+      file = file.replace(/###CONFIG_START###/g, '');
+      file = file.replace(/###CONFIG_END###/g, '');
+      return fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
+    } catch (e) {
+      return callback(true, null, e.toString);
+    } finally {
+      callback();
+    }
+  },
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
@@ -153,6 +178,12 @@ Commands = {
     paths = getPaths('assets', ['.styl']);
     command = "stylus --compress " + (paths.join(' '));
     return exec(command, callback);
+  },
+  soyTemplates: function(callback) {
+    var command, soyPaths;
+    soyPaths = getPaths('assets', ['.soy']);
+    command = getSoyCommand(soyPaths);
+    return exec(command, callback);
   }
 };
 
@@ -161,11 +192,9 @@ start = function(args) {
   if (!options.deploy) {
     delete Commands.closureCompilation;
   }
-  startServer();
-  buildAndWatchProjectTemplate();
-  addSoyTemplatesCompileCommands();
   return runCommands(Commands, function(errors) {
     var commands, error, _i, _len;
+    startServer();
     if (errors.length) {
       commands = ((function() {
         var _i, _len, _results;
@@ -197,8 +226,8 @@ setOptions = function(args) {
       case '--debug':
         options.debug = true;
         break;
-      case '--showdurations':
-        options.showdurations = true;
+      case '--verbose':
+        options.verbose = true;
         break;
       case '--deploy':
         options.deploy = true;
@@ -257,45 +286,7 @@ startServer = function() {
     });
   });
   server.listen(8000);
-  return console.log('Server is listening at http://localhost:8000/');
-};
-
-buildAndWatchProjectTemplate = function() {
-  var build;
-  build = function() {
-    var file, scripts, timestamp;
-    timestamp = Date.now().toString(36);
-    if (options.deploy) {
-      scripts = "<script src='/assets/js/" + options.project + ".js?build=" + timestamp + "'></script>";
-    } else {
-      scripts = "<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
-    }
-    file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
-    file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
-    file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
-    fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
-    if (booting || options.showdurations) {
-      return console.log("" + options.project + "-template.html compiled.");
-    }
-  };
-  build();
-  return fs.watchFile("" + options.project + "-template.html", watchOptions, function(curr, prev) {
-    if (curr.mtime <= prev.mtime) {
-      return;
-    }
-    return build();
-  });
-};
-
-addSoyTemplatesCompileCommands = function() {
-  var i, soyPath, soyPaths, _i, _len, _results;
-  soyPaths = getPaths('assets', ['.soy']);
-  _results = [];
-  for (i = _i = 0, _len = soyPaths.length; _i < _len; i = ++_i) {
-    soyPath = soyPaths[i];
-    _results.push(Commands["soyTemplates[" + i + "]"] = getSoyCommand(soyPath));
-  }
-  return _results;
+  return console.log('Server is listening on http://localhost:8000/');
 };
 
 getPaths = function(directory, extensions, includeDirs, enforceClosure) {
@@ -325,13 +316,14 @@ getPaths = function(directory, extensions, includeDirs, enforceClosure) {
   return paths;
 };
 
-getSoyCommand = function(path) {
-  return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + path;
+getSoyCommand = function(paths) {
+  return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + (paths.join(' '));
 };
 
 watchPaths = function(callback) {
   var path, paths, _fn, _i, _len;
   paths = getPaths('assets', ['.coffee', '.styl', '.soy'], true);
+  paths.push("" + options.project + "-template.html");
   _fn = function(path) {
     if (path.indexOf('.') > -1) {
       return fs.watchFile(path, watchOptions, function(curr, prev) {
@@ -363,6 +355,11 @@ onPathChange = function(path, dir) {
   }
   commands = {};
   switch (pathModule.extname(path)) {
+    case '.html':
+      if (path === ("" + options.project + "-template.html")) {
+        commands['projectTemplate'] = Commands.projectTemplate;
+      }
+      break;
     case '.coffee':
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
       commands["mochaTests"] = Commands.mochaTests;
@@ -375,7 +372,7 @@ onPathChange = function(path, dir) {
       commands["stylusStyle: " + path] = "stylus --compress " + path;
       break;
     case '.soy':
-      commands["soyTemplate: " + path] = getSoyCommand(path);
+      commands["soyTemplate: " + path] = getSoyCommand([path]);
       break;
     default:
       return;
@@ -438,7 +435,7 @@ runCommands = function(commands, onComplete, errors) {
         nextCommands = {};
       }
     }
-    if (booting || options.showdurations) {
+    if (booting || options.verbose) {
       console.log(name, "" + ((Date.now() - commandStartTime) / 1000) + "ms");
     }
     return runCommands(nextCommands, onComplete, errors);

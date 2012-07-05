@@ -17,13 +17,15 @@ How to use it?
     git submodule init
     git submodule update
       (todo: npm dev deps)
-  Install Sublime Text and these must-have packages:
-    Package Control
-    CoffeeScript
-    Stylus
-    SoyTemplate
-    Clipboard History
-    JsFormat
+  Install Sublime Text, consider these packages:
+      Package Control
+      CoffeeScript
+      Stylus
+      SoyTemplate
+      Clipboard History
+      JsFormat
+      Git - git commands for command palette
+      SideBarGit - like Tortoise inside Sublimetext
   Type 'node run app' into console.
   Build something beautiful.
 

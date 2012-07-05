@@ -1,5 +1,5 @@
 ###*
-  @fileoverview DOM utils.
+  @fileoverview Various DOM utils.
 ###
 
 goog.provide 'este.dom'
@@ -346,6 +346,7 @@ este.dom.getQueryParts = function(query) {
 `
 goog.scope ->
   `var _ = este.dom`
+  `var classes = goog.dom.classes`
 
   ###*
     Element matcher for getQueryParts.
@@ -359,7 +360,7 @@ goog.scope ->
       return false if part.tag && part.tag != '*' && el.tagName != part.tag
       return false if part.id && el.id != part.id
       for className in part.classes
-        return false if !goog.dom.classes.has el, className
+        return false if !classes.has el, className
     true
 
   ###*
@@ -386,7 +387,7 @@ goog.scope ->
     for element in elements
       path.push element.tagName.toUpperCase()
       path.push '#', element.id if element.id
-      for className in goog.dom.classes.get element
+      for className in classes.get element
         path.push '.', className
       path.push ' '
     path.pop()
@@ -418,7 +419,7 @@ goog.scope ->
     node = e.target
     while node && node.nodeType == 1
       for className, callback of object
-        if goog.dom.classes.has node, className
+        if classes.has node, className
           callback node
           return true
       node = node.parentNode
@@ -437,17 +438,18 @@ goog.scope ->
       v
 
   ###*
-    todo:
-      get element (parents) dompath
-      if retrieve localStored dompath (window.location involved)
-        unlisten previous listeners
-        restore states
-      register events to store fields state
-        store states into localStorage
+    register bubbled focus on element
+      onfocus, register field state storing
+        use its dom path
+    check, dom paths of element, retrieve its states
+
+    thingabout
+      listeners purge
+      stored selector purge (explicit reset)
 
     @param {Element} element
   ###
-  _.fieldsState = (element) ->
+  _.persistFormFields = (element) ->
 
 
   return
