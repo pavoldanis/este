@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Various DOM utils.
+  @fileoverview DOM utils.
 ###
 
 goog.provide 'este.dom'
@@ -346,7 +346,6 @@ este.dom.getQueryParts = function(query) {
 `
 goog.scope ->
   `var _ = este.dom`
-  `var classes = goog.dom.classes`
 
   ###*
     Element matcher for getQueryParts.
@@ -360,7 +359,7 @@ goog.scope ->
       return false if part.tag && part.tag != '*' && el.tagName != part.tag
       return false if part.id && el.id != part.id
       for className in part.classes
-        return false if !classes.has el, className
+        return false if !goog.dom.classes.has el, className
     true
 
   ###*
@@ -387,7 +386,7 @@ goog.scope ->
     for element in elements
       path.push element.tagName.toUpperCase()
       path.push '#', element.id if element.id
-      for className in classes.get element
+      for className in goog.dom.classes.get element
         path.push '.', className
       path.push ' '
     path.pop()
@@ -419,7 +418,7 @@ goog.scope ->
     node = e.target
     while node && node.nodeType == 1
       for className, callback of object
-        if classes.has node, className
+        if goog.dom.classes.has node, className
           callback node
           return true
       node = node.parentNode
@@ -438,19 +437,47 @@ goog.scope ->
       v
 
   ###*
-    register bubbled focus on element
-      onfocus, register field state storing
-        use its dom path
-    check, dom paths of element, retrieve its states
+    Returns a single value of a form element.
 
-    thingabout
-      listeners purge
-      stored selector purge (explicit reset)
+    If there are more elements with given name, returns value of the first one.
+    If none is found, returns null.
+
+    @param {Element} form
+    @param {string} name
+    @return {string|null}
+  ###
+  _.getSingleFormValueByName = (form, name) ->
+    `form = /** @type {HTMLFormElement} */ (form)`
+    value = goog.dom.forms.getValueByName form, name
+    return value if !goog.isArray value
+    return null if value.length == 0
+    value[0]
+
+  ###*
+    todo:
+      get element (parents) dompath
+      if retrieve localStored dompath (window.location involved)
+        unlisten previous listeners
+        restore states
+      register events to store fields state
+        store states into localStorage
 
     @param {Element} element
   ###
-  _.persistFormFields = (element) ->
+  _.fieldsState = (element) ->
 
+  ###*
+    @param {Element} form
+    @param {Function} callback
+  ###
+  _.preserveFormState = (form, callback) ->
+    values = _.serializeForm form
+    callback()
+    for name, value of values
+      field = form.elements[name]
+      continue if !field
+      goog.dom.forms.setValue field, value
+    return
 
   return
 
