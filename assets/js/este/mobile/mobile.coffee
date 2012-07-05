@@ -54,4 +54,15 @@ goog.scope ->
   #   }
   # }
 
+  ###*
+    Adds basic iPhone home icon link to the head
+
+    @param {string} url
+  ###
+  _.addiPhoneAppIcon = (url) ->
+    link = document.createElement 'link'
+    link.rel = 'apple-touch-icon'
+    link.href = url
+    document.head.appendChild link
+
   return
