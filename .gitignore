@@ -6,6 +6,7 @@ este.sublime-workspace
 assets/js/dev/**/*
 assets/js/dev/*.js
 assets/js/este/**/*
+!assets/js/este/**/*.html
 assets/js/este/*.js
 assets/js/app/**/*
 assets/js/app/*.js
