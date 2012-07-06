@@ -14,10 +14,7 @@
 				"assets/js/deps.js",
 
 				// *.css we don't want to see because we have Stylus
-				"assets/js/app/*.css",
-				"assets/js/dev/*.css",
-				"assets/js/este/*.css",
-				"assets/js/deps.js"
+				"assets/css/*.css"
 			]
 		}
 	]
