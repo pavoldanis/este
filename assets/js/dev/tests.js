@@ -163,6 +163,6 @@ exports.run = function(callback) {
   depsFiles = resolveDeps(namespaces, deps);
   writeNodeGoogBase();
   files = getAllFiles(depsFiles, testFiles);
-  command = 'mocha --colors --timeout 20 --ui tdd --reporter min ' + files.join(' ');
+  command = 'mocha --colors --timeout 50 --ui tdd --reporter min ' + files.join(' ');
   return exec(command, callback);
 };
