@@ -200,7 +200,9 @@ Commands = {
 };
 
 start = function(args) {
-  setOptions(args);
+  if (!setOptions(args)) {
+    return;
+  }
   if (!options.deploy) {
     delete Commands.closureCompilation;
   }
@@ -241,7 +243,7 @@ start = function(args) {
 };
 
 setOptions = function(args) {
-  var arg;
+  var arg, path;
   while (args.length) {
     arg = args.shift();
     switch (arg) {
@@ -261,6 +263,11 @@ setOptions = function(args) {
         options.project = arg;
     }
   }
+  path = "assets/js/" + options.project;
+  if (!fs.existsSync(path)) {
+    console.log("Project directory " + path + " does not exists.");
+    return false;
+  }
   if (options.debug) {
     options.outputFilename = "assets/js/" + options.project + "_dev.js";
   } else {
@@ -269,6 +276,7 @@ setOptions = function(args) {
   if (options.deploy) {
     console.log('Output filename: ' + options.outputFilename);
   }
+  return true;
 };
 
 startServer = function() {

@@ -171,7 +171,7 @@ Commands =
     exec command, callback
 
 start = (args) ->
-  setOptions args
+  return if !setOptions args
   delete Commands.closureCompilation if !options.deploy
   
   runCommands Commands, (errors) ->
@@ -212,6 +212,12 @@ setOptions = (args) ->
       else
         options.project = arg
 
+  path = "assets/js/#{options.project}"
+  
+  if !fs.existsSync path
+    console.log "Project directory #{path} does not exists."
+    return false
+
   if options.debug
     options.outputFilename = "assets/js/#{options.project}_dev.js"
   else
@@ -220,7 +226,7 @@ setOptions = (args) ->
   if options.deploy
     console.log 'Output filename: ' + options.outputFilename
 
-  return
+  true
 
 startServer = ->
   server = http.createServer (request, response) ->
