@@ -1,14 +1,6 @@
 ###*
-  @fileoverview Model with auto change event. Use set method.
-    This is great idea. Setters sucks, and string based properties too.
-    This solution works in advanced compilation mode too.
-    
-    todo
-      consider comparing just primitives to ignore references to another objects?
-      use custom overridable comparer for subclasses
-
-    note
-      goog.json will probably not be updated to native, because different specs
+  @fileoverview
+  @deprecated Use este.mvc.Model
 ###
 
 goog.provide 'este.oop.Model'

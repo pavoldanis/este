@@ -1,6 +1,6 @@
 ###*
-  @fileoverview Collection with auto change event.
-    Array-like object. Use set method.
+  @fileoverview
+  @deprecated Use este.mvc.Collection
 ###
 
 goog.provide 'este.oop.Collection'
