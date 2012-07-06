@@ -30,8 +30,8 @@
 
   Todo
     fix too much cmd-s's errors
-    consider: delete .css and .js files on start
-    strip asserts and throws too
+    consider: delete .css onstart
+    strip asserts and strings throws
 */
 
 var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
@@ -357,6 +357,10 @@ watchPaths = function(callback) {
   var path, paths, _fn, _i, _len;
   paths = getPaths('assets', ['.coffee', '.styl', '.soy'], true);
   paths.push("" + options.project + "-template.html");
+  paths.push('assets/js/dev/run.coffee');
+  paths.push('assets/js/dev/mocks.coffee');
+  paths.push('assets/js/dev/deploy.coffee');
+  paths.push('assets/js/dev/tests.coffee');
   _fn = function(path) {
     if (path.indexOf('.') > -1) {
       return fs.watchFile(path, watchOptions, function(curr, prev) {

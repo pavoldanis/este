@@ -29,8 +29,8 @@
 
   Todo
     fix too much cmd-s's errors
-    consider: delete .css and .js files on start
-    strip asserts and throws too
+    consider: delete .css onstart
+    strip asserts and strings throws
 ###
 
 fs = require 'fs'
@@ -287,6 +287,10 @@ getSoyCommand = (paths) ->
 watchPaths = (callback) ->
   paths = getPaths 'assets', ['.coffee', '.styl', '.soy'], true
   paths.push "#{options.project}-template.html"
+  paths.push 'assets/js/dev/run.coffee' 
+  paths.push 'assets/js/dev/mocks.coffee' 
+  paths.push 'assets/js/dev/deploy.coffee' 
+  paths.push 'assets/js/dev/tests.coffee' 
   for path in paths
     continue if watchPaths['$' + path]
     watchPaths['$' + path] = true
