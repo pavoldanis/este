@@ -17,7 +17,8 @@ How to use it?
     git submodule init
     git submodule update
       (todo: npm dev deps)
-  Install Sublime Text, consider these packages:
+  Install Sublime Text
+    Consider these packages:
       Package Control
       CoffeeScript
       Stylus
@@ -26,8 +27,17 @@ How to use it?
       JsFormat
       Git - git commands for command palette
       SideBarGit - like Tortoise inside Sublimetext
+    Check settings and snippets
+      https://github.com/Steida/Sublimetext-user-settings
   Type 'node run app' into console.
   Build something beautiful.
+
+All commands (documented in run.coffee)
+  'node run app'
+  'node run app --deploy'
+  'node run app --deploy --debug'
+  'node run app --verbose'
+  'node run app --buildonly'
 
 Ok. I got it, what's next?
   Take a look at the app. It defines structure, namespacing (by features ftw),
@@ -52,6 +62,11 @@ Near future
   two-way databinding
 
 Change Log
+  07/06/12
+    fixes and improvements for run script
+    este library new commiter jiri.kopsa@proactify.com
+    snippets https://github.com/Steida/Sublimetext-user-settings
+
   07/01/12
     [breaking]
       one script to rule them all!
