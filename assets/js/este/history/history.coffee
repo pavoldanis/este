@@ -89,7 +89,11 @@ goog.scope ->
     if @html5historyIsSupported
       @history_.getToken()
     else
-      window.location['hash']
+      # Note: It's important to use history_.getToken() instead of window.location['hash']
+      # The reason is that window.location['hash'] performs url-decoding, which may not be
+      # desired (we want the raw value of the token)
+      # Also see hashURIEncoding.html and goog.History.prototype.getLocationFragment_
+      @history_.getToken()
 
   ###*
     @param {goog.events.BrowserEvent} e
