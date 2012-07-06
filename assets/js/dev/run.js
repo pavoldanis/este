@@ -34,7 +34,7 @@
     strip asserts and strings throws
 */
 
-var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
+var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, reloadBrowser, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -58,6 +58,8 @@ options = {
 startTime = Date.now();
 
 booting = true;
+
+reloadBrowser = false;
 
 watchOptions = {
   interval: 100
@@ -118,7 +120,7 @@ Commands = {
       if (options.deploy) {
         scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
       } else {
-        scripts = "<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
+        scripts = "<script src='/assets/js/dev/livereload.js'></script>\n<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
       }
       file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
       file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
@@ -283,6 +285,14 @@ startServer = function() {
   var server;
   server = http.createServer(function(request, response) {
     var contentType, extname, filePath;
+    if (request.url === '/dev/live-reload') {
+      response.writeHead(200, {
+        'Content-Type': contentType
+      });
+      response.end(reloadBrowser.toString(), 'utf-8');
+      reloadBrowser = false;
+      return;
+    }
     filePath = '.' + request.url;
     if (filePath === './') {
       filePath = "./" + options.project + ".htm";
@@ -369,6 +379,7 @@ watchPaths = function(callback) {
   paths.push('assets/js/dev/mocks.coffee');
   paths.push('assets/js/dev/deploy.coffee');
   paths.push('assets/js/dev/tests.coffee');
+  paths.push('assets/js/dev/livereload.coffee');
   _fn = function(path) {
     if (path.indexOf('.') > -1) {
       return fs.watchFile(path, watchOptions, function(curr, prev) {
@@ -447,6 +458,9 @@ runCommands = function(commands, onComplete, errors) {
     break;
   }
   if (!command) {
+    if (!booting) {
+      reloadBrowser = true;
+    }
     if (onComplete) {
       onComplete(errors);
     }

@@ -48,6 +48,7 @@ options =
 
 startTime = Date.now()
 booting = true
+reloadBrowser = false
 watchOptions =
   # 10  -> cpu at 30%
   # 80  -> cpu at 10%
@@ -84,6 +85,7 @@ Commands =
         """
       else
         scripts = """
+          <script src='/assets/js/dev/livereload.js'></script>
           <script src='/assets/js/google-closure/closure/goog/base.js'></script>
           <script src='/assets/js/deps.js'></script>
           <script src='/assets/js/#{options.project}/start.js'></script>
@@ -230,6 +232,14 @@ setOptions = (args) ->
 
 startServer = ->
   server = http.createServer (request, response) ->
+    
+    # todo: use websockets
+    if request.url == '/dev/live-reload'
+      response.writeHead 200, 'Content-Type': contentType
+      response.end reloadBrowser.toString(), 'utf-8'
+      reloadBrowser = false
+      return
+
     filePath = '.' + request.url
     filePath = "./#{options.project}.htm" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
@@ -293,10 +303,14 @@ getSoyCommand = (paths) ->
 watchPaths = (callback) ->
   paths = getPaths 'assets', ['.coffee', '.styl', '.soy'], true
   paths.push "#{options.project}-template.html"
+  # todo
+  # devCoffees = fs.readdirSync "assets/js/dev/*.coffee"
+  # console.log devCoffees
   paths.push 'assets/js/dev/run.coffee' 
   paths.push 'assets/js/dev/mocks.coffee' 
   paths.push 'assets/js/dev/deploy.coffee' 
   paths.push 'assets/js/dev/tests.coffee' 
+  paths.push 'assets/js/dev/livereload.coffee' 
   for path in paths
     continue if watchPaths['$' + path]
     watchPaths['$' + path] = true
@@ -356,6 +370,8 @@ runCommands = (commands, onComplete, errors = []) ->
     break
   
   if !command
+    # todo
+    reloadBrowser = true if !booting
     onComplete errors if onComplete
     return
 
