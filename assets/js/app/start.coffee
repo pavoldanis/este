@@ -11,6 +11,7 @@ goog.require 'app.listing.View'
 goog.require 'goog.net.XhrIo'
 
 app.start = ->
+
   if goog.DEBUG
     este.dev.Monitor.create()
 
