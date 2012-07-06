@@ -17,17 +17,20 @@
       goog.DEBUG == false (code using that will be stripped)
 
     'node run app --deploy --debug'
-      use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
+      compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
     'node run app --verbose'
       if you are curious how much time each compilation took
 
+    'node run app --buildonly'
+      only builds the files aka CI mode
+      does not start http server nor watches for changes
+
   Todo
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
     strip asserts and throws too
-    CI
 ###
 
 fs = require 'fs'
@@ -41,6 +44,7 @@ options =
   verbose: false
   debug: false
   deploy: false
+  buildonly: false
 
 startTime = Date.now()
 booting = true
@@ -76,7 +80,7 @@ Commands =
       timestamp = Date.now().toString 36
       if options.deploy
         scripts = """
-          <script src='/assets/js/#{options.project}.js?build=#{timestamp}'></script>
+          <script src='/#{options.outputFilename}?build=#{timestamp}'></script>
         """
       else
         scripts = """
@@ -87,9 +91,6 @@ Commands =
       file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
       file = file.replace /###CLOSURESCRIPTS###/g, scripts
       file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
-      # todo: what's that?
-      file = file.replace /###CONFIG_START###/g, ''
-      file = file.replace /###CONFIG_END###/g, ''
       fs.writeFileSync "./#{options.project}.html", file, 'utf8'
     
     catch e
@@ -98,8 +99,18 @@ Commands =
     finally
       callback()
 
+  removeJavascripts: (callback) ->
+    for jsPath in getPaths 'assets', ['.js']
+      fs.unlinkSync jsPath
+    callback()
+
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
-  
+
+  soyTemplates: (callback) ->
+    soyPaths = getPaths 'assets', ['.soy']
+    command = getSoyCommand soyPaths
+    exec command, callback
+
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
     #{depsNamespaces}
     > assets/js/deps.js"
@@ -118,11 +129,20 @@ Commands =
       for jsPath in getPaths 'assets', ['.js'], false, true
         source = fs.readFileSync jsPath, 'utf8'
         continue if source.indexOf('this.logger_.') == -1
+        
         # preserve google closure scripts
         # we dont want to modify submodule
         if jsPath.indexOf('google-closure/') != -1
-          preservedClosureScripts.push jsPath: jsPath, source: source
-        source = source.replace /this\.logger_\./g, 'goog.DEBUG && this.logger_.'
+          preservedClosureScripts.push
+            jsPath: jsPath
+            source: source
+
+        # replace all "this.logger" (but not "_this.logger")
+        # fix for coffee _this alias
+        source = source.replace /[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.'
+        # Replace all "_this.logger"
+        source = source.replace /_this\.logger_\./g, 'goog.DEBUG && _this.logger_.'
+
         fs.writeFileSync jsPath, source, 'utf8'
     
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
@@ -136,7 +156,7 @@ Commands =
       --compiler_flags=\"--output_wrapper=(function(){%output%})();\"
       --compiler_flags=\"--js=assets/js/deps.js\"
       #{flagsText}
-      > assets/js/#{options.project}.js"
+      > #{options.outputFilename}"
 
     exec command, ->
       for script in preservedClosureScripts
@@ -150,28 +170,32 @@ Commands =
     command = "stylus --compress #{paths.join ' '}"
     exec command, callback
 
-  soyTemplates: (callback) ->
-    soyPaths = getPaths 'assets', ['.soy']
-    command = getSoyCommand soyPaths
-    exec command, callback
-
 start = (args) ->
   setOptions args
   delete Commands.closureCompilation if !options.deploy
   
   runCommands Commands, (errors) ->
-    startServer()
+    if !options.buildonly
+      startServer()
     if errors.length
       commands = (error.name for error in errors).join ', '
       console.log """
         Something's wrong with: #{commands}
         Fixit, then press cmd-s."""
       console.log error.stderr for error in errors
+      # Signal error and exit (only if deploy, otherwise keep server running)
+      if options.buildonly
+        process.exit 1
     else
       console.log "Everything's fine, happy coding!",
-        "#{(Date.now() - startTime) / 1000}ms"
+        "#{(Date.now() - startTime) / 1000}s"
+      # Signal ok and exit (only if deploy, otherwise keep server running)
+      if options.buildonly
+        process.exit 0
     booting = false
-    watchPaths onPathChange
+
+    if !options.buildonly
+      watchPaths onPathChange
 
 setOptions = (args) ->
   while args.length
@@ -183,8 +207,19 @@ setOptions = (args) ->
         options.verbose = true
       when '--deploy'
         options.deploy = true
+      when '--buildonly'
+        options.buildonly = true
       else
         options.project = arg
+
+  if options.debug
+    options.outputFilename = "assets/js/#{options.project}_dev.js"
+  else
+    options.outputFilename = "assets/js/#{options.project}.js"
+
+  if options.deploy
+    console.log 'Output filename: ' + options.outputFilename
+
   return
 
 startServer = ->
@@ -231,7 +266,7 @@ getPaths = (directory, extensions, includeDirs, enforceClosure) ->
     path = directory + '/' + file
     # ignored directories
     continue if !enforceClosure && path.indexOf('google-closure/') > -1
-    continue if path.indexOf('/node_modules') > -1
+    continue if path.indexOf('assets/js/dev') > -1
     if fs.statSync(path).isDirectory()
       paths.push path if includeDirs
       paths.push.apply paths, getPaths path, extensions, includeDirs, enforceClosure
@@ -272,6 +307,11 @@ onPathChange = (path, dir) ->
     return
 
   commands = {}
+  addDepsAndCompilation = ->
+    commands["closureDeps"] = Commands.closureDeps
+    if options.deploy
+      commands["closureCompilation"] = Commands.closureCompilation
+
   switch pathModule.extname path
     when '.html'
       if path == "#{options.project}-template.html"
@@ -280,13 +320,12 @@ onPathChange = (path, dir) ->
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
       # tests first, they have to be as fast as possible
       commands["mochaTests"] = Commands.mochaTests
-      commands["closureDeps"] = Commands.closureDeps
-      if options.deploy
-        commands["closureCompilation"] = Commands.closureCompilation
+      addDepsAndCompilation()
     when '.styl'
       commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
+      addDepsAndCompilation()
     else
       return
 
@@ -337,9 +376,9 @@ runCommands = (commands, onComplete, errors = []) ->
         nextCommands = {}
 
     if booting || options.verbose
-      console.log name, "#{(Date.now() - commandStartTime) / 1000}ms"
+      console.log name + " in #{(Date.now() - commandStartTime) / 1000}s"
     runCommands nextCommands, onComplete, errors
-  
+
   if typeof command == 'function'
     command onExec
   else

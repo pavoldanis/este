@@ -18,17 +18,20 @@
       goog.DEBUG == false (code using that will be stripped)
 
     'node run app --deploy --debug'
-      use closure compiler flags: '--formatting=PRETTY_PRINT --debug=true'
+      compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
     'node run app --verbose'
       if you are curious how much time each compilation took
 
+    'node run app --buildonly'
+      only builds the files aka CI mode
+      does not start http server nor watches for changes
+
   Todo
     fix too much cmd-s's errors
     consider: delete .css and .js files on start
     strip asserts and throws too
-    CI
 */
 
 var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
@@ -48,7 +51,8 @@ options = {
   project: null,
   verbose: false,
   debug: false,
-  deploy: false
+  deploy: false,
+  buildonly: false
 };
 
 startTime = Date.now();
@@ -112,15 +116,13 @@ Commands = {
     try {
       timestamp = Date.now().toString(36);
       if (options.deploy) {
-        scripts = "<script src='/assets/js/" + options.project + ".js?build=" + timestamp + "'></script>";
+        scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
       } else {
         scripts = "<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
       }
       file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
       file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
       file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
-      file = file.replace(/###CONFIG_START###/g, '');
-      file = file.replace(/###CONFIG_END###/g, '');
       return fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
     } catch (e) {
       return callback(true, null, e.toString);
@@ -128,7 +130,22 @@ Commands = {
       callback();
     }
   },
+  removeJavascripts: function(callback) {
+    var jsPath, _i, _len, _ref;
+    _ref = getPaths('assets', ['.js']);
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      jsPath = _ref[_i];
+      fs.unlinkSync(jsPath);
+    }
+    return callback();
+  },
   coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
+  soyTemplates: function(callback) {
+    var command, soyPaths;
+    soyPaths = getPaths('assets', ['.soy']);
+    command = getSoyCommand(soyPaths);
+    return exec(command, callback);
+  },
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
     var command, flag, flags, flagsText, jsPath, preservedClosureScripts, source, _i, _j, _len, _len1, _ref, _ref1;
@@ -158,11 +175,12 @@ Commands = {
             source: source
           });
         }
-        source = source.replace(/this\.logger_\./g, 'goog.DEBUG && this.logger_.');
+        source = source.replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.');
+        source = source.replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.');
         fs.writeFileSync(jsPath, source, 'utf8');
       }
     }
-    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > assets/js/" + options.project + ".js";
+    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > " + options.outputFilename;
     return exec(command, function() {
       var script, _k, _len2;
       for (_k = 0, _len2 = preservedClosureScripts.length; _k < _len2; _k++) {
@@ -178,12 +196,6 @@ Commands = {
     paths = getPaths('assets', ['.styl']);
     command = "stylus --compress " + (paths.join(' '));
     return exec(command, callback);
-  },
-  soyTemplates: function(callback) {
-    var command, soyPaths;
-    soyPaths = getPaths('assets', ['.soy']);
-    command = getSoyCommand(soyPaths);
-    return exec(command, callback);
   }
 };
 
@@ -194,7 +206,9 @@ start = function(args) {
   }
   return runCommands(Commands, function(errors) {
     var commands, error, _i, _len;
-    startServer();
+    if (!options.buildonly) {
+      startServer();
+    }
     if (errors.length) {
       commands = ((function() {
         var _i, _len, _results;
@@ -210,11 +224,19 @@ start = function(args) {
         error = errors[_i];
         console.log(error.stderr);
       }
+      if (options.buildonly) {
+        process.exit(1);
+      }
     } else {
-      console.log("Everything's fine, happy coding!", "" + ((Date.now() - startTime) / 1000) + "ms");
+      console.log("Everything's fine, happy coding!", "" + ((Date.now() - startTime) / 1000) + "s");
+      if (options.buildonly) {
+        process.exit(0);
+      }
     }
     booting = false;
-    return watchPaths(onPathChange);
+    if (!options.buildonly) {
+      return watchPaths(onPathChange);
+    }
   });
 };
 
@@ -232,9 +254,20 @@ setOptions = function(args) {
       case '--deploy':
         options.deploy = true;
         break;
+      case '--buildonly':
+        options.buildonly = true;
+        break;
       default:
         options.project = arg;
     }
+  }
+  if (options.debug) {
+    options.outputFilename = "assets/js/" + options.project + "_dev.js";
+  } else {
+    options.outputFilename = "assets/js/" + options.project + ".js";
+  }
+  if (options.deploy) {
+    console.log('Output filename: ' + options.outputFilename);
   }
 };
 
@@ -299,7 +332,7 @@ getPaths = function(directory, extensions, includeDirs, enforceClosure) {
     if (!enforceClosure && path.indexOf('google-closure/') > -1) {
       continue;
     }
-    if (path.indexOf('/node_modules') > -1) {
+    if (path.indexOf('assets/js/dev') > -1) {
       continue;
     }
     if (fs.statSync(path).isDirectory()) {
@@ -348,12 +381,18 @@ watchPaths = function(callback) {
 };
 
 onPathChange = function(path, dir) {
-  var commands;
+  var addDepsAndCompilation, commands;
   if (dir) {
     watchPaths(onPathChange);
     return;
   }
   commands = {};
+  addDepsAndCompilation = function() {
+    commands["closureDeps"] = Commands.closureDeps;
+    if (options.deploy) {
+      return commands["closureCompilation"] = Commands.closureCompilation;
+    }
+  };
   switch (pathModule.extname(path)) {
     case '.html':
       if (path === ("" + options.project + "-template.html")) {
@@ -363,16 +402,14 @@ onPathChange = function(path, dir) {
     case '.coffee':
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
       commands["mochaTests"] = Commands.mochaTests;
-      commands["closureDeps"] = Commands.closureDeps;
-      if (options.deploy) {
-        commands["closureCompilation"] = Commands.closureCompilation;
-      }
+      addDepsAndCompilation();
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "stylus --compress " + path;
       break;
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);
+      addDepsAndCompilation();
       break;
     default:
       return;
@@ -436,7 +473,7 @@ runCommands = function(commands, onComplete, errors) {
       }
     }
     if (booting || options.verbose) {
-      console.log(name, "" + ((Date.now() - commandStartTime) / 1000) + "ms");
+      console.log(name + (" in " + ((Date.now() - commandStartTime) / 1000) + "s"));
     }
     return runCommands(nextCommands, onComplete, errors);
   };
