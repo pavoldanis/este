@@ -105,8 +105,11 @@ Commands =
     for jsPath in getPaths 'assets', ['.js']
       fs.unlinkSync jsPath
     callback()
-
-  coffeeScripts: "coffee --compile --bare --output assets/js assets/js"
+  
+  coffeeScripts: "node assets/js/dev/node_modules/coffee-script/bin/coffee
+    --compile
+    --bare
+    --output assets/js assets/js"
 
   soyTemplates: (callback) ->
     soyPaths = getPaths 'assets', ['.soy']
@@ -169,7 +172,8 @@ Commands =
 
   stylusStyles: (callback) ->
     paths = getPaths 'assets', ['.styl']
-    command = "stylus --compress #{paths.join ' '}"
+    command = "node assets/js/dev/node_modules/stylus/bin/stylus
+      --compress #{paths.join ' '}"
     exec command, callback
 
 start = (args) ->
@@ -337,7 +341,9 @@ onPathChange = (path, dir) ->
         commands['projectTemplate'] = Commands.projectTemplate
     
     when '.coffee'
-      commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
+      commands["coffeeScript: #{path}"] = "
+        node assets/js/dev/node_modules/coffee-script/bin/coffee
+          --compile --bare #{path}"
       
       if !options.deploy
         commands["reload browser"] = (callback) ->
@@ -350,7 +356,9 @@ onPathChange = (path, dir) ->
       addDepsAndCompilation commands
     
     when '.styl'
-      commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
+      commands["stylusStyle: #{path}"] = "
+        node assets/js/dev/node_modules/stylus/bin/stylus
+          --compress #{path}"
     
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]

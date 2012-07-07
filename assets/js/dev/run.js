@@ -143,7 +143,7 @@ Commands = {
     }
     return callback();
   },
-  coffeeScripts: "coffee --compile --bare --output assets/js assets/js",
+  coffeeScripts: "node assets/js/dev/node_modules/coffee-script/bin/coffee    --compile    --bare    --output assets/js assets/js",
   soyTemplates: function(callback) {
     var command, soyPaths;
     soyPaths = getPaths('assets', ['.soy']);
@@ -198,7 +198,7 @@ Commands = {
   stylusStyles: function(callback) {
     var command, paths;
     paths = getPaths('assets', ['.styl']);
-    command = "stylus --compress " + (paths.join(' '));
+    command = "node assets/js/dev/node_modules/stylus/bin/stylus      --compress " + (paths.join(' '));
     return exec(command, callback);
   }
 };
@@ -416,7 +416,7 @@ onPathChange = function(path, dir) {
       }
       break;
     case '.coffee':
-      commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
+      commands["coffeeScript: " + path] = "        node assets/js/dev/node_modules/coffee-script/bin/coffee          --compile --bare " + path;
       if (!options.deploy) {
         commands["reload browser"] = function(callback) {
           notifyClient(notifyAction);
@@ -428,7 +428,7 @@ onPathChange = function(path, dir) {
       addDepsAndCompilation(commands);
       break;
     case '.styl':
-      commands["stylusStyle: " + path] = "stylus --compress " + path;
+      commands["stylusStyle: " + path] = "        node assets/js/dev/node_modules/stylus/bin/stylus          --compress " + path;
       break;
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);

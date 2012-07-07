@@ -8,28 +8,27 @@ What's that?
 
 How to use it?
   Install Node.js, Java, Python.
-  npm install -g coffee-script
-  npm install -g mocha
-  npm install -g stylus
-    (todo: unglobalize, same as chai)
   Clone repository.
-  Install Sublime Text
-    Consider these packages:
-      Package Control
-      CoffeeScript
-      Stylus
-      SoyTemplate
-      Clipboard History
-      JsFormat
-      Git - git commands for command palette
-      SideBarGit - like Tortoise inside Sublimetext
-      Jade
-    Check settings and snippets
-      https://github.com/Steida/Sublimetext-user-settings
   Type 'node run app' into console.
+  Open browser at localhost:8000.
   Build something beautiful.
 
-All commands (documented in run.coffee)
+Do you know sublimetext.com? I highly recommend you check out.
+  must have packages
+    Package Control
+    CoffeeScript
+    Stylus
+    SoyTemplate
+  recommended packages
+    Clipboard History
+    JsFormat
+    Git - git commands for command palette
+    SideBarGit - like Tortoise inside Sublimetext
+    Jade
+  my settings and snippets
+    https://github.com/Steida/Sublimetext-user-settings
+
+run script commands
   'node run app'
   'node run app --deploy'
   'node run app --deploy --debug'
@@ -59,6 +58,9 @@ Near future
   two-way databinding
 
 Change Log
+  07/08/12
+    CoffeeScript, Mocha and Stylus were unglobalized. No need to install them.
+
   07/07/12
     [improvement]
       Live reloading is coming to town!

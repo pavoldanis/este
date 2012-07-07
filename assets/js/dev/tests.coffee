@@ -1,3 +1,10 @@
+###*
+  @fileoverview Really fast unit testing.
+
+  todo
+    make it even faster
+###
+
 fs = require 'fs'
 {exec} = require 'child_process'
 
@@ -106,5 +113,21 @@ exports.run = (callback) ->
   depsFiles = resolveDeps namespaces, deps
   writeNodeGoogBase()
   files = getAllFiles depsFiles, testFiles
-  command = 'mocha --colors --timeout 50 --ui tdd --reporter min ' + files.join ' '
+  command = "node assets/js/dev/node_modules/mocha/bin/mocha
+    --colors
+    --timeout 50
+    --ui tdd
+    --reporter min #{files.join ' '}"
   exec command, callback
+
+
+
+
+
+
+
+
+
+
+
+
