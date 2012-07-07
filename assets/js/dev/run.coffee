@@ -339,6 +339,12 @@ onPathChange = (path, dir) ->
     
     when '.coffee'
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
+      # experiment
+      commands["reload browser"] = (callback) ->
+        notifyClient notifyAction
+        notifyAction = null
+        callback()
+        
       # tests first, they have to be as fast as possible
       commands["mochaTests"] = Commands.mochaTests
       addDepsAndCompilation commands
@@ -355,7 +361,7 @@ onPathChange = (path, dir) ->
 
   clearScreen()
   runCommands commands, ->
-    notifyClient notifyAction
+    notifyClient notifyAction if notifyAction
 
 clearScreen = ->
   # todo: fix in windows

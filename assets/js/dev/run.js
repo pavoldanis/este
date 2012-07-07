@@ -417,6 +417,11 @@ onPathChange = function(path, dir) {
       break;
     case '.coffee':
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
+      commands["reload browser"] = function(callback) {
+        notifyClient(notifyAction);
+        notifyAction = null;
+        return callback();
+      };
       commands["mochaTests"] = Commands.mochaTests;
       addDepsAndCompilation(commands);
       break;
@@ -432,7 +437,9 @@ onPathChange = function(path, dir) {
   }
   clearScreen();
   return runCommands(commands, function() {
-    return notifyClient(notifyAction);
+    if (notifyAction) {
+      return notifyClient(notifyAction);
+    }
   });
 };
 
