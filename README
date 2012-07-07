@@ -13,10 +13,6 @@ How to use it?
   npm install -g stylus
     (todo: unglobalize, same as chai)
   Clone repository.
-  Update Closure submodule.
-    git submodule init
-    git submodule update
-      (todo: npm dev deps)
   Install Sublime Text
     Consider these packages:
       Package Control
@@ -67,6 +63,7 @@ Change Log
     Live reloading is coming to town!
     In dev mode, browser tab is reloaded automatically when needed.
     No more F5 nor CMD-R!
+    Google Closure no more as git submodule.
 
   07/06/12
     fixes and improvements for run script
