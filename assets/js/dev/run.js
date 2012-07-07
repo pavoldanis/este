@@ -417,11 +417,13 @@ onPathChange = function(path, dir) {
       break;
     case '.coffee':
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
-      commands["reload browser"] = function(callback) {
-        notifyClient(notifyAction);
-        notifyAction = null;
-        return callback();
-      };
+      if (!options.deploy) {
+        commands["reload browser"] = function(callback) {
+          notifyClient(notifyAction);
+          notifyAction = null;
+          return callback();
+        };
+      }
       commands["mochaTests"] = Commands.mochaTests;
       addDepsAndCompilation(commands);
       break;

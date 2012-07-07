@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Live reload.
+  @fileoverview Live reload. Browser is automatically reload if needed.
 ###
 
 do ->

@@ -339,11 +339,11 @@ onPathChange = (path, dir) ->
     when '.coffee'
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
       
-      # experiment
-      commands["reload browser"] = (callback) ->
-        notifyClient notifyAction
-        notifyAction = null
-        callback()
+      if !options.deploy
+        commands["reload browser"] = (callback) ->
+          notifyClient notifyAction
+          notifyAction = null
+          callback()
         
       # tests first, they need to be afap
       commands["mochaTests"] = Commands.mochaTests
