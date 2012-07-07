@@ -1,9 +1,7 @@
 # todo: refactor
-
 .DS_Store
 este.sublime-workspace
 *.css
-
 assets/js/dev/**/*
 assets/js/dev/*.js
 assets/js/este/**/*
@@ -12,7 +10,6 @@ assets/js/este/*.js
 assets/js/app/**/*
 assets/js/app/*.js
 assets/js/*.js
-
 !*.coffee
 !*.soy
 !assets/js/dev/soyutils_usegoog.js
@@ -20,7 +17,6 @@ assets/js/*.js
 !assets/js/dev/tests.js
 !assets/js/google-closure/**/*
 !assets/js/dev/node_modules/*
-
 app.html
 assets/js/google-closure/closure/bin/build/*.*
 assets/js/google-closure/closure/bin/calcdeps.py
