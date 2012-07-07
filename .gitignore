@@ -18,7 +18,10 @@ assets/js/*.js
 !assets/js/google-closure/**/*
 !assets/js/dev/node_modules/*
 app.html
-assets/js/google-closure/closure/bin/build/**/*
+assets/js/google-closure/closure/bin/build/depstree.pyc
+assets/js/google-closure/closure/bin/build/jscompiler.pyc
+assets/js/google-closure/closure/bin/build/source.pyc
+assets/js/google-closure/closure/bin/build/treescan.pyc
 !assets/js/google-closure/closure/bin/build/depswriter.py
 assets/js/google-closure/closure/bin/calcdeps.py
 build/**/*
