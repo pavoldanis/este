@@ -63,7 +63,8 @@ Change Log
     [improvement]
       Live reloading is coming to town!
       In dev mode, browser tab is reloaded automatically when needed.
-      No more F5 nor CMD-R!
+      No more F5 nor CMD-R.
+      
     [breaking]
       Google Closure no more as git submodule.
 
