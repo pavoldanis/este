@@ -40,7 +40,7 @@ Ok. I got it, what's next?
   Take a look at the app. It defines structure, namespacing (by features ftw),
   how component uses templates, custom events, compilation into one über small
   file. This is just the beginning. TodoMVC (mobile version) is in process.
-  In the meantime, see what este.mvc namespace contains yet.
+  In the meantime, see what assets/js/este namespace contains yet.
 
 este.mvc
   Model, collection, router.., todo: examples, docs, etc.
