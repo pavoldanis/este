@@ -60,10 +60,12 @@ Near future
 
 Change Log
   07/07/12
-    Live reloading is coming to town!
-    In dev mode, browser tab is reloaded automatically when needed.
-    No more F5 nor CMD-R!
-    Google Closure no more as git submodule.
+    [improvement]
+      Live reloading is coming to town!
+      In dev mode, browser tab is reloaded automatically when needed.
+      No more F5 nor CMD-R!
+    [breaking]
+      Google Closure no more as git submodule.
 
   07/06/12
     fixes and improvements for run script
