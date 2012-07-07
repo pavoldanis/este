@@ -25,7 +25,7 @@ app.start = ->
   view1 = new app.listing.View model
   view1.render document.body
 
-  view1.getElement().style.color = 'blue'
+  view1.getElement().style.color = 'green'
 
   # custom events test
   goog.events.listen view1, 'componentclick', (e) ->
