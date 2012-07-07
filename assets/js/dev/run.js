@@ -34,7 +34,7 @@
     strip asserts and strings throws
 */
 
-var Commands, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, onPathChange, options, pathModule, reloadBrowser, runCommands, runCommandsAsyncTimer, setOptions, start, startServer, startTime, tests, watchOptions, watchPaths,
+var Commands, addDepsAndCompilation, booting, buildNamespaces, clearScreen, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -47,6 +47,8 @@ http = require('http');
 
 pathModule = require('path');
 
+ws = require('websocket.io');
+
 options = {
   project: null,
   verbose: false,
@@ -55,11 +57,11 @@ options = {
   buildonly: false
 };
 
+socket = null;
+
 startTime = Date.now();
 
 booting = true;
-
-reloadBrowser = false;
 
 watchOptions = {
   interval: 100
@@ -282,17 +284,9 @@ setOptions = function(args) {
 };
 
 startServer = function() {
-  var server;
+  var server, wsServer;
   server = http.createServer(function(request, response) {
     var contentType, extname, filePath;
-    if (request.url === '/dev/live-reload') {
-      response.writeHead(200, {
-        'Content-Type': contentType
-      });
-      response.end(reloadBrowser.toString(), 'utf-8');
-      reloadBrowser = false;
-      return;
-    }
     filePath = '.' + request.url;
     if (filePath === './') {
       filePath = "./" + options.project + ".htm";
@@ -335,6 +329,10 @@ startServer = function() {
         return response.end(content, 'utf-8');
       });
     });
+  });
+  wsServer = ws.attach(server);
+  wsServer.on('connection', function(p_socket) {
+    return socket = p_socket;
   });
   server.listen(8000);
   return console.log('Server is listening on http://localhost:8000/');
@@ -404,18 +402,13 @@ watchPaths = function(callback) {
 };
 
 onPathChange = function(path, dir) {
-  var addDepsAndCompilation, commands;
+  var commands, notifyAction;
   if (dir) {
     watchPaths(onPathChange);
     return;
   }
   commands = {};
-  addDepsAndCompilation = function() {
-    commands["closureDeps"] = Commands.closureDeps;
-    if (options.deploy) {
-      return commands["closureCompilation"] = Commands.closureCompilation;
-    }
-  };
+  notifyAction = 'page';
   switch (pathModule.extname(path)) {
     case '.html':
       if (path === ("" + options.project + "-template.html")) {
@@ -425,20 +418,22 @@ onPathChange = function(path, dir) {
     case '.coffee':
       commands["coffeeScript: " + path] = "coffee --compile --bare " + path;
       commands["mochaTests"] = Commands.mochaTests;
-      addDepsAndCompilation();
+      addDepsAndCompilation(commands);
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "stylus --compress " + path;
       break;
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);
-      addDepsAndCompilation();
+      addDepsAndCompilation(commands);
       break;
     default:
       return;
   }
   clearScreen();
-  return runCommands(commands);
+  return runCommands(commands, function() {
+    return notifyClient(notifyAction);
+  });
 };
 
 clearScreen = function() {
@@ -446,9 +441,15 @@ clearScreen = function() {
   return process.stdout.write('\033[1;3H');
 };
 
-runCommandsAsyncTimer = null;
+addDepsAndCompilation = function(commands) {
+  commands["closureDeps"] = Commands.closureDeps;
+  if (!options.deploy) {
+    return;
+  }
+  return commands["closureCompilation"] = Commands.closureCompilation;
+};
 
-runCommands = function(commands, onComplete, errors) {
+runCommands = function(commands, complete, errors) {
   var command, commandStartTime, k, name, nextCommands, onExec, v;
   if (errors == null) {
     errors = [];
@@ -458,11 +459,8 @@ runCommands = function(commands, onComplete, errors) {
     break;
   }
   if (!command) {
-    if (!booting) {
-      reloadBrowser = true;
-    }
-    if (onComplete) {
-      onComplete(errors);
+    if (complete) {
+      complete(errors);
     }
     return;
   }
@@ -501,13 +499,20 @@ runCommands = function(commands, onComplete, errors) {
     if (booting || options.verbose) {
       console.log(name + (" in " + ((Date.now() - commandStartTime) / 1000) + "s"));
     }
-    return runCommands(nextCommands, onComplete, errors);
+    return runCommands(nextCommands, complete, errors);
   };
   if (typeof command === 'function') {
     command(onExec);
   } else {
     exec(command, onExec);
   }
+};
+
+notifyClient = function(message) {
+  if (!socket) {
+    return;
+  }
+  return socket.send(message);
 };
 
 exports.start = start;

@@ -17,9 +17,9 @@ assets/js/*.js
 !assets/js/dev/soyutils_usegoog.js
 !assets/js/dev/run.js
 !assets/js/dev/tests.js
-# Except all files in Google Closure Library and Chai
+# Except all files in Google Closure Library and Node Modules
 !assets/js/google-closure/**/*
-!assets/js/dev/node_modules/chai
+!assets/js/dev/node_modules/*
 # Other common files
 app.html
 assets/js/google-closure/closure/bin/build/*.*

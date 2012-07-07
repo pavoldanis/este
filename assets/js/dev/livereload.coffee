@@ -1,21 +1,14 @@
 ###*
-  @fileoverview Live reload. Just a concept.
+  @fileoverview Live reload.
   
   todo
-    use websockets, consider socket.io
-    postpone update of unfocused/hidden window
-    live update styles and images
+    postpone updates of unfocused/hidden window
+    update styles and images too
 ###
 
 do ->
-  setInterval ->
-    xhr = new XMLHttpRequest()
-    xhr.open 'GET', '/dev/live-reload', true
-    xhr.onreadystatechange = ->
-      return if @readyState != 4
-      return if @status != 200
-      return if @responseText != 'true'
-      window.location.reload true
-    xhr.send()
-  , 100
-
+  ws = new WebSocket 'ws://localhost:8000/'
+  ws.onmessage = (e) ->
+    switch e.data
+      when 'page'
+        window.location.reload true

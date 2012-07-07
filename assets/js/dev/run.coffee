@@ -38,6 +38,7 @@ exec = require('child_process').exec
 tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
+ws = require 'websocket.io'
 
 options =
   project: null
@@ -46,9 +47,9 @@ options =
   deploy: false
   buildonly: false
 
+socket = null
 startTime = Date.now()
 booting = true
-reloadBrowser = false
 watchOptions =
   # 10  -> cpu at 30%
   # 80  -> cpu at 10%
@@ -233,13 +234,6 @@ setOptions = (args) ->
 startServer = ->
   server = http.createServer (request, response) ->
     
-    # todo: use websockets
-    if request.url == '/dev/live-reload'
-      response.writeHead 200, 'Content-Type': contentType
-      response.end reloadBrowser.toString(), 'utf-8'
-      reloadBrowser = false
-      return
-
     filePath = '.' + request.url
     filePath = "./#{options.project}.htm" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
@@ -272,7 +266,12 @@ startServer = ->
         response.end content, 'utf-8'
     return
       
+  wsServer = ws.attach server
+  wsServer.on 'connection', (p_socket) ->
+    socket = p_socket
+
   server.listen 8000
+
   console.log 'Server is listening on http://localhost:8000/'
 
 getPaths = (directory, extensions, includeDirs, enforceClosure) ->
@@ -331,30 +330,32 @@ onPathChange = (path, dir) ->
     return
 
   commands = {}
-  addDepsAndCompilation = ->
-    commands["closureDeps"] = Commands.closureDeps
-    if options.deploy
-      commands["closureCompilation"] = Commands.closureCompilation
+  notifyAction = 'page'
 
   switch pathModule.extname path
     when '.html'
       if path == "#{options.project}-template.html"
         commands['projectTemplate'] = Commands.projectTemplate
+    
     when '.coffee'
       commands["coffeeScript: #{path}"] = "coffee --compile --bare #{path}"
       # tests first, they have to be as fast as possible
       commands["mochaTests"] = Commands.mochaTests
-      addDepsAndCompilation()
+      addDepsAndCompilation commands
+    
     when '.styl'
       commands["stylusStyle: #{path}"] = "stylus --compress #{path}"
+    
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
-      addDepsAndCompilation()
+      addDepsAndCompilation commands
+    
     else
       return
 
   clearScreen()
-  runCommands commands
+  runCommands commands, ->
+    notifyClient notifyAction
 
 clearScreen = ->
   # todo: fix in windows
@@ -363,16 +364,17 @@ clearScreen = ->
   # set cursor position
   `process.stdout.write('\033[1;3H')`
 
-runCommandsAsyncTimer = null
+addDepsAndCompilation = (commands) ->
+  commands["closureDeps"] = Commands.closureDeps
+  return if !options.deploy
+  commands["closureCompilation"] = Commands.closureCompilation
 
-runCommands = (commands, onComplete, errors = []) ->
+runCommands = (commands, complete, errors = []) ->
   for name, command of commands
     break
   
   if !command
-    # todo
-    reloadBrowser = true if !booting
-    onComplete errors if onComplete
+    complete errors if complete
     return
 
   if name == 'closureCompilation'
@@ -403,7 +405,7 @@ runCommands = (commands, onComplete, errors = []) ->
 
     if booting || options.verbose
       console.log name + " in #{(Date.now() - commandStartTime) / 1000}s"
-    runCommands nextCommands, onComplete, errors
+    runCommands nextCommands, complete, errors
 
   if typeof command == 'function'
     command onExec
@@ -411,5 +413,9 @@ runCommands = (commands, onComplete, errors = []) ->
     exec command, onExec
 
   return
+
+notifyClient = (message) ->
+  return if !socket
+  socket.send message
 
 exports.start = start

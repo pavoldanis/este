@@ -27,6 +27,7 @@ How to use it?
       JsFormat
       Git - git commands for command palette
       SideBarGit - like Tortoise inside Sublimetext
+      Jade
     Check settings and snippets
       https://github.com/Steida/Sublimetext-user-settings
   Type 'node run app' into console.
@@ -62,9 +63,14 @@ Near future
   two-way databinding
 
 Change Log
+  07/07/12
+    Live reloading is coming to town!
+    In dev mode, browser tab is reloaded automatically when needed.
+    No more F5 nor CMD-R!
+
   07/06/12
     fixes and improvements for run script
-    este library new commiter jiri.kopsa@proactify.com
+    welcome new este library commiter: jiri.kopsa@proactify.com
     snippets https://github.com/Steida/Sublimetext-user-settings
 
   07/01/12
