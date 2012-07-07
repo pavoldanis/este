@@ -18,7 +18,8 @@ assets/js/*.js
 !assets/js/google-closure/**/*
 !assets/js/dev/node_modules/*
 app.html
-assets/js/google-closure/closure/bin/build/*.*
+assets/js/google-closure/closure/bin/build/**/*
+!assets/js/google-closure/closure/bin/build/depswriter.py
 assets/js/google-closure/closure/bin/calcdeps.py
 build/**/*
 build/*.*
