@@ -1,9 +1,5 @@
 ###*
   @fileoverview Live reload.
-  
-  todo
-    postpone updates of unfocused/hidden window
-    update styles and images too
 ###
 
 do ->
