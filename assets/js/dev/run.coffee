@@ -32,7 +32,6 @@
     consider: delete .css onstart
     strip asserts and strings throws
 ###
-
 fs = require 'fs'
 exec = require('child_process').exec
 tests = require './tests'
