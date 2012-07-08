@@ -8,3 +8,6 @@ do ->
     switch e.data
       when 'page'
         window.location.reload true
+      when 'styles'
+        link.href = link.href for link in document.getElementsByTagName 'link'
+    return

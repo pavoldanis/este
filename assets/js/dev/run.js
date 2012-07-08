@@ -402,13 +402,23 @@ watchPaths = function(callback) {
 };
 
 onPathChange = function(path, dir) {
-  var commands, notifyAction;
+  var addReloadBrowserNowCommand, commands, notifyAction;
   if (dir) {
     watchPaths(onPathChange);
     return;
   }
   commands = {};
   notifyAction = 'page';
+  addReloadBrowserNowCommand = function(action) {
+    if (action == null) {
+      action = notifyAction;
+    }
+    return commands["reload browser"] = function(callback) {
+      notifyClient(action);
+      notifyAction = null;
+      return callback();
+    };
+  };
   switch (pathModule.extname(path)) {
     case '.html':
       if (path === ("" + options.project + "-template.html")) {
@@ -418,17 +428,14 @@ onPathChange = function(path, dir) {
     case '.coffee':
       commands["coffeeScript: " + path] = "        node assets/js/dev/node_modules/coffee-script/bin/coffee          --compile --bare " + path;
       if (!options.deploy) {
-        commands["reload browser"] = function(callback) {
-          notifyClient(notifyAction);
-          notifyAction = null;
-          return callback();
-        };
+        addReloadBrowserNowCommand();
       }
       commands["mochaTests"] = Commands.mochaTests;
       addDepsAndCompilation(commands);
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "        node assets/js/dev/node_modules/stylus/bin/stylus          --compress " + path;
+      addReloadBrowserNowCommand('styles');
       break;
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);

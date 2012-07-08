@@ -59,7 +59,9 @@ Near future
 
 Change Log
   07/08/12
-    CoffeeScript, Mocha and Stylus were unglobalized. No need to install them.
+    [improvement]
+      CoffeeScript, Mocha and Stylus were unglobalized. No need to install them.
+      Styles are reloaded instantly now.
 
   07/07/12
     [improvement]
@@ -71,9 +73,10 @@ Change Log
       Google Closure no more as git submodule.
 
   07/06/12
-    fixes and improvements for run script
-    welcome new este library commiter: jiri.kopsa@proactify.com
-    snippets https://github.com/Steida/Sublimetext-user-settings
+    [improvement]
+      fixes and another fixes for run script
+      welcome new este library commiter: jiri.kopsa@proactify.com
+      snippets for Sublime https://github.com/Steida/Sublimetext-user-settings
 
   07/01/12
     [breaking]

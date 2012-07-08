@@ -335,6 +335,12 @@ onPathChange = (path, dir) ->
   commands = {}
   notifyAction = 'page'
 
+  addReloadBrowserNowCommand = (action = notifyAction) ->
+    commands["reload browser"] = (callback) ->
+      notifyClient action
+      notifyAction = null
+      callback()
+
   switch pathModule.extname path
     when '.html'
       if path == "#{options.project}-template.html"
@@ -346,12 +352,9 @@ onPathChange = (path, dir) ->
           --compile --bare #{path}"
       
       if !options.deploy
-        commands["reload browser"] = (callback) ->
-          notifyClient notifyAction
-          notifyAction = null
-          callback()
+        addReloadBrowserNowCommand()
         
-      # tests first, they need to be afap
+      # tests asap
       commands["mochaTests"] = Commands.mochaTests
       addDepsAndCompilation commands
     
@@ -359,6 +362,7 @@ onPathChange = (path, dir) ->
       commands["stylusStyle: #{path}"] = "
         node assets/js/dev/node_modules/stylus/bin/stylus
           --compress #{path}"
+      addReloadBrowserNowCommand 'styles'
     
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
