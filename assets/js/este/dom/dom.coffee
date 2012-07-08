@@ -8,6 +8,7 @@ goog.require 'goog.dom'
 goog.require 'goog.string'
 goog.require 'goog.dom.forms'
 goog.require 'goog.object'
+goog.require 'goog.array'
 
 `
 /**
@@ -478,6 +479,34 @@ goog.scope ->
       continue if !field
       goog.dom.forms.setValue field, value
     return
+
+  ###*
+    @param {Element} element
+    @return {Array.<number>}
+  ###
+  _.getDomPathIndexes = (element) ->
+    indexes = []
+    parent = null
+    loop
+      `parent = /** @type {Element} */ (element.parentNode)`
+      break if !parent || parent.nodeType != 1
+      index = goog.array.indexOf parent.childNodes, element
+      indexes.push index
+      element = parent
+    indexes.reverse()
+    indexes
+
+  ###*
+    @param {Array.<number>} path
+    @param {Document=} doc
+    @return {Element}
+  ###
+  _.getElementByDomPathIndex = (path, doc = document) ->
+    element = doc.documentElement
+    while path.length
+      index = path.shift()
+      element = element.childNodes[index]
+    element
 
   return
 
