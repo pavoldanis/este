@@ -13,19 +13,23 @@ How to use it?
   Open browser at localhost:8000.
   Build something beautiful.
 
-Do you know sublimetext.com? I highly recommend you check out.
-  must have packages
+What editor should I use?
+  Sublime Text.
+  
+  Must-have packages
     Package Control
     CoffeeScript
     Stylus
     SoyTemplate
-  recommended packages
+  
+  Recommended packages
     Clipboard History
     JsFormat
     Git - git commands for command palette
     SideBarGit - like Tortoise inside Sublimetext
     Jade
-  my settings and snippets
+  
+  My settings and snippets
     https://github.com/Steida/Sublimetext-user-settings
 
 run script commands
