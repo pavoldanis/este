@@ -61,7 +61,7 @@ Change Log
   07/08/12
     [improvement]
       CoffeeScript, Mocha and Stylus were unglobalized. No need to install them.
-      Styles are reloaded instantly now.
+      Live reload - styles are refreshed instantly without page reload.
 
   07/07/12
     [improvement]
