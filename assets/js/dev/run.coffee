@@ -142,6 +142,10 @@ Commands =
             jsPath: jsPath
             source: source
 
+        # todo:
+        #   goog.asserts.assert
+        #   throw
+
         # replace all "this.logger" (but not "_this.logger")
         # fix for coffee _this alias
         source = source.replace /[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.'

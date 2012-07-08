@@ -10,6 +10,8 @@ goog.require 'app.listing.View'
 
 goog.require 'goog.net.XhrIo'
 
+goog.require 'este.forms.persist'
+
 app.start = ->
 
   if goog.DEBUG
