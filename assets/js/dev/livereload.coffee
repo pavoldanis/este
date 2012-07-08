@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Live reload. Your browsers don't need a refresh button.
+  @fileoverview Live reload. Your browsers don't need a refresh button anymore.
 ###
 
 do ->

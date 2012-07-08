@@ -122,7 +122,7 @@ Commands = {
       if (options.deploy) {
         scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
       } else {
-        scripts = "<script src='/assets/js/dev/livereload.js'></script>\n<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
+        scripts = "<script src='/assets/js/dev/livereload.js'></script>\n  <script src='/assets/js/google-closure/closure/goog/base.js'></script>\n  <script src='/assets/js/deps.js'></script>\n  <script src='/assets/js/" + options.project + "/start.js'></script>";
       }
       file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
       file = file.replace(/###CLOSURESCRIPTS###/g, scripts);

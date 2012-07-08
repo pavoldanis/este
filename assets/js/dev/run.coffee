@@ -86,9 +86,9 @@ Commands =
       else
         scripts = """
           <script src='/assets/js/dev/livereload.js'></script>
-          <script src='/assets/js/google-closure/closure/goog/base.js'></script>
-          <script src='/assets/js/deps.js'></script>
-          <script src='/assets/js/#{options.project}/start.js'></script>
+            <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+            <script src='/assets/js/deps.js'></script>
+            <script src='/assets/js/#{options.project}/start.js'></script>
         """
       file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
       file = file.replace /###CLOSURESCRIPTS###/g, scripts
