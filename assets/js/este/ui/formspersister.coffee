@@ -4,9 +4,9 @@
 
   todo
     session only
-    use tag, id, class, name, type.. based dom path
+    think about domPath, use classetc? url name + url?
     ensure clean after innerHTML
-    expiration
+    add expiration!
     http://stackoverflow.com/a/266252/233902
     reset event (does bubble?)
     change for ie<9? (does bubble?)
@@ -86,6 +86,7 @@ goog.scope ->
       form = este.dom.getElementByDomPathIndex formPath.split ','
       for name, value of fields
         field = form.querySelector "[name='#{name}']"
+        continue if !field
         switch field.type
           when 'radio'
             for el in field.form.elements when el.name == field.name
