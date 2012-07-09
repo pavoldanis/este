@@ -2,70 +2,86 @@
 <head>
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-  <title>este.forms.persist</title>
+  <title>este.ui.FormsPersister</title>
   <style>
-    label {
-      display: block;
-    }
-
   </style>
   <script src='/assets/js/dev/livereload.js'></script>
   <script src='/assets/js/google-closure/closure/goog/base.js'></script>
   <script src='/assets/js/deps.js'></script>
   <script>
     goog.require('este.dev.Monitor.create')
-    goog.require('este.forms.persist')
+    goog.require('este.ui.FormsPersister.create')
   </script>
 </head>
 <body>
-  <h1>este.forms.persist</h1>
+  <h1>
+    este.ui.FormsPersister</h1>
+  <p>
+    Maintain fields state. Click to field, write something, reload.</p>
   <div id='container'>
     <form>
       <label>
         input
-        <input name='input'><br>
-      </label>
+        <input name='input'>
+      </label><br>
       <label>
         textarea
-        <textarea name='textarea'></textarea><br>
-      </label>
+        <textarea name='textarea'></textarea>
+      </label><br>
       <label>
         select
         <select name='select'>
           <option>Foo</option>
           <option>Bla</option>
         </select>
-      </label>
+      </label><br>
       <label>
         multiselect
-        <select multiple name='select'>
+        <select multiple name='multiple-select'>
           <option>Foo</option>
           <option>Bla</option>
         </select>
-      </label>
+      </label><br>
       <label>
         Male
-        <input type='radio' name='sex' value='male'>
+        <input type='radio' name='radio' value='male'>
       </label>
       <label>
         Female
-        <input type='radio' name='sex' value='female'>
-      </label>
+        <input type='radio' name='radio' value='female'>
+      </label><br>
       <label>
         I have a bike
-        <input type='checkbox' name='vehicle' value='Bike'>
+        <input type='checkbox' name='checkbox' value='Bike'>
       </label>
       <label>
         I have a car
-        <input type='checkbox' name='vehicle' value='Car'>
+        <input type='checkbox' name='checkbox' value='Car'>
       </label>
     </form>
   </div>
-  <button>reload page</button>
-  <button>innerhtml, then restore state</button>
+  <button id='reload'>reload page</button>
+  <button id='innerhtml'>set form.innerHTML = form.innerHTML</button>
+  <button id='restore'>restore state - este.ui.FormsPersister.use(container)</button>
   <script>
     este.dev.Monitor.create()
     container = document.getElementById('container')
-    este.forms.persist(container)
+
+    var formsPersister = este.ui.FormsPersister.create(container)
+    
+    goog.events.listen(document.body, 'click', function(e) {
+      switch(e.target.id) {
+        case 'reload':
+          window.location.reload(true)
+          break
+        case 'innerhtml':
+          document.title = 'innerhtml'
+          break
+        case 'restore':
+          formsPersister.dispose()
+          formsPersister = este.ui.FormsPersister.create(container)
+          break
+      }
+    })
   </script>
 </body>

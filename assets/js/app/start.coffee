@@ -10,7 +10,7 @@ goog.require 'app.listing.View'
 
 goog.require 'goog.net.XhrIo'
 
-goog.require 'este.forms.persist'
+goog.require 'este.ui.FormsPersister'
 
 app.start = ->
 
