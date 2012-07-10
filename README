@@ -63,6 +63,9 @@ Near future
 
 Change Log
   07/08/12
+    este.ui.FormsPersister - persist forms states into localstorage or session
+
+  07/08/12
     Links to demos.
     CoffeeScript, Mocha and Stylus were unglobalized. No need to install them.
     Live reload improvement, styles are refreshed instantly without page reload.

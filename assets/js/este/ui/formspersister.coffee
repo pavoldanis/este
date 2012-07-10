@@ -22,13 +22,13 @@ goog.require 'goog.events.InputHandler'
 goog.require 'este.storage.create'
 
 ###*
-  @param {boolean=} onlySession
+  @param {boolean=} session
   @constructor
   @extends {goog.ui.Component}
 ###
-este.ui.FormsPersister = (@onlySession = false) ->
+este.ui.FormsPersister = (session = false) ->
   goog.base @
-  @storage = este.storage.create 'ui:formspersister'
+  @storage = este.storage.create 'este-ui-formspersister', session
   return
 
 goog.inherits este.ui.FormsPersister, goog.ui.Component
@@ -39,19 +39,13 @@ goog.scope ->
 
   ###*
     @param {Element} element
-    @param {boolean=} onlySession
+    @param {boolean=} session
     @return {este.ui.FormsPersister}
   ###
-  _.create = (element, onlySession) ->
-    persist = new este.ui.FormsPersister onlySession
+  _.create = (element, session) ->
+    persist = new este.ui.FormsPersister session
     persist.decorate element
     persist
-
-  ###*
-    @type {boolean}
-    @protected
-  ###
-  _::onlySession
 
   ###*
     @type {goog.storage.Storage}
@@ -70,11 +64,11 @@ goog.scope ->
   ###
   _::decorateInternal = (element) ->
     goog.base @, 'decorateInternal', element
-    path = @getElementDomPathIndexes()
-    storage = @storage.get path.join()
-    return if !storage
-    `storage = /** @type {Object} */ (storage)`
-    @retrieve storage
+    path = @getElementDomPath()
+    data = @storage.get path.join()
+    return if !data
+    `data = /** @type {Object} */ (data)`
+    @retrieve data
     return
 
   ###*
@@ -84,16 +78,24 @@ goog.scope ->
   _::retrieve = (data) ->
     for formPath, fields of data
       form = este.dom.getElementByDomPathIndex formPath.split ','
+      continue if !form
+
+      fieldsMap = {}
+      for el in form.elements
+        fieldsMap[el.name] ?= []
+        fieldsMap[el.name].push el
+
       for name, value of fields
-        field = form.querySelector "[name='#{name}']"
+        field = fieldsMap[name]?[0]
         continue if !field
+        
         switch field.type
           when 'radio'
-            for el in field.form.elements when el.name == field.name
-              forms.setValue el, el.value == value  
-          when 'checkbox'
-            for el in field.form.elements when el.name == field.name
+            for el in fieldsMap[name]
               forms.setValue el, el.value == value
+          when 'checkbox'
+            for el in fieldsMap[name]
+              forms.setValue el, goog.array.contains value, el.value
           else
             forms.setValue field, value
     return
@@ -168,20 +170,19 @@ goog.scope ->
     @param {string|Array.<string>} value
   ###
   _::store = (formDomPath, name, value) ->
-    path = @getElementDomPathIndexes()
+    path = @getElementDomPath()
     key = path.join()
-    # todo: refactor
     storage = @storage.get key
-    storage = {} if !storage
-    formStorage = storage[formDomPath] ?= {}
-    formStorage[name] = value
+    storage ?= {}
+    storage[formDomPath] ?= {}
+    storage[formDomPath][name] = value
     @storage.set key, storage
 
   ###*
     @return {Array.<number>}
     @protected
   ###
-  _::getElementDomPathIndexes = ->
+  _::getElementDomPath = ->
     este.dom.getDomPathIndexes @getElement()
 
   ###*
@@ -197,12 +198,5 @@ goog.scope ->
         values.push value if value?
       return values
     forms.getValue field
-
-  ###*
-    @override
-  ###
-  _::disposeInternal = ->
-    goog.base @, 'disposeInternal'
-    return
 
   return

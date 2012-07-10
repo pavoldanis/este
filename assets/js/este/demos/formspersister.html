@@ -19,7 +19,7 @@
   <p>
     Maintain fields state. Click to field, write something, reload.</p>
   <div id='container'>
-    <form>
+    <form id='form'>
       <label>
         input
         <input name='input'>
@@ -61,11 +61,12 @@
     </form>
   </div>
   <button id='reload'>reload page</button>
-  <button id='innerhtml'>set form.innerHTML = form.innerHTML</button>
-  <button id='restore'>restore state - este.ui.FormsPersister.use(container)</button>
+  <button id='reset'>reset form (without saving)</button>
+  <button id='restore'>restore state</button>
   <script>
     este.dev.Monitor.create()
     container = document.getElementById('container')
+    form = document.getElementById('form')
 
     var formsPersister = este.ui.FormsPersister.create(container)
     
@@ -74,8 +75,8 @@
         case 'reload':
           window.location.reload(true)
           break
-        case 'innerhtml':
-          document.title = 'innerhtml'
+        case 'reset':
+          form.reset()
           break
         case 'restore':
           formsPersister.dispose()
