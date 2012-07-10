@@ -2,14 +2,13 @@
   @fileoverview Forms persister. Persist form fields state into localStorage
   or session.
 
+  note
+    not tested in IE, but it should work in IE>8 and be easily fixable for rest
+  
   todo
-    session only
-    think about domPath, use classetc? url name + url?
-    ensure clean after innerHTML
     add expiration!
-    http://stackoverflow.com/a/266252/233902
-    reset event (does bubble?)
-    change for ie<9? (does bubble?)
+    improve field dom path (consider: url, form name, etc.)
+    check&fix IE (http://stackoverflow.com/a/266252/233902)
 ###
 
 goog.provide 'este.ui.FormsPersister'
@@ -28,7 +27,7 @@ goog.require 'este.storage.create'
 ###
 este.ui.FormsPersister = (session = false) ->
   goog.base @
-  @storage = este.storage.create 'este-ui-formspersister', session
+  @storage = este.storage.createCollectable 'este-ui-formspersister', session
   return
 
 goog.inherits este.ui.FormsPersister, goog.ui.Component
@@ -48,7 +47,13 @@ goog.scope ->
     persist
 
   ###*
-    @type {goog.storage.Storage}
+    Minimal client storage ftw.
+    @type {number}
+  ###
+  _::expirationTime = 1000 * 60 * 60 * 24 * 30
+
+  ###*
+    @type {goog.storage.CollectableStorage}
     @protected
   ###
   _::storage
@@ -176,7 +181,7 @@ goog.scope ->
     storage ?= {}
     storage[formDomPath] ?= {}
     storage[formDomPath][name] = value
-    @storage.set key, storage
+    @storage.set key, storage, goog.now() + @expirationTime
 
   ###*
     @return {Array.<number>}
