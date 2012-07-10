@@ -7,14 +7,14 @@ What's that?
   Browser is automatically reloaded. Tested on mac and win.
 
 How to use it?
-  Install Node.js, Java, Python.
-  Clone repository.
-  Type 'node run app' into console.
-  Open browser at localhost:8000.
-  Build something beautiful.
+  Install Node.js, Java, Python
+  Clone repository
+  Type 'node run app' into console
+  Open browser at localhost:8000
+  Build something beautiful
 
 What editor should I use?
-  Sublime Text.
+  Sublime Text
   
   Must-have packages
     Package Control
@@ -44,9 +44,6 @@ Ok. I got it, what's next?
   how component uses templates, custom events, compilation into one über small
   file. This is just the beginning. TodoMVC (mobile version) is in process.
   In the meantime, see what assets/js/este namespace contains yet.
-
-este.mvc
-  Model, collection, router.., todo: examples, docs, etc.
 
 Namespaces
   Namespaces in assets/js. App is obvious, dev are development scripts, este
