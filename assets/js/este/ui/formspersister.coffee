@@ -14,6 +14,7 @@
 goog.provide 'este.ui.FormsPersister'
 goog.provide 'este.ui.FormsPersister.create'
 
+goog.require 'goog.ui.Component'
 goog.require 'goog.dom.forms'
 goog.require 'este.dom'
 goog.require 'goog.events.FocusHandler'
@@ -83,7 +84,7 @@ goog.scope ->
   _::retrieve = (data) ->
     for formPath, fields of data
       form = este.dom.getElementByDomPathIndex formPath.split ','
-      continue if !form
+      continue if !form || !form.elements
 
       fieldsMap = {}
       for el in form.elements
