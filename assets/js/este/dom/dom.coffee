@@ -468,8 +468,11 @@ goog.scope ->
   _.fieldsState = (element) ->
 
   ###*
+    Just a quick hack, use este.ui.FormsPersister.
+
     @param {Element} form
     @param {Function} callback
+    @deprecated
   ###
   _.preserveFormState = (form, callback) ->
     values = _.serializeForm form
@@ -507,6 +510,19 @@ goog.scope ->
       index = path.shift()
       element = element.childNodes[index]
     element
+
+  ###*
+    Hack to force blur.
+  ###
+  _.forceBlur = ->
+    setTimeout ->
+      input = goog.dom.createDom 'input',
+        # prevents scroll jumps
+        style: 'position: fixed; left: 0; top: 0'
+      document.body.appendChild input
+      input.focus()
+      document.body.removeChild input
+    , 0
 
   return
 
