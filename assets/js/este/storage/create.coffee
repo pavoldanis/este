@@ -30,7 +30,7 @@ goog.scope ->
     mechanism = _.getMechanism key, session
     return null if !mechanism
     storage = new goog.storage.CollectableStorage mechanism
-    storage.collect()
+    storage.collect true
     storage
 
   ###*
