@@ -14,6 +14,6 @@ goog.scope ->
     @return {number}
   ###
   _.parseInt = (value) ->
-    parseInt value
+    parseInt value, 10
   
   return
