@@ -429,7 +429,7 @@ runCommands = (commands, complete, errors = []) ->
 
   onExec = (err, stdout, stderr) ->
     if name == 'closureCompilation'
-      console.log 'done'
+      console.log 'Compilation succeeded.'
 
     isError = !!err
     # workaround: closure doesn't return err for warnings
