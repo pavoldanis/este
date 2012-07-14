@@ -60,7 +60,7 @@ Near future
 
 Change Log
   07/14/12
-    'node run este --deploy' will compile add este source files (fine for dev)
+    'node run este --deploy' to compile all /este source files (fine for dev)
     Google Closure and Compiler updated
     este.style
 
