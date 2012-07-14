@@ -26,6 +26,7 @@ goog.scope ->
 
   ###*
     @param {Element} element
+    @return {boolean}
   ###
   _.isVisible = (element) ->
     ancestors = este.dom.getAncestors element
