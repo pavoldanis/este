@@ -1,10 +1,11 @@
 Este - Google Closure based project boilerplate
 
 What's that?
-  It's my beloved development stack. Run one script, to compile Coffeescript,
-  Stylus, Soy templates, update deps.js, run insanely fast unit tests,
-  automatically just on file change. One console output, to rule them all.
-  Browser is automatically reloaded. Tested on mac and win.
+  Way to create beautiful web applications, my beloved development stack.
+  Run one script, to compile Coffeescript, Stylus, Soy templates, update
+  deps.js, run insanely fast unit tests, automatically just on file change.
+  One console output, to rule them all. Browser is automatically reloaded.
+  Tested on mac and win.
 
 How to use it?
   Install Node.js, Java, Python
