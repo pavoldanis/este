@@ -517,7 +517,7 @@ runCommands = function(commands, complete, errors) {
   onExec = function(err, stdout, stderr) {
     var isError;
     if (name === 'closureCompilation') {
-      console.log('Compilation succeeded.');
+      console.log('Compilation finished.');
     }
     isError = !!err;
     if (!isError && name === 'closureCompilation' && ~(stderr != null ? stderr.indexOf(': WARNING -') : void 0)) {

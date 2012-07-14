@@ -1,5 +1,3 @@
-goog.require 'este.Locale'
-
 suite 'este.Locale', ->
 
   suite 'instance test', ->

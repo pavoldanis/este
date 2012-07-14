@@ -3,6 +3,7 @@
 ###
 
 do ->
+  return if !window.WebSocket
   ws = new WebSocket 'ws://localhost:8000/'
   ws.onmessage = (e) ->
     switch e.data
