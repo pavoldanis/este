@@ -28,6 +28,9 @@
       only builds the files aka CI mode
       does not start http server nor watches for changes
 
+    'node run este --deploy'
+      compile and check all este namespaces, fine for development
+
   Todo
     fix too much cmd-s's errors
     consider: delete .css onstart
@@ -109,30 +112,25 @@ buildNamespaces = (function() {
   return namespaces.join('');
 })();
 
-/**
-  Commands for watchables.
-*/
-
-
 Commands = {
   projectTemplate: function(callback) {
-    var file, scripts, timestamp;
-    try {
-      timestamp = Date.now().toString(36);
-      if (options.deploy) {
-        scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
-      } else {
-        scripts = "<script src='/assets/js/dev/livereload.js'></script>\n  <script src='/assets/js/google-closure/closure/goog/base.js'></script>\n  <script src='/assets/js/deps.js'></script>\n  <script src='/assets/js/" + options.project + "/start.js'></script>";
-      }
-      file = fs.readFileSync("./" + options.project + "-template.html", 'utf8');
+    var file, filePath, scripts, timestamp;
+    timestamp = Date.now().toString(36);
+    if (options.deploy) {
+      scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
+    } else {
+      scripts = "<script src='/assets/js/dev/livereload.js'></script>\n  <script src='/assets/js/google-closure/closure/goog/base.js'></script>\n  <script src='/assets/js/deps.js'></script>\n  <script src='/assets/js/" + options.project + "/start.js'></script>";
+    }
+    filePath = "./" + options.project + "-template.html";
+    if (fs.existsSync(filePath)) {
+      file = fs.readFileSync(filePath, 'utf8');
       file = file.replace(/###CLOSURESCRIPTS###/g, scripts);
       file = file.replace(/###BUILD_TIMESTAMP###/g, timestamp);
-      return fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
-    } catch (e) {
-      return callback(true, null, e.toString);
-    } finally {
-      callback();
+      fs.writeFileSync("./" + options.project + ".html", file, 'utf8');
+    } else {
+      console.log("" + filePath + " does not exits.");
     }
+    return callback();
   },
   removeJavascripts: function(callback) {
     var jsPath, _i, _len, _ref;
@@ -147,12 +145,16 @@ Commands = {
   soyTemplates: function(callback) {
     var command, soyPaths;
     soyPaths = getPaths('assets', ['.soy']);
+    if (!soyPaths.length) {
+      callback();
+      return;
+    }
     command = getSoyCommand(soyPaths);
     return exec(command, callback);
   },
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var command, flag, flags, flagsText, jsPath, preservedClosureScripts, source, _i, _j, _len, _len1, _ref, _ref1;
+    var command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, preservedClosureScripts, source, startjs, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
@@ -164,11 +166,29 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
+    if (options.project === 'este') {
+      deps = tests.getDeps();
+      namespaces = [];
+      for (k in deps) {
+        v = deps[k];
+        if (k.indexOf('este.') !== 0) {
+          continue;
+        }
+        namespaces.push(k);
+      }
+      startjs = ["goog.provide('este.start');"];
+      for (_j = 0, _len1 = namespaces.length; _j < _len1; _j++) {
+        namespace = namespaces[_j];
+        startjs.push("goog.require('" + namespace + "');");
+      }
+      source = startjs.join('\n');
+      fs.writeFileSync("./assets/js/este/start.js", source, 'utf8');
+    }
     preservedClosureScripts = [];
     if (!options.debug) {
       _ref1 = getPaths('assets', ['.js'], false, true);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        jsPath = _ref1[_j];
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        jsPath = _ref1[_k];
         source = fs.readFileSync(jsPath, 'utf8');
         if (source.indexOf('this.logger_.') === -1) {
           continue;
@@ -186,10 +206,13 @@ Commands = {
     }
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > " + options.outputFilename;
     return exec(command, function() {
-      var script, _k, _len2;
-      for (_k = 0, _len2 = preservedClosureScripts.length; _k < _len2; _k++) {
-        script = preservedClosureScripts[_k];
+      var script, _l, _len3;
+      for (_l = 0, _len3 = preservedClosureScripts.length; _l < _len3; _l++) {
+        script = preservedClosureScripts[_l];
         fs.writeFileSync(script.jsPath, script.source, 'utf8');
+      }
+      if (options.project === 'este') {
+        fs.unlinkSync('./assets/js/este/start.js');
       }
       return callback.apply(null, arguments);
     });

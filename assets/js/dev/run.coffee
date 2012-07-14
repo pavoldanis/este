@@ -27,6 +27,9 @@
       only builds the files aka CI mode
       does not start http server nor watches for changes
 
+    'node run este --deploy'
+      compile and check all este namespaces, fine for development
+
   Todo
     fix too much cmd-s's errors
     consider: delete .css onstart
@@ -71,35 +74,33 @@ buildNamespaces = do ->
     "--root=assets/js/#{dir} "
   namespaces.join ''
 
-###*
-  Commands for watchables.
-###
-
 Commands =
   projectTemplate: (callback) ->
-    try
-      timestamp = Date.now().toString 36
-      if options.deploy
-        scripts = """
-          <script src='/#{options.outputFilename}?build=#{timestamp}'></script>
-        """
-      else
-        scripts = """
-          <script src='/assets/js/dev/livereload.js'></script>
-            <script src='/assets/js/google-closure/closure/goog/base.js'></script>
-            <script src='/assets/js/deps.js'></script>
-            <script src='/assets/js/#{options.project}/start.js'></script>
-        """
-      file = fs.readFileSync "./#{options.project}-template.html", 'utf8'
+    timestamp = Date.now().toString 36
+    
+    if options.deploy
+      scripts = """
+        <script src='/#{options.outputFilename}?build=#{timestamp}'></script>
+      """
+    else
+      scripts = """
+        <script src='/assets/js/dev/livereload.js'></script>
+          <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+          <script src='/assets/js/deps.js'></script>
+          <script src='/assets/js/#{options.project}/start.js'></script>
+      """
+    
+    filePath = "./#{options.project}-template.html"
+    
+    if fs.existsSync filePath
+      file = fs.readFileSync filePath, 'utf8'
       file = file.replace /###CLOSURESCRIPTS###/g, scripts
       file = file.replace /###BUILD_TIMESTAMP###/g, timestamp
       fs.writeFileSync "./#{options.project}.html", file, 'utf8'
-    
-    catch e
-      callback true, null, e.toString
+    else
+      console.log "#{filePath} does not exits."
 
-    finally
-      callback()
+    callback()
 
   removeJavascripts: (callback) ->
     for jsPath in getPaths 'assets', ['.js']
@@ -113,6 +114,9 @@ Commands =
 
   soyTemplates: (callback) ->
     soyPaths = getPaths 'assets', ['.soy']
+    if !soyPaths.length
+      callback()
+      return
     command = getSoyCommand soyPaths
     exec command, callback
 
@@ -129,7 +133,22 @@ Commands =
     flagsText = ''
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
 
+    # just for este development, require all namespaces for compilation
+    if options.project == 'este'
+      deps = tests.getDeps()
+      namespaces = []
+      for k, v of deps
+        continue if k.indexOf('este.') != 0
+        namespaces.push k
+      startjs = ["goog.provide('este.start');"]
+      for namespace in namespaces
+        startjs.push "goog.require('#{namespace}');"
+      source = startjs.join '\n'
+      fs.writeFileSync "./assets/js/este/start.js", source, 'utf8'
+
     preservedClosureScripts = []
+
+    # strip all loggers from compiled code
     if !options.debug
       for jsPath in getPaths 'assets', ['.js'], false, true
         source = fs.readFileSync jsPath, 'utf8'
@@ -153,7 +172,7 @@ Commands =
         source = source.replace /_this\.logger_\./g, 'goog.DEBUG && _this.logger_.'
 
         fs.writeFileSync jsPath, source, 'utf8'
-    
+
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
       #{buildNamespaces}
       --namespace=\"#{options.project}.start\"
@@ -169,7 +188,9 @@ Commands =
 
     exec command, ->
       for script in preservedClosureScripts
-        fs.writeFileSync script.jsPath, script.source, 'utf8' 
+        fs.writeFileSync script.jsPath, script.source, 'utf8'
+      if options.project == 'este'
+        fs.unlinkSync './assets/js/este/start.js'
       callback.apply null, arguments
 
   mochaTests: tests.run
@@ -183,7 +204,7 @@ Commands =
 start = (args) ->
   return if !setOptions args
   delete Commands.closureCompilation if !options.deploy
-  
+
   runCommands Commands, (errors) ->
     if !options.buildonly
       startServer()
