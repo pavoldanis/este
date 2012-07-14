@@ -59,6 +59,11 @@ Near future
   two-way databinding
 
 Change Log
+  07/14/12
+    'node run este --deploy' for compiling all este classes (fine for dev)
+    Google Closure and Compiler updated
+    este.style
+
   07/10/12
     este.dom.merge
     este.dom.forceBlur
