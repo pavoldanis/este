@@ -130,20 +130,6 @@ goog.editor.Field = function(id, opt_doc) {
    */
   this.cssStyles = '';
 
-  // Work around bug https://bugs.webkit.org/show_bug.cgi?id=19086 in affected
-  // versions of Webkit by specifying 1px right margin on all immediate children
-  // of the editable field. This works in most (but not all) cases.
-  // Note. The fix uses a CSS rule which may be quite expensive, especially
-  //       in BLENDED mode. Currently this is the only known wokraround.
-  // TODO(user): The bug was fixed in community Webkit but not included in
-  //       Safari yet. Verify that the next Safari release after 525.18 is
-  //       unaffected.
-  if (goog.userAgent.WEBKIT && goog.userAgent.isVersion('525.13') &&
-      goog.string.compareVersions(goog.userAgent.VERSION, '525.18') <= 0) {
-    this.workaroundClassName_ = goog.getCssName('tr-webkit-workaround');
-    this.cssStyles = '.' + this.workaroundClassName_ + '>*{padding-right:1}';
-  }
-
   // The field will not listen to change events until it has finished loading
   this.stoppedEvents_ = {};
   this.stopEvent(goog.editor.Field.EventType.CHANGE);
@@ -2131,12 +2117,6 @@ goog.editor.Field.prototype.installStyles = function() {
 goog.editor.Field.prototype.dispatchLoadEvent_ = function() {
   var field = this.getElement();
 
-  // Apply workaround className if necessary, see goog.editor.Field constructor
-  // for more details.
-  if (this.workaroundClassName_) {
-    goog.dom.classes.add(field, this.workaroundClassName_);
-  }
-
   this.installStyles();
   this.startChangeEvents();
   this.logger.info('Dispatching load ' + this.id);
@@ -2172,7 +2152,9 @@ goog.editor.Field.prototype.isLoading = function() {
  * Gives the field focus.
  */
 goog.editor.Field.prototype.focus = function() {
-  if (!goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE) {
+  if (!goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE &&
+      this.usesIframe()) {
+    // In designMode, only the window itself can be focused; not the element.
     this.getEditableDomHelper().getWindow().focus();
   } else {
     if (goog.userAgent.OPERA) {
@@ -2577,7 +2559,8 @@ goog.editor.Field.prototype.iframeFieldLoadHandler = function(iframe,
   var body = doc.body;
   this.setupFieldObject(body);
 
-  if (!goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE) {
+  if (!goog.editor.BrowserFeature.HAS_CONTENT_EDITABLE &&
+      this.usesIframe()) {
     this.turnOnDesignModeGecko();
   }
 

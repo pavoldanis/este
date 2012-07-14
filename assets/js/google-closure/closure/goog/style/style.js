@@ -910,7 +910,7 @@ goog.style.setHeight = function(element, height) {
 
 /**
  * Set the width of an element.  Sets the element's style property.
- * @param {Element} element Element to set the height of.
+ * @param {Element} element Element to set the width of.
  * @param {string|number} width The width value to set.  If a number, 'px'
  *     will be appended, otherwise the value will be applied directly.
  */
@@ -1212,8 +1212,7 @@ goog.style.setStyles = function(element, stylesString) {
     // the style node works fine and ignores CSS that IE doesn't understand
     element.cssText = stylesString;
   } else {
-    var propToSet = goog.userAgent.WEBKIT ? 'innerText' : 'innerHTML';
-    element[propToSet] = stylesString;
+    element.innerHTML = stylesString;
   }
 };
 
@@ -1929,4 +1928,3 @@ goog.style.getCssTranslation = function(element) {
   return new goog.math.Coordinate(parseFloat(matches[1]),
                                   parseFloat(matches[2]));
 };
-

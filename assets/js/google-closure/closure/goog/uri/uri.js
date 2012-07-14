@@ -97,6 +97,22 @@ goog.Uri = function(opt_uri, opt_ignoreCase) {
 
 
 /**
+ * If true, we preserve the type of query parameters set programmatically.
+ *
+ * This means that if you set a parameter to a boolean, and then call
+ * getParameterValue, you will get a boolean back.
+ *
+ * If false, we will coerce parameters to strings, just as they would
+ * appear in real URIs.
+ *
+ * TODO(nicksantos): Remove this once people have time to fix all tests.
+ *
+ * @type {boolean}
+ */
+goog.Uri.preserveParameterTypesCompatibilityFlag = false;
+
+
+/**
  * Parameter name added to stop caching.
  * @type {string}
  */
@@ -629,12 +645,15 @@ goog.Uri.prototype.getParameterValues = function(name) {
  * Returns the first value for a given cgi parameter or undefined if the given
  * parameter name does not appear in the query string.
  * @param {string} paramName Unescaped parameter name.
- * @return {*} The first value for a given cgi parameter or
+ * @return {string|undefined} The first value for a given cgi parameter or
  *     undefined if the given parameter name does not appear in the query
  *     string.
  */
 goog.Uri.prototype.getParameterValue = function(paramName) {
-  return this.queryData_.get(paramName);
+  // NOTE(nicksantos): This type-cast is a lie when
+  // preserveParameterTypesCompatibilityFlag is set to true.
+  // But this should only be set to true in tests.
+  return /** @type {string|undefined} */ (this.queryData_.get(paramName));
 };
 
 
@@ -1303,11 +1322,16 @@ goog.Uri.QueryData.prototype.set = function(key, value) {
  * @param {string} key The name of the parameter to get the value for.
  * @param {*=} opt_default The default value to return if the query data
  *     has no such key.
- * @return {*} The first value associated with the key.
+ * @return {*} The first string value associated with the key, or opt_default
+ *     if there's no value.
  */
 goog.Uri.QueryData.prototype.get = function(key, opt_default) {
   var values = key ? this.getValues(key) : [];
-  return values.length > 0 ? values[0] : opt_default;
+  if (goog.Uri.preserveParameterTypesCompatibilityFlag) {
+    return values.length > 0 ? values[0] : opt_default;
+  } else {
+    return values.length > 0 ? String(values[0]) : opt_default;
+  }
 };
 
 

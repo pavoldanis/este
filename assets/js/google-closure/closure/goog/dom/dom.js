@@ -306,7 +306,8 @@ goog.dom.setProperties = function(element, properties) {
       element.htmlFor = val;
     } else if (key in goog.dom.DIRECT_ATTRIBUTE_MAP_) {
       element.setAttribute(goog.dom.DIRECT_ATTRIBUTE_MAP_[key], val);
-    } else if (goog.string.startsWith(key, 'aria-')) {
+    } else if (goog.string.startsWith(key, 'aria-') ||
+        goog.string.startsWith(key, 'data-')) {
       element.setAttribute(key, val);
     } else {
       element[key] = val;
@@ -327,14 +328,15 @@ goog.dom.DIRECT_ATTRIBUTE_MAP_ = {
   'cellpadding': 'cellPadding',
   'cellspacing': 'cellSpacing',
   'colspan': 'colSpan',
-  'rowspan': 'rowSpan',
-  'valign': 'vAlign',
-  'height': 'height',
-  'width': 'width',
-  'usemap': 'useMap',
   'frameborder': 'frameBorder',
+  'height': 'height',
   'maxlength': 'maxLength',
-  'type': 'type'
+  'role': 'role',
+  'rowspan': 'rowSpan',
+  'type': 'type',
+  'usemap': 'useMap',
+  'valign': 'vAlign',
+  'width': 'width'
 };
 
 
