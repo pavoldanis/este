@@ -173,3 +173,5 @@ exports.run = function(callback) {
   command = "node assets/js/dev/node_modules/mocha/bin/mocha    --colors    --timeout 50    --ui tdd    --reporter min " + (files.join(' '));
   return exec(command, callback);
 };
+
+exports.getDeps = getDeps;

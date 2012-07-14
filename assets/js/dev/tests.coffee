@@ -120,6 +120,7 @@ exports.run = (callback) ->
     --reporter min #{files.join ' '}"
   exec command, callback
 
+exports.getDeps = getDeps
 
 
 
