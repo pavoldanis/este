@@ -58,7 +58,7 @@ watchOptions =
   # 80  -> cpu at 10%
   # 100 -> cpu at 4%
   # todo: fix once nodejs fix watch on mac
-  interval: 50
+  interval: 100
 
 jsSubdirs = do ->
   for path in fs.readdirSync 'assets/js'

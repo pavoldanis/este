@@ -68,7 +68,7 @@ startTime = Date.now();
 booting = true;
 
 watchOptions = {
-  interval: 50
+  interval: 100
 };
 
 jsSubdirs = (function() {
