@@ -29,6 +29,7 @@
       does not start http server nor watches for changes
 
     'node run este --deploy'
+      works only for este (todo: make a new option)
       compile and check all este namespaces, fine for development
 
   Todo
@@ -67,7 +68,7 @@ startTime = Date.now();
 booting = true;
 
 watchOptions = {
-  interval: 100
+  interval: 50
 };
 
 jsSubdirs = (function() {

@@ -1,19 +1,34 @@
 ###*
-  @fileoverview DOM Merger. Good for .innerHTML partial updates. innerHTML is
-  tricky. Fields can lost focus, images can flicker..., DOM Merger fixes it.
-  Just proof of concept now.
+  @fileoverview Non destructive innerHTML update. Preserve form fields states,
+  prevents images flickering, changes only changed nodes.
+
+  How does it work
+    element is clonned (without content)
+    clone.innerHTML = html
+    element and clone are normalized
+    then clone is merged with element, see mergeInternal
+    only changed elements are changed
+    node, the order in dom is important
 
   todo
-    more inteligent merging, consider when to add, replace, remove element
-    for input, textarea.. just update values
-    tests, consider unit vs. qunit like within real browser
+    tests
+    consider outerHTML optimalization
 
 ###
-goog.provide 'este.dom.Merge'
 goog.provide 'este.dom.merge'
+goog.provide 'este.dom.Merge'
 
 goog.require 'este.dom'
 goog.require 'este.json'
+
+###*
+  @param {Element} element
+  @param {string} html
+###
+este.dom.merge = (element, html) ->
+  instance = new este.dom.Merge element, html
+  instance.merge()
+  return
 
 ###*
   @param {Element} element
@@ -25,15 +40,6 @@ este.dom.Merge = (@element, @html) ->
 
 goog.scope ->
   `var _ = este.dom.Merge`
-
-  ###*
-    @param {Element} element
-    @param {string} html
-  ###
-  este.dom.merge = (element, html) ->
-    instance = new _ element, html
-    instance.merge()
-    return
 
   ###*
     @type {Element}
@@ -48,13 +54,16 @@ goog.scope ->
   _::html
 
   ###*
-    innerHTML without innerHTML. DOM manipulations ftw.
+    Merge html into element.
   ###
   _::merge = ->
+    clone = @element.cloneNode false
+    clone.innerHTML = @html
+    
+    clone.normalize()
     @element.normalize()
-    clone = @createClone()
+    
     @mergeInternal @element, clone
-    # @element.innerHTML = @html
 
   ###*
     @param {Element} to
@@ -73,75 +82,37 @@ goog.scope ->
     for fromNode, i in fromNodes
       toNode = toNodes[i]
 
-      if !@nodesAreSameTypeTagAttributes fromNode, toNode
-        if toNode?.parentNode
-          goog.dom.replaceNode fromNode, toNode
-        else
-          to.appendChild fromNode
+      if !toNode
+        to.appendChild fromNode
         continue
 
-      if @nodesAreElements fromNode, toNode
-        @mergeInternal toNode, fromNode
-        continue
-      
-      if @nodesAreTextNodes fromNode, toNode
+      if toNode.nodeType == 3 && fromNode.nodeType == 3
         toNode.data = fromNode.data
         continue
 
+      if toNode.tagName != fromNode.tagName
+        toNode.parentNode.replaceChild fromNode, toNode
+        continue
+
+      @mergeAttributes toNode, fromNode
+      @mergeInternal toNode, fromNode
     return
 
   ###*
-    @param {Node} fromNode
-    @param {Node} toNode
-    @return {boolean}
+    @param {Element} toNode
+    @param {Element} fromNode
     @protected
   ###
-  _::nodesAreSameTypeTagAttributes = (fromNode, toNode) ->
-    fromNode? && toNode? &&
-    fromNode.nodeType == 1 && toNode.nodeType == 1 &&
-    fromNode.tagName == toNode.tagName &&
-    @getSerializedAttributes(fromNode) == @getSerializedAttributes(toNode)
-
-  ###*
-    @param {Node} node
-    @return {string}
-    @protected
-  ###
-  _::getSerializedAttributes = (node) ->
-    return '' if !node || !node.attributes || !node.attributes.length
-    attributes = ([attr.name, attr.value] for attr in node.attributes)
-    este.json.stringify attributes
-
-  ###*
-    @param {Node} fromNode
-    @param {Node} toNode
-    @return {boolean}
-    @protected
-  ###
-  _::nodesAreTextNodes = (fromNode, toNode) ->
-    fromNode?.nodeType == 3 && toNode?.nodeType == 3
-
-  ###*
-    @param {Node} fromNode
-    @param {Node} toNode
-    @return {boolean}
-    @protected
-  ###
-  _::nodesAreElements = (fromNode, toNode) ->
-    fromNode?.nodeType == 1 && toNode?.nodeType == 1
-
-  ###*
-    @return {Element}
-    @protected
-  ###
-  _::createClone = ->
-    clone = @element.cloneNode false
-    clone.innerHTML = @html
-    clone.normalize()
-    clone
+  _::mergeAttributes = (toNode, fromNode) ->
+    toNodeAttributes = (attr.name for attr in toNode.attributes)
+    toNode.removeAttribute name for name in toNodeAttributes
+    toNode.setAttribute attr.name, attr.value for attr in fromNode.attributes
+    toNode.value = fromNode.value if fromNode.tagName in ['INPUT', 'TEXTAREA']
 
   return
 
+
+  
 
 
 

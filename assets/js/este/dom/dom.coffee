@@ -426,16 +426,14 @@ goog.scope ->
     false
 
   ###*
+    Alias for goog.dom.forms.getForm...
+
     @param {Element} form
     @return {Object}
   ###
   _.serializeForm = (form) ->
     `form = /** @type {HTMLFormElement} */ (form)`
-    object = goog.dom.forms.getFormDataMap(form).toObject()
-    # we do not want single item array values
-    goog.object.map object, (v, k) ->
-      return v[0] if goog.isArray(v) && v.length == 1
-      v
+    goog.dom.forms.getFormDataMap(form).toObject()
 
   ###*
     Returns a single value of a form element.

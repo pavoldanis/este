@@ -28,6 +28,7 @@
       does not start http server nor watches for changes
 
     'node run este --deploy'
+      works only for este (todo: make a new option)
       compile and check all este namespaces, fine for development
 
   Todo
@@ -57,7 +58,7 @@ watchOptions =
   # 80  -> cpu at 10%
   # 100 -> cpu at 4%
   # todo: fix once nodejs fix watch on mac
-  interval: 100
+  interval: 50
 
 jsSubdirs = do ->
   for path in fs.readdirSync 'assets/js'
