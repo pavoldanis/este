@@ -1,0 +1,85 @@
+<!doctype html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+  <title>este.Page</title>
+  <style>
+  </style>
+  <script src='/assets/js/dev/livereload.js'></script>
+  <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+  <script src='/assets/js/deps.js'></script>
+  <script>
+    goog.require('este.dev.Monitor.create')
+    goog.require('este.Page')
+  </script>
+</head>
+<body>
+  <h1>este.Page</h1>
+  <p>Live integration test, see source.</p>
+  <p id='output'>
+    testing...
+  </p>
+  <script>
+    
+    este.dev.Monitor.create()
+    
+    base = '/assets/js/este/demos/page.html'
+    page = new este.Page(base)
+    done = false
+
+    page.add('/', function(context) {
+      if (done) {
+        output.innerHTML = 'Succeeded.'
+        return
+      }
+
+      if (context.querystring == 'done') {
+        done = true
+        setTimeout(function() {
+          page.show(base)
+        }, 10)
+        return
+      }
+      setTimeout(function() {
+        page.show('/foo')
+      }, 10)
+    })
+  
+    page.add('/foo', function (ctx, next) {
+      if (ctx.canonicalPath != base + '/foo')
+        return
+      if (ctx.path != '/foo')
+        return
+      if (ctx.pathname != base + '/foo')
+        return
+      if (ctx.querystring != '')
+        return
+
+      setTimeout(function() {
+        page.show('/not-existing')
+      }, 10)
+    })
+
+    page.add('/user/:id', function(ctx) {
+      if (ctx.params.id != 25)
+        return
+      setTimeout(function() {
+        page.show('/?done')
+      }, 10)
+    })
+
+    page.add('*', function () {
+      setTimeout(function() {
+        page.show('/user/25')
+      }, 10)
+    })
+    
+    page.start()
+
+  </script>
+</body>
+
+
+
+
+
