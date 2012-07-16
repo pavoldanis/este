@@ -1,6 +1,6 @@
 ###*
   @fileoverview
-  @deprecated Use este.mvc.Model
+  @deprecated Use {@link este.mvc.Model}
 ###
 
 goog.provide 'este.oop.Model'

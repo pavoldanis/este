@@ -1,6 +1,6 @@
 ###*
   @fileoverview
-  @deprecated Use este.mvc.Collection
+  @deprecated Use {@link este.mvc.Collection}
 ###
 
 goog.provide 'este.oop.Collection'
