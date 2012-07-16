@@ -2,11 +2,9 @@
   @fileoverview visionmedia/page.js for Google Closure.
 
   todo
-    tests
-    more demos
-    onpopstate?
+    tdd driven redesign
+    demos
     hash and IE support
-    clean&refactor
 
 ###
 goog.provide 'este.Page'
