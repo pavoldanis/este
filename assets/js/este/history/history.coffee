@@ -21,16 +21,14 @@ goog.require 'este.history.TokenTransformer'
 ###
 este.History = (forceHash, @pathPrefix) ->
   goog.base @
-  @handler = new goog.events.EventHandler @
-
+  
   html5historySupported = goog.history.Html5History.isSupported()
-  # old iOS does not support pushState correctly
+  # iOS < 5 does not support pushState correctly
   if este.mobile.iosVersion && este.mobile.iosVersion < 5
     html5historySupported = false
 
   @html5historyEnabled = html5historySupported && !forceHash
   @setHistoryInternal pathPrefix || '/'
-  @setEnabled()
   return
 
 goog.inherits este.History, goog.events.EventTarget
@@ -78,11 +76,11 @@ goog.scope ->
     @param {boolean=} enabled
   ###
   _::setEnabled = (enabled = true) ->
+    @handler ?= new goog.events.EventHandler @
     if enabled
       @handler.listen @history, 'navigate', @onNavigate
     else
       @handler.unlisten @history, 'navigate', @onNavigate
-
     @history.setEnabled enabled
 
   ###*
@@ -116,7 +114,7 @@ goog.scope ->
     @override
   ###
   _::disposeInternal = ->
-    @handler.dispose()
+    @handler?.dispose()
     goog.base @, 'disposeInternal'
     return
 
