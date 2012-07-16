@@ -1,3 +1,7 @@
+##07/17/12
+
+  - `este.History` cleaned, demo added
+
 ##07/16/12
 
   - added `este.Page`, ported [visionmedia/page.js](http://visionmedia.github.com/page.js/)
