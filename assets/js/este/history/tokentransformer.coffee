@@ -1,9 +1,10 @@
 ###*
-  @fileoverview goog.history.Html5History default behavior is that setToken(token) replaces 
-  pathname of current location, but keeps search query as is.
+  @fileoverview goog.history.Html5History default behavior is that setToken
+  replaces pathname of current location, but keeps search query as is.
 
-  This transformer treats tokens as "pathAndAfter"; hence they may also include query string and
-  a query string is replaced when a new history state is pushed.
+  This transformer treats tokens as "pathAndAfter"; hence they may also include
+  query string and a query string is replaced when a new history state is
+  pushed.
 
 ###
 
@@ -19,7 +20,6 @@ este.history.TokenTransformer = ->
 
 goog.scope ->
   `var _ = este.history.TokenTransformer`
-
 
   ###*
     @override

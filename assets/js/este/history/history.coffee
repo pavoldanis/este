@@ -13,29 +13,24 @@ goog.require 'este.mobile'
 goog.require 'este.history.TokenTransformer'
 
 ###*
-  @param {boolean} forceHash If true, este.History will degrade to hash even if html5history is supported
+  @param {boolean=} forceHash If true, este.History will degrade to hash even
+  if html5history is supported.
   @param {string=} pathPrefix
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.History = (forceHash, @pathPrefix = '/') ->
+este.History = (forceHash, @pathPrefix) ->
   goog.base @
-  @html5historyIsSupported = !forceHash && goog.history.Html5History.isSupported();
+  @handler = new goog.events.EventHandler @
+
+  html5historySupported = goog.history.Html5History.isSupported()
+  # old iOS does not support pushState correctly
   if este.mobile.iosVersion && este.mobile.iosVersion < 5
-    @html5historyIsSupported = false
-  if @html5historyIsSupported
-    @history_ = new goog.history.Html5History undefined, new este.history.TokenTransformer()
-    @history_.setUseFragment false
-    @history_.setPathPrefix @pathPrefix
-  else
-    # for some reason, hidden input created in history via doc.write does't work
-    `var hiddenInput = /** @type {HTMLInputElement} */ (goog.dom.createDom('input', {style: 'display: none'}))`
-    document.body.appendChild hiddenInput
-    @history_ = new goog.History false, undefined, hiddenInput
-  
-  @handler_ = new goog.events.EventHandler @
-  @handler_.listen(@history_, goog.history.EventType.NAVIGATE, @onNavigate)
-  @history_.setEnabled true
+    html5historySupported = false
+
+  @html5historyEnabled = html5historySupported && !forceHash
+  @setHistoryInternal pathPrefix || '/'
+  @setEnabled()
   return
 
 goog.inherits este.History, goog.events.EventTarget
@@ -45,62 +40,75 @@ goog.scope ->
 
   ###*
     @type {boolean}
-    @protected
   ###
-  _::html5historyIsSupported
+  _::html5historyEnabled
 
   ###*
     @type {goog.History|goog.history.Html5History}
+    @protected
   ###
-  _::history_
+  _::history
 
   ###*
     @type {goog.events.EventHandler}
+    @protected
   ###
-  _::handler_
+  _::handler
 
   ###*
     @type {boolean}
+    @protected
   ###
-  _::preventNextNavigate = false
-
-  ###*
-    @type {string}
-  ###
-  _::pathPrefix = ''
+  _::silent = false
 
   ###*
     @param {string} token
-    @param {boolean=} preventNextNavigate
+    @param {boolean=} silent
   ###
-  _::setToken = (token, @preventNextNavigate = false) ->
-    @history_.setToken token
-
-  ###*
-    @return {boolean}
-  ###
-  _::isHtml5HistorySupported = ->
-    @html5historyIsSupported
+  _::setToken = (token, @silent = false) ->
+    @history.setToken token
 
   ###*
     @return {string}
   ###
   _::getToken = ->
-    if @html5historyIsSupported
-      @history_.getToken()
+    @history.getToken()
+
+  ###*
+    @param {boolean=} enabled
+  ###
+  _::setEnabled = (enabled = true) ->
+    if enabled
+      @handler.listen @history, 'navigate', @onNavigate
     else
-      # Note: It's important to use history_.getToken() instead of window.location['hash']
-      # The reason is that window.location['hash'] performs url-decoding, which may not be
-      # desired (we want the raw value of the token)
-      # Also see hashURIEncoding.html and goog.History.prototype.getLocationFragment_
-      @history_.getToken()
+      @handler.unlisten @history, 'navigate', @onNavigate
+
+    @history.setEnabled enabled
+
+  ###*
+    @param {string} pathPrefix
+    @protected
+  ###
+  _::setHistoryInternal = (pathPrefix) ->
+    if @html5historyEnabled
+      transformer = new este.history.TokenTransformer()
+      @history = new goog.history.Html5History undefined, transformer
+      @history.setUseFragment false
+      @history.setPathPrefix pathPrefix
+    else
+      # workaround: hidden input created in history via doc.write does not work
+      input = goog.dom.createDom 'input', style: 'display: none'
+      `input = /** @type {HTMLInputElement} */ (input)`
+      document.body.appendChild input
+      @history = new goog.History false, undefined, input
 
   ###*
     @param {goog.events.BrowserEvent} e
+    @protected
   ###
   _::onNavigate = (e) ->
-    if @preventNextNavigate
-      @preventNextNavigate = false
+    if @silent
+      @silent = false
       return
     @dispatchEvent e
 
@@ -108,7 +116,7 @@ goog.scope ->
     @override
   ###
   _::disposeInternal = ->
-    @handler_.dispose()
+    @handler.dispose()
     goog.base @, 'disposeInternal'
     return
 
