@@ -264,10 +264,9 @@ startServer = ->
   server = http.createServer (request, response) ->
     
     filePath = '.' + request.url
-    filePath = "./#{options.project}.htm" if filePath is './'
+    filePath = "./#{options.project}.html" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
     extname = pathModule.extname filePath
-    contentType = 'text/html'
     
     switch extname
       when '.js'
@@ -280,11 +279,14 @@ startServer = ->
         contentType = 'image/gif'
       when '.jpg', '.jpeg'
         contentType = 'image/jpeg'
+      else
+        contentType = 'text/html'
     
     fs.exists filePath, (exists) ->
-      # because uri like /product/123 will be handled by HTML5 pushState
       if !exists
-        filePath = "./#{options.project}.html"
+        response.writeHead 404
+        response.end '404', 'utf-8'
+        return
 
       fs.readFile filePath, (error, content) ->
         if error

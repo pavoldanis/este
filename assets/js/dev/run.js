@@ -313,13 +313,12 @@ startServer = function() {
     var contentType, extname, filePath;
     filePath = '.' + request.url;
     if (filePath === './') {
-      filePath = "./" + options.project + ".htm";
+      filePath = "./" + options.project + ".html";
     }
     if (filePath.indexOf('?') !== -1) {
       filePath = filePath.split('?')[0];
     }
     extname = pathModule.extname(filePath);
-    contentType = 'text/html';
     switch (extname) {
       case '.js':
         contentType = 'text/javascript';
@@ -336,10 +335,15 @@ startServer = function() {
       case '.jpg':
       case '.jpeg':
         contentType = 'image/jpeg';
+        break;
+      default:
+        contentType = 'text/html';
     }
     fs.exists(filePath, function(exists) {
       if (!exists) {
-        filePath = "./" + options.project + ".html";
+        response.writeHead(404);
+        response.end('404', 'utf-8');
+        return;
       }
       return fs.readFile(filePath, function(error, content) {
         if (error) {
