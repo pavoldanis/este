@@ -1,6 +1,6 @@
 ##07/15/12
 
-  - ported `visionmedia/page.js`
+  - ported `visionmedia/page.js`, see [page.js](http://visionmedia.github.com/page.js/)
 
 ##07/15/12
 
