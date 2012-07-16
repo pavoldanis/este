@@ -1,6 +1,6 @@
 ##07/15/12
 
-  - `visionmedia/page.js` ported
+  - ported `visionmedia/page.js`
 
 ##07/15/12
 
@@ -10,7 +10,7 @@
 
   - `node run este --deploy` to compile all este source files (fine for dev)
   - Google Closure and Compiler updated
-  - `este.style`
+  - added `este.style`
 
 ##07/10/12
 
@@ -19,11 +19,11 @@
 
 ##07/08/12
 
-  - `este.ui.FormsPersister` persist forms states into localstorage or session
+  - added `este.ui.FormsPersister` persist forms states into localstorage or session
 
 ##07/08/12
 
-  - `assets/js/este/demos/index.html`
+  - added `assets/js/este/demos/index.html`
   - CoffeeScript, Mocha and Stylus were unglobalized. No need to install them
   - Live reload improvement, styles are refreshed instantly without page reload
 
