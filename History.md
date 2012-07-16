@@ -1,4 +1,4 @@
-##07/15/12
+##07/16/12
 
   - added `este.Page`, ported [visionmedia/page.js](http://visionmedia.github.com/page.js/)
 
