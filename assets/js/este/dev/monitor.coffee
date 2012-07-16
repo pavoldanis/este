@@ -58,7 +58,9 @@ goog.scope ->
       'style': 'display: inline-block'
     element.appendChild @monitor
     @timer = setInterval =>
-      @right.innerHTML = '| ' + goog.events.getTotalListenerCount()
+      # - 1 because listen(window, 'scroll', @onWindowScroll)
+      # dont make user thing about that listener
+      @right.innerHTML = '| ' + (goog.events.getTotalListenerCount() - 1)
     , 500
     return
 
