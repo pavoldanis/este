@@ -26,8 +26,8 @@ goog.require 'este.json'
   @param {string} html
 ###
 este.dom.merge = (element, html) ->
-  instance = new este.dom.Merge element, html
-  instance.merge()
+  merge = new este.dom.Merge element, html
+  merge.merge()
   return
 
 ###*
