@@ -46,7 +46,7 @@ goog.scope ->
 
     # Compute the URL of the page; if app is running using hash-based history,
     # it will be tracked as html5 history based (i.e. no hashes, full URLs)
-    url = window.location.protocol + "//" + window.location.host + @pathPrefix + @history_.getToken()
+    url = window.location.protocol + "//" + window.location.host + @pathPrefix + @history.getToken()
     window['_gaq'].push ['_trackPageview', url]
 
     @logger_.info "GA: trackPageview: " + url
