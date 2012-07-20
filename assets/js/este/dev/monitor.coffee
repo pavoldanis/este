@@ -83,6 +83,9 @@ goog.scope ->
     goog.base @, 'disposeInternal'
     return
 
+  ###*
+    For mobile development
+  ###
   window.mlog = ->
     message = goog.array.toArray(arguments).join()
     document.getElementById('devlog').innerHTML = message
