@@ -28,8 +28,8 @@
       does not start http server nor watches for changes
 
     'node run este --deploy'
-      works only for este (todo: make a new option)
-      compile and check all este namespaces, fine for development
+      compilation of este automatically includes all este namespaces
+      it's fine for development, when we need to compile everything
 
   Todo
     fix too much cmd-s's errors
