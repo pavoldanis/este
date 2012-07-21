@@ -9,7 +9,7 @@ Browser is automatically reloaded when needed. Tested on mac and win.
 
 ###How to use it?
   
-  - Install Node.js, Java, Python
+  - Install Node.js, Java, Python (use version < 3 for windows)
   - Clone repository
   - Type `node run app` into console
   - Open browser at `localhost:8000`
