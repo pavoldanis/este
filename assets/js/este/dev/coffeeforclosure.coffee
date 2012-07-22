@@ -26,6 +26,9 @@ este.dev.coffeeForClosure = (source) ->
 este.dev.CoffeeForClosure = (@source) ->
   # consider newlines canonization
   # str.replace(/(\r\n|\r|\n)/g, '\n');
+  @random = @getRandomString()
+  @replaces = []
+  @storeReplaces()
   return
 
 goog.scope ->
@@ -36,6 +39,18 @@ goog.scope ->
     @protected
   ###
   _::source
+
+  ###*
+    @type {string}
+    @protected
+  ###
+  _::random
+
+  ###*
+    @type {Array}
+    @protected
+  ###
+  _::replaces
 
   ###*
     @return {string}
@@ -66,6 +81,7 @@ goog.scope ->
       @removeWrapper className, namespace, superClass
 
     @addNote()
+    @restoreReplaces()
     @source
 
   ###*
@@ -209,6 +225,32 @@ goog.scope ->
   _::addNote = ->
     # @source = "Fixed " + @source
     @source = "// Fixed coffee code for Closure Compiler by este dev stack\n" + @source
+
+  ###*
+    @protected
+  ###
+  _::storeReplaces = ->
+    @source = @source.replace /\'[^\']*\'/g, (match) =>
+      "#{@random}#{@replaces.push match}#{@random}"
+    @source = @source.replace /\"[^\"]*\"/g, (match) =>
+      "#{@random}#{@replaces.push match}#{@random}"
+    @source = @source.replace /\/\*[^\/\*]*\*\//g, (match) =>
+      "#{@random}#{@replaces.push match}#{@random}"
+
+  ###*
+    @protected
+  ###
+  _::restoreReplaces = ->
+    for replace, i in @replaces
+      @source = @source.replace "#{@random}#{i + 1}#{@random}", replace
+
+  ###*
+    @protected
+  ###
+  _::getRandomString = ->
+    x = 2147483648
+    Math.floor(Math.random() * x).toString(36) +
+    Math.abs(Math.floor(Math.random() * x) ^ goog.now()).toString(36)
   
   return
 
