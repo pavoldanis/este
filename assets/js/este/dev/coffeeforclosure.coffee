@@ -1,12 +1,6 @@
 ###*
   @fileoverview Fix CoffeeScript compiled code for Closure Compiler.
-
-  note
-    It's experimental stuff. Not ready for production yet.
-
-  todo
-    use try finally to return unmodified source on error
-
+  
 ###
 goog.provide 'este.dev.coffeeForClosure'
 goog.provide 'este.dev.CoffeeForClosure'
@@ -61,15 +55,16 @@ goog.scope ->
     @return {string}
   ###
   _::fix = ->
-
     @storeReplaces()
     source = null
+
     loop
       className = @getClassName()
       break if !className || source == @source
       source = @source
+
       superClass = @getSuperClass className
-      # @source = "#{superClass} " + @source
+      
       if superClass
         @removeCoffeeExtends className
         @removeInjectedExtendsCode className
@@ -82,7 +77,7 @@ goog.scope ->
       
       if superClass
         @addGoogInherits className, namespace, superClass
-        @fixSuperClassReference()
+        @fixSuperClassReference className, namespace
       
       @removeWrapper className, namespace, superClass
 
@@ -169,6 +164,7 @@ goog.scope ->
   _::fullQualifyProperties = (className, namespace) ->
     regex = new RegExp className + '\\.(\\w+)', 'g'
     @replace regex, (match, prop) ->
+      return match if prop == className
       return match if prop == '__super__'
       namespace + match
 
@@ -194,23 +190,26 @@ goog.scope ->
     regex = new RegExp "#{namespace}#{className} = function\\(", 'g'
     index = @source.search regex
     return if index == -1
-    # look for position after constructor
-    # a bit tricky, because functions can contain everything
-    # luckily, indentation helps us
+
+    # Looking for position after constructor, is a bit tricky, because function
+    # can contains everything. Luckily, indentation works for us.
     lines = @source.slice(index).split '\n'
 
     for line, i in lines
       index += line.length + 1
       break if line == '  }'
 
-    inherits = "\n  goog.inherits(#{className}, #{superClass});\n"
+    inherits = "\n  goog.inherits(#{namespace + className}, #{superClass});\n"
     @source = @source.slice(0, index) + inherits + @source.slice index
 
   ###*
+    @param {string} className
+    @param {string} namespace
     @protected
   ###
-  _::fixSuperClassReference = ->
-    @replace /__super__/g, 'superClass_'
+  _::fixSuperClassReference = (className, namespace) ->
+    regex = new RegExp "#{className}\\.__super__", 'g'
+    @replace regex, "#{namespace}#{className}\.superClass_"
 
   ###*
     @param {string} className
@@ -229,35 +228,32 @@ goog.scope ->
     @protected
   ###
   _::addNote = ->
-    # @source = "Fixed " + @source
-    @source = "// Fixed coffee code for Closure Compiler by este dev stack\n" + @source
+    @source =
+      "// Fixed coffee code for Closure Compiler by este dev stack\n" + @source
 
   ###*
     @protected
   ###
   _::storeReplaces = ->
-    # dollar sucks for regexp
     @source = @source.replace /\$/g, (match) =>
-      "@@@@dollar@@@@"
-    @source = @source.replace /'[^']*'/g, (match) =>
-      "#{_.random}#{@replaces.push match}#{_.random}"
-    @source = @source.replace /"[^"]*"/g, (match) =>
-      "#{_.random}#{@replaces.push match}#{_.random}"
-    @source = @source.replace /\/\*[^\*\/]+\*\//g, (match) =>
-      "#{_.random}#{@replaces.push match}#{_.random}"
-
+      "xn2fs07c6n7ldollar_sucks_for_regexps"
+    @source = @source.replace /('[^']*')|("[^"]*")|(\/\*[^\*\/]+\*\/)/g,
+      (match) => "#{_.random}#{@replaces.push match}#{_.random}"
+    
   ###*
     @protected
   ###
   _::restoreReplaces = ->
     for replace, i in @replaces
       @source = @source.replace "#{_.random}#{i + 1}#{_.random}", replace
-    @source = @source.replace /@@@@dollar@@@@/g, (match) =>
-      "$"
+    @source = @source.replace /xn2fs07c6n7ldollar_sucks_for_regexps/g,
+      (match) => "$"
     return
   
   return
 
+# just for sake of the Compiler
+exports = exports || {}
 exports.coffeeForClosure = este.dev.coffeeForClosure
 
 

@@ -13,7 +13,7 @@ app.start = (data) ->
 
   if goog.DEBUG
     este.dev.Monitor.create()
-  
+
 # ensures the symbol will be visible after compiler renaming
 goog.exportSymbol 'app.start', app.start
 

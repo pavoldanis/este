@@ -25,6 +25,8 @@ suite 'este.dev.CoffeeForClosure', ->
       var testForString = 'function Person'
       var testForString = "function Person"
       /* function Person */
+      if (window == '"') alert('wtf');
+      if (window == "'") alert('wtf');
       var Person;
 
       goog.provide('example.Person');
@@ -69,6 +71,8 @@ suite 'este.dev.CoffeeForClosure', ->
       var testForString = 'function Person'
       var testForString = "function Person"
       /* function Person */
+      if (window == '"') alert('wtf');
+      if (window == "'") alert('wtf');
       
 
       goog.provide('example.Person');
@@ -144,6 +148,7 @@ suite 'este.dev.CoffeeForClosure', ->
         Person.prototype.name = '';
 
         Person.prototype.showName = function() {
+          var el = goog.dom.createDom('div', null, Person.EventType);
           Person.__super__.showName.call(this, 'fok');
           return alert(this.name + Person.EventType);
         };return Person;
@@ -172,7 +177,7 @@ suite 'este.dev.CoffeeForClosure', ->
           this.bla = {};
         }
 
-        goog.inherits(Person, este.Foo);
+        goog.inherits(example.Person, este.Foo);
 
         /**
           @enum {string}
@@ -191,7 +196,8 @@ suite 'este.dev.CoffeeForClosure', ->
         example.Person.prototype.name = '';
 
         example.Person.prototype.showName = function() {
-          Person.superClass_.showName.call(this, 'fok');
+          var el = goog.dom.createDom('div', null, example.Person.EventType);
+          example.Person.superClass_.showName.call(this, 'fok');
           return alert(this.name + example.Person.EventType);
         };"""
 

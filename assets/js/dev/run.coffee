@@ -1,10 +1,10 @@
 ###*
-  @fileoverview https://github.com/Steida/este.
+  @fileoverview github.com/Steida/este.
 
   Features
     compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
-    run and watch [*]_test.coffee unit tests
+    run and watch *_test.coffee unit tests
     run simple NodeJS development server
 
   Workflow
@@ -31,10 +31,16 @@
       compilation of este automatically includes all este namespaces
       it's fine for development, when we need to compile everything
 
-  Todo
-    fix too much cmd-s's errors
-    consider: delete .css onstart
-    strip asserts and strings throws
+    'node run app --nocoffeefix'
+      u know
+
+  todo
+    closure rewrites in separate dir
+    investigate why live reload does not work in deploy mode
+    check windows platform
+    consider: delete .css on start
+    strip asserts
+
 ###
 fs = require 'fs'
 exec = require('child_process').exec
@@ -42,6 +48,8 @@ tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
 ws = require 'websocket.io'
+nodebase = require './nodebase'
+{coffeeForClosure} = require './../este/dev/coffeeforclosure'
 
 options =
   project: null
@@ -59,6 +67,7 @@ watchOptions =
   # 100 -> cpu at 4%
   # todo: fix once nodejs fix watch on mac
   interval: 100
+commandsRunning = false
 
 jsSubdirs = do ->
   for path in fs.readdirSync 'assets/js'
@@ -86,11 +95,11 @@ Commands =
     else
       scripts = """
         <script src='/assets/js/dev/livereload.js'></script>
-          <script src='/assets/js/google-closure/closure/goog/base.js'></script>
-          <script src='/assets/js/deps.js'></script>
-          <script src='/assets/js/#{options.project}/start.js'></script>
+        <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+        <script src='/assets/js/deps.js'></script>
+        <script src='/assets/js/#{options.project}/start.js'></script>
       """
-    
+
     filePath = "./#{options.project}-template.html"
     
     if fs.existsSync filePath
@@ -112,6 +121,23 @@ Commands =
     --compile
     --bare
     --output assets/js assets/js"
+
+  coffeeForClosure: (callback, path) ->
+    if path
+      paths = [path]
+    else
+      paths = (path for path in getPaths 'assets', ['.js'])
+    
+    for path in paths
+      if  !options.nocoffeefix &&
+          path.indexOf('coffeeforclosure_test.js') == -1 &&
+          path.indexOf('coffeeforclosure.js') == -1 &&
+          fs.existsSync path
+            file = fs.readFileSync path, 'utf8'
+            file = coffeeForClosure file
+            fs.writeFileSync path, file, 'utf8'
+    
+    callback()
 
   soyTemplates: (callback) ->
     soyPaths = getPaths 'assets', ['.soy']
@@ -151,7 +177,8 @@ Commands =
 
     # strip all loggers from compiled code
     if !options.debug
-      for jsPath in getPaths 'assets', ['.js'], false, true
+      # todo: fix brittle closure debug stuff removing 
+      for jsPath in getPaths 'assets', ['.js'], false, false
         source = fs.readFileSync jsPath, 'utf8'
         continue if source.indexOf('this.logger_.') == -1
         
@@ -241,6 +268,8 @@ setOptions = (args) ->
         options.deploy = true
       when '--buildonly'
         options.buildonly = true
+      when '--nocoffeefix'
+        options.nocoffeefix = true
       else
         options.project = arg
 
@@ -378,13 +407,20 @@ onPathChange = (path, dir) ->
       commands["coffeeScript: #{path}"] = "
         node assets/js/dev/node_modules/coffee-script/bin/coffee
           --compile --bare #{path}"
-      
+
+      commands["coffeeForClosure"] = (callback) ->
+        Commands.coffeeForClosure callback, path.replace '.coffee', '.js'
+
       if !options.deploy
         addReloadBrowserNowCommand()
         
       # tests asap
       commands["mochaTests"] = Commands.mochaTests
       addDepsAndCompilation commands
+
+      # todo: investigate why that does not work
+      # if options.deploy
+      #   addReloadBrowserNowCommand()
     
     when '.styl'
       commands["stylusStyle: #{path}"] = "
@@ -400,6 +436,7 @@ onPathChange = (path, dir) ->
       return
 
   clearScreen()
+  return if commandsRunning
   runCommands commands, ->
     notifyClient notifyAction if notifyAction
 
@@ -416,15 +453,19 @@ addDepsAndCompilation = (commands) ->
   commands["closureCompilation"] = Commands.closureCompilation
 
 runCommands = (commands, complete, errors = []) ->
+  commandsRunning = true
   for name, command of commands
     break
   
   if !command
+    commandsRunning = false
+    if options.verbose && !booting
+      console.log 'ready'
     complete errors if complete
     return
 
   if name == 'closureCompilation'
-    console.log 'Compiling scripts, wait pls...'
+    console.log 'Compiling, please wait...'
   
   commandStartTime = Date.now()
   nextCommands = {}
@@ -440,13 +481,22 @@ runCommands = (commands, complete, errors = []) ->
       ~stderr?.indexOf ': WARNING -'
 
     if isError
+      output = stderr
+      if name == 'mochaTests'
+        # we need stdout for console.log
+        # remove screen clearing from stdout
+        # todo: check windows
+        stdout = stdout.trim()
+        `stdout = stdout.replace('\033[2J', '')`
+        `stdout = stdout.replace('\033[1;3H', '')`
+        output = stderr + stdout
       if booting
         errors.push
           name: name
           command: command
-          stderr: stderr
+          stderr: output
       else
-        console.log stderr
+        console.log output
         nextCommands = {}
 
     if booting || options.verbose

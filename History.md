@@ -1,3 +1,9 @@
+##07/22/12
+
+  - CoffeeScript class syntax for Google Closure! (dancing)
+  - several run script bugs fixed
+  - console.log in test works
+
 ##07/17/12
 
   - `este.History` cleaned, demo added
