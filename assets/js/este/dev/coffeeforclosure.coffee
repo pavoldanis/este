@@ -1,12 +1,11 @@
 ###*
   @fileoverview Fix CoffeeScript compiled code for Closure Compiler.
 
-  Note
+  note
     It's experimental stuff. Not ready for production yet.
 
   todo
-    nenahrazovat ve strinzich..
-    make it less brittle to omit search in strings and comments
+    use try finally to return unmodified source on error
 
 ###
 goog.provide 'este.dev.coffeeForClosure'
@@ -26,13 +25,19 @@ este.dev.coffeeForClosure = (source) ->
 este.dev.CoffeeForClosure = (@source) ->
   # consider newlines canonization
   # str.replace(/(\r\n|\r|\n)/g, '\n');
-  @random = @getRandomString()
   @replaces = []
-  @storeReplaces()
   return
 
 goog.scope ->
   `var _ = este.dev.CoffeeForClosure`
+
+  ###*
+    @type {string}
+  ###
+  _.random = do ->
+    x = 2147483648
+    Math.floor(Math.random() * x).toString(36) +
+    Math.abs(Math.floor(Math.random() * x) ^ goog.now()).toString(36)
 
   ###*
     @type {string}
@@ -57,13 +62,14 @@ goog.scope ->
   ###
   _::fix = ->
 
+    @storeReplaces()
     source = null
     loop
       className = @getClassName()
       break if !className || source == @source
       source = @source
-
       superClass = @getSuperClass className
+      # @source = "#{superClass} " + @source
       if superClass
         @removeCoffeeExtends className
         @removeInjectedExtendsCode className
@@ -95,7 +101,7 @@ goog.scope ->
     @return {string}
   ###
   _::getSuperClass = (className) ->
-    regex = new RegExp "return #{className};[\\s]*\\}\\)\\((\\w+)\\);"
+    regex = new RegExp "return #{className};[\\s]*\\}\\)\\(([\\w\\.]+)\\);"
     matches = @source.match regex
     return '' if !matches
     matches[1]
@@ -230,27 +236,25 @@ goog.scope ->
     @protected
   ###
   _::storeReplaces = ->
-    @source = @source.replace /\'[^\']*\'/g, (match) =>
-      "#{@random}#{@replaces.push match}#{@random}"
-    @source = @source.replace /\"[^\"]*\"/g, (match) =>
-      "#{@random}#{@replaces.push match}#{@random}"
-    @source = @source.replace /\/\*[^\/\*]*\*\//g, (match) =>
-      "#{@random}#{@replaces.push match}#{@random}"
+    # dollar sucks for regexp
+    @source = @source.replace /\$/g, (match) =>
+      "@@@@dollar@@@@"
+    @source = @source.replace /'[^']*'/g, (match) =>
+      "#{_.random}#{@replaces.push match}#{_.random}"
+    @source = @source.replace /"[^"]*"/g, (match) =>
+      "#{_.random}#{@replaces.push match}#{_.random}"
+    @source = @source.replace /\/\*[^\*\/]+\*\//g, (match) =>
+      "#{_.random}#{@replaces.push match}#{_.random}"
 
   ###*
     @protected
   ###
   _::restoreReplaces = ->
     for replace, i in @replaces
-      @source = @source.replace "#{@random}#{i + 1}#{@random}", replace
-
-  ###*
-    @protected
-  ###
-  _::getRandomString = ->
-    x = 2147483648
-    Math.floor(Math.random() * x).toString(36) +
-    Math.abs(Math.floor(Math.random() * x) ^ goog.now()).toString(36)
+      @source = @source.replace "#{_.random}#{i + 1}#{_.random}", replace
+    @source = @source.replace /@@@@dollar@@@@/g, (match) =>
+      "$"
+    return
   
   return
 

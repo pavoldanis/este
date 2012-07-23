@@ -38,6 +38,7 @@ suite 'este.dev.CoffeeForClosure', ->
         function Person(name) {
           this.name = name;
           this.bla = {};
+          this.fok = '$' // dollar sucks for some reason
         }
 
         /**
@@ -81,6 +82,7 @@ suite 'este.dev.CoffeeForClosure', ->
         example.Person = function(name) {
           this.name = name;
           this.bla = {};
+          this.fok = '$' // dollar sucks for some reason
         }
 
         /**
@@ -146,7 +148,7 @@ suite 'este.dev.CoffeeForClosure', ->
           return alert(this.name + Person.EventType);
         };return Person;
 
-      })(Foo);"""
+      })(este.Foo);"""
 
     closureSourceWithExtends = """
       // Fixed coffee code for Closure Compiler by este dev stack
@@ -170,7 +172,7 @@ suite 'este.dev.CoffeeForClosure', ->
           this.bla = {};
         }
 
-        goog.inherits(Person, Foo);
+        goog.inherits(Person, este.Foo);
 
         /**
           @enum {string}
@@ -328,7 +330,7 @@ suite 'este.dev.CoffeeForClosure', ->
       assert.equal className, ''
 
       className = coffeeForClosureWithExtends.getSuperClass 'Person'
-      assert.equal className, 'Foo'
+      assert.equal className, 'este.Foo'
 
   suite 'getNamespaceFromWrapper', ->
     test 'should found wrapper and parse namespace', ->
