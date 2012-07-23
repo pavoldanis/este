@@ -2,7 +2,7 @@
 
   - CoffeeScript class syntax for Google Closure! (dancing)
   - several run script bugs fixed
-  - console.log in test works
+  - console.log within unit tests works
 
 ##07/17/12
 
