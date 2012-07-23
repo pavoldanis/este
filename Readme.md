@@ -33,7 +33,7 @@ Must-have packages
   - Package Control
   - CoffeeScript
   - Stylus
-  - SoyTemplate
+  - SoyTemplate (custom install https://github.com/anvie/SoyTemplate)
   
 Recommended packages
 
