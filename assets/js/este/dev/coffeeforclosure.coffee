@@ -1,5 +1,6 @@
 ###*
   @fileoverview Fix CoffeeScript compiled code for Closure Compiler.
+
 ###
 goog.provide 'este.dev.coffeeForClosure'
 goog.provide 'este.dev.CoffeeForClosure'
@@ -73,6 +74,7 @@ goog.scope ->
       namespace = @getNamespaceFromWrapper className
       @fullQualifyProperties className, namespace
       @fullQualifyConstructor className, namespace
+      @fullQualifyNew className, namespace
       
       if superClass
         @addGoogInherits className, namespace, superClass
@@ -181,6 +183,14 @@ goog.scope ->
   ###*
     @param {string} className
     @param {string} namespace
+  ###
+  _::fullQualifyNew = (className, namespace) ->
+    regex = new RegExp "new #{className}", 'g'
+    @replace regex, "new #{namespace}#{className}"
+
+  ###*
+    @param {string} className
+    @param {string} namespace
     @param {string} superClass
     @protected
   ###
@@ -243,6 +253,8 @@ goog.scope ->
     # http://blog.stevenlevithan.com/archives/match-quoted-string
     @source = @source.replace /(["'])(?:(?=(\\?))\2.)*?\1/g, (match) =>
       "#{_.random}#{@replaces.push match}#{_.random}"
+
+    # todo: add regex for regex
 
   ###*
     @protected
