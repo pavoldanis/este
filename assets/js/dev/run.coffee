@@ -414,9 +414,8 @@ onPathChange = (path, dir) ->
       if !options.deploy
         addReloadBrowserNowCommand()
         
-      # tests asap
-      commands["mochaTests"] = Commands.mochaTests
       addDepsAndCompilation commands
+      commands["mochaTests"] = Commands.mochaTests
 
       # todo: investigate why that does not work
       # if options.deploy

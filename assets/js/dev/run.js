@@ -501,8 +501,8 @@ onPathChange = function(path, dir) {
       if (!options.deploy) {
         addReloadBrowserNowCommand();
       }
-      commands["mochaTests"] = Commands.mochaTests;
       addDepsAndCompilation(commands);
+      commands["mochaTests"] = Commands.mochaTests;
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "        node assets/js/dev/node_modules/stylus/bin/stylus          --compress " + path;
