@@ -1,6 +1,5 @@
 ###*
   @fileoverview Fix CoffeeScript compiled code for Closure Compiler.
-  
 ###
 goog.provide 'este.dev.coffeeForClosure'
 goog.provide 'este.dev.CoffeeForClosure'
@@ -237,9 +236,14 @@ goog.scope ->
   _::storeReplaces = ->
     @source = @source.replace /\$/g, (match) =>
       "xn2fs07c6n7ldollar_sucks_for_regexps"
-    @source = @source.replace /('[^']*')|("[^"]*")|(\/\*[^\*\/]+\*\/)/g,
+
+    @source = @source.replace /\/\*[^*]*\*+([^\/][^*]*\*+)*\//g,
       (match) => "#{_.random}#{@replaces.push match}#{_.random}"
-    
+
+    # http://blog.stevenlevithan.com/archives/match-quoted-string
+    @source = @source.replace /(["'])(?:(?=(\\?))\2.)*?\1/g, (match) =>
+      "#{_.random}#{@replaces.push match}#{_.random}"
+
   ###*
     @protected
   ###

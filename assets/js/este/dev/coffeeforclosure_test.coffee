@@ -33,7 +33,7 @@ suite 'este.dev.CoffeeForClosure', ->
 
       example.Person = (function() {
         /**
-          @param {string} name
+          @param {string} nam'e
           @constructor
         */
 
@@ -79,7 +79,7 @@ suite 'este.dev.CoffeeForClosure', ->
 
       
         /**
-          @param {string} name
+          @param {string} nam'e
           @constructor
         */
 
