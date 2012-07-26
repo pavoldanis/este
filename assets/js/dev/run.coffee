@@ -35,11 +35,10 @@
       u know
 
   todo
+    remove python dependency, much faster deps
     closure rewrites in separate dir
-    investigate why live reload does not work in deploy mode
     check windows platform
-    consider: delete .css on start
-    strip asserts
+    delete .css on start
 
 ###
 fs = require 'fs'
@@ -416,10 +415,6 @@ onPathChange = (path, dir) ->
         
       addDepsAndCompilation commands
       commands["mochaTests"] = Commands.mochaTests
-
-      # todo: investigate why that does not work
-      # if options.deploy
-      #   addReloadBrowserNowCommand()
     
     when '.styl'
       commands["stylusStyle: #{path}"] = "

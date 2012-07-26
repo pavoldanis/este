@@ -36,11 +36,10 @@
       u know
 
   todo
+    remove python dependency, much faster deps
     closure rewrites in separate dir
-    investigate why live reload does not work in deploy mode
     check windows platform
-    consider: delete .css on start
-    strip asserts
+    delete .css on start
 */
 
 var Commands, addDepsAndCompilation, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, nodebase, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
