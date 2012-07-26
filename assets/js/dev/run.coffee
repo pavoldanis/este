@@ -391,7 +391,7 @@ onPathChange = (path, dir) ->
   commands = {}
   notifyAction = 'page'
 
-  addReloadBrowserNowCommand = (action = notifyAction) ->
+  addBrowserLiveReloadCommand = (action = notifyAction) ->
     commands["reload browser"] = (callback) ->
       notifyClient action
       notifyAction = null
@@ -410,21 +410,24 @@ onPathChange = (path, dir) ->
       commands["coffeeForClosure"] = (callback) ->
         Commands.coffeeForClosure callback, path.replace '.coffee', '.js'
 
-      if !options.deploy
-        addReloadBrowserNowCommand()
-        
-      addDepsAndCompilation commands
+      commands["closureDeps"] = Commands.closureDeps
       commands["mochaTests"] = Commands.mochaTests
+      if options.deploy
+        commands["closureCompilation"] = Commands.closureCompilation
+      else
+        addBrowserLiveReloadCommand()
     
     when '.styl'
       commands["stylusStyle: #{path}"] = "
         node assets/js/dev/node_modules/stylus/bin/stylus
           --compress #{path}"
-      addReloadBrowserNowCommand 'styles'
+      addBrowserLiveReloadCommand 'styles'
     
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
-      addDepsAndCompilation commands
+      commands["closureDeps"] = Commands.closureDeps
+      if options.deploy
+        commands["closureCompilation"] = Commands.closureCompilation
     
     else
       return
@@ -440,11 +443,6 @@ clearScreen = ->
   `process.stdout.write('\033[2J')`
   # set cursor position
   `process.stdout.write('\033[1;3H')`
-
-addDepsAndCompilation = (commands) ->
-  commands["closureDeps"] = Commands.closureDeps
-  return if !options.deploy
-  commands["closureCompilation"] = Commands.closureCompilation
 
 runCommands = (commands, complete, errors = []) ->
   commandsRunning = true

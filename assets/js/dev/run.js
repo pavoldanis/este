@@ -42,7 +42,7 @@
     delete .css on start
 */
 
-var Commands, addDepsAndCompilation, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, nodebase, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
+var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, nodebase, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -469,14 +469,14 @@ watchPaths = function(callback) {
 };
 
 onPathChange = function(path, dir) {
-  var addReloadBrowserNowCommand, commands, notifyAction;
+  var addBrowserLiveReloadCommand, commands, notifyAction;
   if (dir) {
     watchPaths(onPathChange);
     return;
   }
   commands = {};
   notifyAction = 'page';
-  addReloadBrowserNowCommand = function(action) {
+  addBrowserLiveReloadCommand = function(action) {
     if (action == null) {
       action = notifyAction;
     }
@@ -497,19 +497,24 @@ onPathChange = function(path, dir) {
       commands["coffeeForClosure"] = function(callback) {
         return Commands.coffeeForClosure(callback, path.replace('.coffee', '.js'));
       };
-      if (!options.deploy) {
-        addReloadBrowserNowCommand();
-      }
-      addDepsAndCompilation(commands);
+      commands["closureDeps"] = Commands.closureDeps;
       commands["mochaTests"] = Commands.mochaTests;
+      if (options.deploy) {
+        commands["closureCompilation"] = Commands.closureCompilation;
+      } else {
+        addBrowserLiveReloadCommand();
+      }
       break;
     case '.styl':
       commands["stylusStyle: " + path] = "        node assets/js/dev/node_modules/stylus/bin/stylus          --compress " + path;
-      addReloadBrowserNowCommand('styles');
+      addBrowserLiveReloadCommand('styles');
       break;
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);
-      addDepsAndCompilation(commands);
+      commands["closureDeps"] = Commands.closureDeps;
+      if (options.deploy) {
+        commands["closureCompilation"] = Commands.closureCompilation;
+      }
       break;
     default:
       return;
@@ -528,14 +533,6 @@ onPathChange = function(path, dir) {
 clearScreen = function() {
   process.stdout.write('\033[2J');
   return process.stdout.write('\033[1;3H');
-};
-
-addDepsAndCompilation = function(commands) {
-  commands["closureDeps"] = Commands.closureDeps;
-  if (!options.deploy) {
-    return;
-  }
-  return commands["closureCompilation"] = Commands.closureCompilation;
 };
 
 runCommands = function(commands, complete, errors) {

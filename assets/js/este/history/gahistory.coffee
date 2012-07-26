@@ -39,7 +39,7 @@ goog.scope ->
   `var _ = este.history.GAHistory`
 
   ###*
-    @param {goog.events.BrowserEvent} e
+    @param {goog.history.Event} e
   ###
   _::onNavigate = (e) ->
     goog.base @, 'onNavigate', e
