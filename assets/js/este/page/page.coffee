@@ -1,11 +1,6 @@
 ###*
   @fileoverview visionmedia/page.js for Google Closure.
-
-  todo
-    tdd driven redesign
-    demos
-    hash and IE support
-
+  @deprecated It was just an experiment.
 ###
 goog.provide 'este.Page'
 
