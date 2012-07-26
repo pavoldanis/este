@@ -1,11 +1,14 @@
 ###*
   @fileoverview HTML5 pushState and hashchange history.
+  Facade for goog.History and goog.history.Html5History.
+  It dispatches goog.history.Event.
 ###
 
 goog.provide 'este.History'
 
 goog.require 'goog.History'
 goog.require 'goog.history.Html5History'
+goog.require 'goog.history.Event'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.events.EventHandler'
 goog.require 'goog.dom'
@@ -15,7 +18,8 @@ goog.require 'este.history.TokenTransformer'
 ###*
   @param {boolean=} forceHash If true, este.History will degrade to hash even
   if html5history is supported.
-  @param {string=} pathPrefix
+  @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
+  The path prefix should start and end with slash.
   @constructor
   @extends {goog.events.EventTarget}
 ###
@@ -101,7 +105,7 @@ goog.scope ->
       @history = new goog.History false, undefined, input
 
   ###*
-    @param {goog.events.BrowserEvent} e
+    @param {goog.history.Event} e
     @protected
   ###
   _::onNavigate = (e) ->
@@ -114,6 +118,7 @@ goog.scope ->
     @override
   ###
   _::disposeInternal = ->
+    @history?.dispose()
     @handler?.dispose()
     goog.base @, 'disposeInternal'
     return
