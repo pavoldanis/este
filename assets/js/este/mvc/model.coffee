@@ -77,28 +77,25 @@ goog.require 'goog.object'
 goog.require 'este.mvc.setters'
 goog.require 'este.mvc.validators'
 
-###*
-  @param {Object=} json
-  @constructor
-  @extends {goog.events.EventTarget}
-###
-este.mvc.Model = (json = {}) ->
-  goog.base @
-  @attributes = {}
-  @schema ?= {}
-  json['id'] ?= goog.string.getRandomString()
-  @setInternal json
-  return
+class este.mvc.Model extends goog.events.EventTarget
 
-goog.inherits este.mvc.Model, goog.events.EventTarget
-  
-goog.scope ->
-  `var _ = este.mvc.Model`
-  
+  ###*
+    @param {Object=} json
+    @constructor
+    @extends {goog.events.EventTarget}
+  ###
+  constructor: (json = {}) ->
+    goog.base @
+    @attributes = {}
+    @schema ?= {}
+    json['id'] ?= goog.string.getRandomString()
+    @setInternal json
+    return
+
   ###*
     @enum {string}
   ###
-  _.EventType =
+  @EventType:
     CHANGE: 'change'
 
   ###*
@@ -106,14 +103,15 @@ goog.scope ->
     @param {string} key
     @return {string}
   ###
-  _.getKey = (key) -> '$' + key
+  @getKey: (key) ->
+    '$' + key
 
   ###*
     @param {Object|string} object Object of key value pairs or string key.
     @param {*=} opt_value value or nothing.
     @return {Object}
   ###
-  _.getObject = (object, opt_value) ->
+  @getObject: (object, opt_value) ->
     return object if !goog.isString object
     key = object
     object = {}
@@ -124,25 +122,25 @@ goog.scope ->
     @type {Object}
     @protected
   ###
-  _::attributes
+  attributes: null
 
   ###*
     @type {Object}
     @protected
   ###
-  _::schema
+  schema: null
 
   ###*
-    Returns model's attribute.
+    Returns models attribute.
     @param {string|Array.<string>} key
     @return {*}
   ###
-  _::get = (key) ->
+  get: (key) ->
     if typeof key != 'string'
       object = {}
       object[k] = @get k for k in key
       return object
-    value = @attributes[_.getKey(key)]
+    value = @attributes[Model.getKey(key)]
     meta = @schema[key]?['meta']
     return meta @ if meta
     get = @schema[key]?.get
@@ -158,8 +156,8 @@ goog.scope ->
     @param {*=} opt_value value or nothing.
     @return {Object} errors object, ex. name: required: true if error
   ###
-  _::set = (object, opt_value) ->
-    object = _.getObject object, opt_value
+  set: (object, opt_value) ->
+    object = Model.getObject object, opt_value
     changes = @getChanges object
     return null if !changes
     errors = @getErrors changes
@@ -174,9 +172,9 @@ goog.scope ->
     @param {Object} object
     @protected
   ###
-  _::setInternal = (object) ->
+  setInternal: (object) ->
     for key, value of object
-      @attributes[_.getKey(key)] = value
+      @attributes[Model.getKey(key)] = value
       continue if !(value instanceof goog.events.EventTarget)
       value.setParentEventTarget @
     return
@@ -187,7 +185,7 @@ goog.scope ->
     @return {Object}
     @protected
   ###
-  _::getChanges = (object) ->
+  getChanges: (object) ->
     changes = null
     for key, value of object
       set = @schema[key]?.set
@@ -202,7 +200,7 @@ goog.scope ->
     @return {Object}
     @protected
   ###
-  _::getErrors = (object) ->
+  getErrors: (object) ->
     errors = null
     for key, value of object
       validators = @schema[key]?['validators']
@@ -218,24 +216,24 @@ goog.scope ->
     @param {Object} changed
     @protected
   ###
-  _::dispatchChangeEvent = (changed) ->
+  dispatchChangeEvent: (changed) ->
     @dispatchEvent
-      type: _.EventType.CHANGE
+      type: Model.EventType.CHANGE
       changed: changed
 
   ###*
     @param {string} key
     @return {boolean}
   ###
-  _::has = (key) ->
-    _.getKey(key) of @attributes
+  has: (key) ->
+    Model.getKey(key) of @attributes
 
   ###*
     @param {string} key
     @return {boolean} true if removed
   ###
-  _::remove = (key) ->
-    _key = _.getKey key
+  remove: (key) ->
+    _key = Model.getKey key
     return false if !(_key of @attributes)
     value = @attributes[_key]
     value.setParentEventTarget null if value instanceof goog.events.EventTarget
@@ -250,7 +248,7 @@ goog.scope ->
     @param {boolean=} withoutMetas
     @return {Object}
   ###
-  _::toJson = (withoutMetas = false) ->
+  toJson: (withoutMetas = false) ->
     object = {}
     for key, value of @attributes
       origKey = key.substring 1
@@ -266,10 +264,13 @@ goog.scope ->
   ###*
     @return {Object} errors object, ex. name: required: true if error
   ###
-  _::validate = ->
+  validate: ->
     keys = (key for key, value of @schema when value?['validators'])
     values = @get keys
     `values = /** @type {Object} */ (values)`
     @getErrors values
 
-  return
+
+
+
+
