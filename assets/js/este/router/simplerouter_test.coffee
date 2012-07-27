@@ -196,3 +196,14 @@ suite 'este.router.SimpleRouter', ->
           done()
         router.start()
         dispatchHistoryNavigateEvent 'user/12.json'
+
+  suite 'remove route', ->
+    test 'should work for string route', ->
+      called = false
+      router.add 'user/:user', (params) ->
+        assert.equal params['user'], 'joe'
+        called = true
+      router.start()
+      router.remove 'user/:user'
+      dispatchHistoryNavigateEvent 'user/joe'
+      assert.isFalse called

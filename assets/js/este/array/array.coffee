@@ -8,6 +8,7 @@ goog.require 'goog.array'
 
 ###*
   Removes all values that satisfies the given condition.
+  todo: optimize it
   @param {goog.array.ArrayLike} arr
   @param {Function} f The function to call for every element. This function
   takes 3 arguments (the element, the index and the array) and should

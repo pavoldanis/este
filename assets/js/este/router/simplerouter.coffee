@@ -1,16 +1,10 @@
 ###*
   @fileoverview este.router.SimpleRouter.
-
-  Some code and regular expressions borrowed from Page.js (by visionmedia).
-
-  todo
-    routes removing
-    tests for strict and sensitive routes
-    404 aka *
 ###
 goog.provide 'este.router.SimpleRouter'
 
 goog.require 'este.Base'
+goog.require 'este.array'
 
 class este.router.SimpleRouter extends este.Base
 
@@ -43,6 +37,14 @@ class este.router.SimpleRouter extends este.Base
   add: (path, show, options = {}) ->
     route = new este.router.Route path, show, options
     @routes.push route
+
+  ###*
+    @param {string|RegExp} path
+    @return {boolean}
+  ###
+  remove: (path) ->
+    este.array.removeAllIf @routes, (item) ->
+      item.path == path
 
   ###*
     @param {string} token
@@ -112,7 +114,6 @@ class este.router.Route
 
   ###*
     @type {string|RegExp}
-    @protected
   ###
   path: null
 
@@ -176,38 +177,39 @@ class este.router.Route
     @param {string} path
   ###
   process: (path) ->
-    params = []
-    if @match path, params
+    matches = @getMatches path
+    if matches
+      params = @getParams matches
       @show params
-    else
-      @hide() if @hide
+      return
+    @hide() if @hide
 
   ###*
     @param {string} path
-    @param {Array} params
+    @return {Array.<string>}
     @protected
   ###
-  match: (path, params) ->
+  getMatches: (path) ->
     qsIndex = path.indexOf '?'
     pathname = if qsIndex > -1 then path.slice(0, qsIndex) else path
-    matches = @regexp.exec pathname
-    return false if !matches
-    
+    @regexp.exec pathname
+
+  ###*
+    @param {Array.<string>} matches
+    @return {Array}
+    @protected
+  ###
+  getParams: (matches) ->
+    params = []
     for match, i in matches
       continue if !i
-      
       key = @keys[i - 1]
       value = if typeof(match) == 'string'
         decodeURIComponent match
       else
         match
-
       if key
-        params[key.name] = if params[key.name] != undefined
-          params[key.name]
-        else
-          value
+        params[key.name] ?= value
       else
         params.push value
-
-    true
+    params
