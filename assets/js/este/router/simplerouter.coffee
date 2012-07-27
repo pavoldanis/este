@@ -118,14 +118,12 @@ class este.router.Route
   path: null
 
   ###*
-    todo: add signature
     @type {Function}
     @protected
   ###
   show: null
 
   ###*
-    todo: add signature
     @type {Function|undefined}
     @protected
   ###
