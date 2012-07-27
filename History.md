@@ -1,3 +1,9 @@
+##07/27/12
+
+  - build fixed
+  - `este.mvc.Model` converted into CoffeeScript Class
+  - `este.router.SimpleRouter` proposal
+
 ##07/22/12
 
   - CoffeeScript class syntax for Google Closure! (dancing)
