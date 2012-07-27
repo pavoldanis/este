@@ -1,13 +1,13 @@
 ###*
-  @fileoverview Validators for este.mvc.Model
+  @fileoverview Validators for este.Model
 ###
 
-goog.provide 'este.mvc.validators'
+goog.provide 'este.model.validators'
 
 goog.require 'goog.string'
 
 goog.scope ->
-  `var _ = este.mvc.validators`
+  `var _ = este.model.validators`
 
   ###*
     @param {string} value

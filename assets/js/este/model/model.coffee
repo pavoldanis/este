@@ -16,13 +16,13 @@
     
     Person::schema = 
       'firstName':
-        'set': este.mvc.setters.trim
+        'set': este.model.setters.trim
         'validators':
-          'required': este.mvc.validators.required
+          'required': este.model.validators.required
       'lastName':
-        'set': este.mvc.setters.trim
+        'set': este.model.setters.trim
         'validators':
-          'required': este.mvc.validators.required
+          'required': este.model.validators.required
       'name':
         'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
       'age':
@@ -66,18 +66,18 @@
     consider model.bind 'firstName', (firstName) -> ..
 ###
 
-goog.provide 'este.mvc.Model'
-goog.provide 'este.mvc.Model.EventType'
+goog.provide 'este.Model'
+goog.provide 'este.Model.EventType'
 
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.string'
 goog.require 'este.json'
 goog.require 'goog.object'
 
-goog.require 'este.mvc.setters'
-goog.require 'este.mvc.validators'
+goog.require 'este.model.setters'
+goog.require 'este.model.validators'
 
-class este.mvc.Model extends goog.events.EventTarget
+class este.Model extends goog.events.EventTarget
 
   ###*
     @param {Object=} json

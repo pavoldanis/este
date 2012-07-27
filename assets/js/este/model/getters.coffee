@@ -1,13 +1,13 @@
 ###*
-  @fileoverview Getters for este.mvc.Model
+  @fileoverview Getters for este.Model
 ###
 
-goog.provide 'este.mvc.getters'
+goog.provide 'este.model.getters'
 
 goog.require 'goog.string'
 
 goog.scope ->
-  `var _ = este.mvc.getters`
+  `var _ = este.model.getters`
 
   ###*
     @param {string} value

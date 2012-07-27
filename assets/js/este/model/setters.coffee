@@ -1,13 +1,13 @@
 ###*
-  @fileoverview Setters for este.mvc.Model
+  @fileoverview Setters for este.Model
 ###
 
-goog.provide 'este.mvc.setters'
+goog.provide 'este.model.setters'
 
 goog.require 'goog.string'
 
 goog.scope ->
-  `var _ = este.mvc.setters`
+  `var _ = este.model.setters`
 
   ###*
     @param {string} value

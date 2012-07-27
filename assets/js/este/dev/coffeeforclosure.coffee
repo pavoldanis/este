@@ -10,7 +10,7 @@ goog.provide 'este.dev.CoffeeForClosure'
 ###
 este.dev.coffeeForClosure = (source) ->
   coffeeForClosure = new este.dev.CoffeeForClosure source
-  coffeeForClosure.fix()
+  coffeeForClosure.fixClass()
 
 ###*
   @param {string} source
@@ -54,14 +54,16 @@ goog.scope ->
   ###*
     @return {string}
   ###
-  _::fix = ->
+  _::fixClass = ->
+    original = @source
+
     @storeReplaces()
-    source = null
+    lastState = null
 
     loop
       className = @getClassName()
-      break if !className || source == @source
-      source = @source
+      break if !className || lastState == @source
+      lastState = @source
 
       superClass = @getSuperClass className
       
@@ -82,8 +84,9 @@ goog.scope ->
       
       @removeWrapper className, namespace, superClass
 
-    @addNote()
     @restoreReplaces()
+    if original != @source
+      @source = "// Coffe Class fixed for Closure Compiler by este dev stack\n" + @source
     @source
 
   ###*
@@ -232,13 +235,6 @@ goog.scope ->
     # outro
     regex = new RegExp "return #{className};[\\s]*\\}\\)\\((#{superClass})?\\);", 'g'
     @remove regex
-
-  ###*
-    @protected
-  ###
-  _::addNote = ->
-    @source =
-      "// Fixed coffee code for Closure Compiler by este dev stack\n" + @source
 
   ###*
     @protected

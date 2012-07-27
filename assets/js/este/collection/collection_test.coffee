@@ -1,9 +1,9 @@
-suite 'este.mvc.Collection', ->
+suite 'este.Collection', ->
 
   # todo: sort compare tests
 
-  Collection = este.mvc.Collection
-  Model = este.mvc.Model
+  Collection = este.Collection
+  Model = este.Model
   Child = null
   collection = null
 

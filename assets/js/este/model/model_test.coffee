@@ -1,10 +1,10 @@
-suite 'este.mvc.Model', ->
+suite 'este.Model', ->
 
   Person = (attrs) ->
     goog.base @, attrs
     return
 
-  goog.inherits Person, este.mvc.Model
+  goog.inherits Person, este.Model
 
   trimSetter = (value) -> goog.string.trim value || ''
   requiredValidator = (value) -> value && goog.string.trim(value).length

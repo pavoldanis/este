@@ -1,3 +1,9 @@
+##07/28/12
+
+  - breaking changes: `este.oop` removed, `este.mvc.*` renamed
+    - `este.mvc.Model` -> `este.Model`
+    - `este.mvc.Collection` -> `este.Collection`
+
 ##07/27/12
 
   - build fixed

@@ -17,7 +17,7 @@
     docs&examples (see tests now)
 ###
 
-goog.provide 'este.mvc.Collection'
+goog.provide 'este.Collection'
 
 goog.require 'goog.array'
 goog.require 'goog.events.EventTarget'
@@ -28,16 +28,16 @@ goog.require 'goog.events.EventTarget'
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.mvc.Collection = (array, @model = null) ->
+este.Collection = (array, @model = null) ->
   goog.base @
   @array = []
   @addMany array if array
   return
 
-goog.inherits este.mvc.Collection, goog.events.EventTarget
+goog.inherits este.Collection, goog.events.EventTarget
   
 goog.scope ->
-  `var _ = este.mvc.Collection`
+  `var _ = este.Collection`
 
   ###*
     @enum {string}

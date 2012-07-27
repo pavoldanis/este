@@ -1,5 +1,6 @@
 ###*
   @fileoverview Router.
+  @deprecated Use some of new routers.
 ###
 
 goog.provide 'este.mvc.Router'
