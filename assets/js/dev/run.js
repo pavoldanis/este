@@ -64,10 +64,9 @@ ws = require('websocket.io');
   nodeBase = fs.readFileSync(googBasePath, 'utf8');
   nodeBase = nodeBase.replace('var goog = goog || {};', 'global.goog = global.goog || {};');
   nodeBase = nodeBase.replace('goog.global = this;', 'goog.global = global;');
-  return fs.writeFileSync(googNodeBasePath, nodeBase, 'utf8');
+  fs.writeFileSync(googNodeBasePath, nodeBase, 'utf8');
+  return require('./nodebase');
 })();
-
-require('./nodebase');
 
 coffeeForClosure = require('./../este/dev/coffeeforclosure').coffeeForClosure;
 
