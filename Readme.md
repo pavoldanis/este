@@ -10,8 +10,9 @@ Browser is automatically reloaded when needed. Tested on mac, linux, win.
 ###How to use it?
   
   - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
-  - Clone repository
-  - Type `node run app` into console
+  - `git clone http://github.com/Steida/este.git`
+  - `cd este`
+  - `node run app`
   - Open browser at `localhost:8000`
   - Build something beautiful
 
