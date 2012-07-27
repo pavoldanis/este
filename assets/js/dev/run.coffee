@@ -58,8 +58,10 @@ do ->
   fs.writeFileSync googNodeBasePath, nodeBase, 'utf8'
   require './nodebase'
 
-# not we can use closure classes in nodejs
-{coffeeForClosure} = require './../este/dev/coffeeforclosure'
+coffeeForClosure = null
+lazyRequireCoffeeForClosure = ->
+  return if coffeeForClosure
+  {coffeeForClosure} = require './../este/dev/coffeeforclosure'
 
 options =
   project: null
@@ -133,6 +135,8 @@ Commands =
     --output assets/js assets/js"
 
   coffeeForClosure: (callback, path) ->
+    lazyRequireCoffeeForClosure()
+
     if path
       paths = [path]
     else
