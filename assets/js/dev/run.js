@@ -42,7 +42,7 @@
     delete .css on start
 */
 
-var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, nodebase, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
+var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -57,7 +57,17 @@ pathModule = require('path');
 
 ws = require('websocket.io');
 
-nodebase = require('./nodebase');
+(function() {
+  var googBasePath, googNodeBasePath, nodeBase;
+  googBasePath = './assets/js/google-closure/closure/goog/base.js';
+  googNodeBasePath = './assets/js/dev/nodebase.js';
+  nodeBase = fs.readFileSync(googBasePath, 'utf8');
+  nodeBase = nodeBase.replace('var goog = goog || {};', 'global.goog = global.goog || {};');
+  nodeBase = nodeBase.replace('goog.global = this;', 'goog.global = global;');
+  return fs.writeFileSync(googNodeBasePath, nodeBase, 'utf8');
+})();
+
+require('./nodebase');
 
 coffeeForClosure = require('./../este/dev/coffeeforclosure').coffeeForClosure;
 

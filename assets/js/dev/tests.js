@@ -6,7 +6,7 @@
     make it even faster
 */
 
-var exec, fs, getAllFiles, getDeps, getDirectoryFiles, getNamespacesToTest, getTestFiles, resolveDeps, writeNodeGoogBase;
+var exec, fs, getAllFiles, getDeps, getDirectoryFiles, getNamespacesToTest, getTestFiles, resolveDeps;
 
 fs = require('fs');
 
@@ -134,16 +134,6 @@ resolveDeps = function(namespaces, deps) {
   return files;
 };
 
-writeNodeGoogBase = function() {
-  var googBasePath, googNodeBasePath, nodeBase;
-  googBasePath = './assets/js/google-closure/closure/goog/base.js';
-  googNodeBasePath = './assets/js/dev/nodebase.js';
-  nodeBase = fs.readFileSync(googBasePath, 'utf8');
-  nodeBase = nodeBase.replace('var goog = goog || {};', 'global.goog = global.goog || {};');
-  nodeBase = nodeBase.replace('goog.global = this;', 'goog.global = global;');
-  return fs.writeFileSync(googNodeBasePath, nodeBase, 'utf8');
-};
-
 /**
   @param {Array.<string>} depsFiles 
   @param {Object.<string>} testFiles
@@ -168,7 +158,6 @@ exports.run = function(callback) {
   testFiles = getTestFiles();
   namespaces = getNamespacesToTest(testFiles, deps);
   depsFiles = resolveDeps(namespaces, deps);
-  writeNodeGoogBase();
   files = getAllFiles(depsFiles, testFiles);
   command = "node assets/js/dev/node_modules/mocha/bin/mocha    --colors    --timeout 50    --ui tdd    --reporter min " + (files.join(' '));
   return exec(command, callback);
