@@ -47,7 +47,20 @@ tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
 ws = require 'websocket.io'
-nodebase = require './nodebase'
+
+# a little fix for closure to work in nodejs
+do ->
+  googBasePath = './assets/js/google-closure/closure/goog/base.js'
+  googNodeBasePath = './assets/js/dev/nodebase.js'
+  nodeBase = fs.readFileSync googBasePath, 'utf8'
+  nodeBase = nodeBase.replace 'var goog = goog || {};', 'global.goog = global.goog || {};'
+  nodeBase = nodeBase.replace 'goog.global = this;', 'goog.global = global;'
+  fs.writeFileSync googNodeBasePath, nodeBase, 'utf8'
+
+# use changed closure base
+require './nodebase'
+
+# not we can use closure classes in nodejs
 {coffeeForClosure} = require './../este/dev/coffeeforclosure'
 
 options =

@@ -83,14 +83,6 @@ resolveDeps = (namespaces, deps) ->
   resolve namespaces
   files
 
-writeNodeGoogBase = ->
-  googBasePath = './assets/js/google-closure/closure/goog/base.js'
-  googNodeBasePath = './assets/js/dev/nodebase.js'
-  nodeBase = fs.readFileSync googBasePath, 'utf8'
-  nodeBase = nodeBase.replace 'var goog = goog || {};', 'global.goog = global.goog || {};'
-  nodeBase = nodeBase.replace 'goog.global = this;', 'goog.global = global;'
-  fs.writeFileSync googNodeBasePath, nodeBase, 'utf8'
-
 ###*
   @param {Array.<string>} depsFiles 
   @param {Object.<string>} testFiles
@@ -111,7 +103,6 @@ exports.run = (callback) ->
   testFiles = getTestFiles()
   namespaces = getNamespacesToTest testFiles, deps
   depsFiles = resolveDeps namespaces, deps
-  writeNodeGoogBase()
   files = getAllFiles depsFiles, testFiles
   command = "node assets/js/dev/node_modules/mocha/bin/mocha
     --colors
@@ -121,14 +112,3 @@ exports.run = (callback) ->
   exec command, callback
 
 exports.getDeps = getDeps
-
-
-
-
-
-
-
-
-
-
-
