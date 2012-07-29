@@ -456,7 +456,7 @@ getSoyCommand = function(paths) {
 
 watchPaths = function(callback) {
   var path, paths, _fn, _i, _len;
-  paths = getPaths('assets', ['.coffee', '.styl', '.soy'], true);
+  paths = getPaths('assets', ['.coffee', '.styl', '.soy', '.html'], true);
   paths.push("" + options.project + "-template.html");
   paths.push('assets/js/dev/run.coffee');
   paths.push('assets/js/dev/mocks.coffee');
@@ -487,20 +487,15 @@ watchPaths = function(callback) {
 };
 
 onPathChange = function(path, dir) {
-  var addBrowserLiveReloadCommand, commands, notifyAction;
+  var addBrowserLiveReloadCommand, commands;
   if (dir) {
     watchPaths(onPathChange);
     return;
   }
   commands = {};
-  notifyAction = 'page';
   addBrowserLiveReloadCommand = function(action) {
-    if (action == null) {
-      action = notifyAction;
-    }
     return commands["reload browser"] = function(callback) {
       notifyClient(action);
-      notifyAction = null;
       return callback();
     };
   };
@@ -509,6 +504,7 @@ onPathChange = function(path, dir) {
       if (path === ("" + options.project + "-template.html")) {
         commands['projectTemplate'] = Commands.projectTemplate;
       }
+      addBrowserLiveReloadCommand('page');
       break;
     case '.coffee':
       commands["coffeeScript: " + path] = "        node assets/js/dev/node_modules/coffee-script/bin/coffee          --compile --bare " + path;
@@ -520,7 +516,7 @@ onPathChange = function(path, dir) {
       if (options.deploy) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {
-        addBrowserLiveReloadCommand();
+        addBrowserLiveReloadCommand('page');
       }
       break;
     case '.styl':
@@ -533,6 +529,7 @@ onPathChange = function(path, dir) {
       if (options.deploy) {
         commands["closureCompilation"] = Commands.closureCompilation;
       }
+      addBrowserLiveReloadCommand('page');
       break;
     default:
       return;
@@ -541,11 +538,7 @@ onPathChange = function(path, dir) {
   if (commandsRunning) {
     return;
   }
-  return runCommands(commands, function() {
-    if (notifyAction) {
-      return notifyClient(notifyAction);
-    }
-  });
+  return runCommands(commands);
 };
 
 clearScreen = function() {

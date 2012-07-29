@@ -374,7 +374,7 @@ getSoyCommand = (paths) ->
 # slower watchFile, because http://nodejs.org/api/fs.html#fs_caveats
 # todo: wait for fix
 watchPaths = (callback) ->
-  paths = getPaths 'assets', ['.coffee', '.styl', '.soy'], true
+  paths = getPaths 'assets', ['.coffee', '.styl', '.soy', '.html'], true
   paths.push "#{options.project}-template.html"
   # todo
   # devCoffees = fs.readdirSync "assets/js/dev/*.coffee"
@@ -404,18 +404,17 @@ onPathChange = (path, dir) ->
     return
 
   commands = {}
-  notifyAction = 'page'
-
-  addBrowserLiveReloadCommand = (action = notifyAction) ->
+  
+  addBrowserLiveReloadCommand = (action) ->
     commands["reload browser"] = (callback) ->
       notifyClient action
-      notifyAction = null
       callback()
 
   switch pathModule.extname path
     when '.html'
       if path == "#{options.project}-template.html"
         commands['projectTemplate'] = Commands.projectTemplate
+      addBrowserLiveReloadCommand 'page'
     
     when '.coffee'
       commands["coffeeScript: #{path}"] = "
@@ -430,7 +429,7 @@ onPathChange = (path, dir) ->
       if options.deploy
         commands["closureCompilation"] = Commands.closureCompilation
       else
-        addBrowserLiveReloadCommand()
+        addBrowserLiveReloadCommand 'page'
     
     when '.styl'
       commands["stylusStyle: #{path}"] = "
@@ -443,14 +442,14 @@ onPathChange = (path, dir) ->
       commands["closureDeps"] = Commands.closureDeps
       if options.deploy
         commands["closureCompilation"] = Commands.closureCompilation
+      addBrowserLiveReloadCommand 'page'
     
     else
       return
 
   clearScreen()
   return if commandsRunning
-  runCommands commands, ->
-    notifyClient notifyAction if notifyAction
+  runCommands commands
 
 clearScreen = ->
   # todo: fix in windows
