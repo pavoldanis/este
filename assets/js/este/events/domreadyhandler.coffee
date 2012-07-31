@@ -6,7 +6,7 @@
 ###
 
 goog.provide 'este.events.domReady'
-goog.provide 'este.events.DomReadyEventHandler'
+goog.provide 'este.events.DomReadyHandler'
 
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.events.EventHandler'
@@ -15,7 +15,7 @@ goog.require 'goog.events.EventHandler'
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.events.DomReadyEventHandler = ->
+este.events.DomReadyHandler = ->
   goog.base @
   if document.readyState == 'complete'
     setTimeout =>
@@ -26,10 +26,10 @@ este.events.DomReadyEventHandler = ->
     @registerEvents()
   return
 
-goog.inherits este.events.DomReadyEventHandler, goog.events.EventTarget
+goog.inherits este.events.DomReadyHandler, goog.events.EventTarget
   
 goog.scope ->
-  `var _ = este.events.DomReadyEventHandler`
+  `var _ = este.events.DomReadyHandler`
 
   ###*
     @enum {string}
@@ -90,7 +90,7 @@ goog.scope ->
 
   return
 
-este.events.domReady = new este.events.DomReadyEventHandler
+este.events.domReady = new este.events.DomReadyHandler
 
 
 

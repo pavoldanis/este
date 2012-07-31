@@ -1,6 +1,6 @@
 ###*
   @fileoverview Event matched by a simple selector, ex.:
-  handler = new este.event.MatchedEventHandler el, [
+  handler = new este.event.MatchedHandler el, [
     id: 123 
     container: '.pw1001'
     child: '.highlightEbook'
@@ -11,35 +11,35 @@
     #e.id == 123
     #e.childIndex = 1
 ###
-goog.provide 'este.event.MatchedEventHandler'
-goog.provide 'este.event.MatchedEventHandler.create'
-goog.provide 'este.event.MatchedEventHandler.Matcher'
+goog.provide 'este.event.MatchedHandler'
+goog.provide 'este.event.MatchedHandler.create'
+goog.provide 'este.event.MatchedHandler.Matcher'
 
 goog.require 'goog.events.EventTarget'
 goog.require 'este.dom'
 
 ###*
   @param {Element} element
-  @param {Array.<este.event.MatchedEventHandler.Matcher>} matchers
+  @param {Array.<este.event.MatchedHandler.Matcher>} matchers
   @param {Function} getChildIndex
   @param {string=} opt_eventType
   @constructor
   @extends {goog.events.EventTarget}
 ###
-este.event.MatchedEventHandler = (@element, @matchers, @getChildIndex, opt_eventType) ->
+este.event.MatchedHandler = (@element, @matchers, @getChildIndex, opt_eventType) ->
   goog.base @
   @listenKey_ = goog.events.listen @element, opt_eventType ? 'click', @
   return
 
-goog.inherits este.event.MatchedEventHandler, goog.events.EventTarget
+goog.inherits este.event.MatchedHandler, goog.events.EventTarget
   
 goog.scope ->
-  `var _ = este.event.MatchedEventHandler`
+  `var _ = este.event.MatchedHandler`
 
   ###*
     @param {Element} element
-    @param {Array.<este.event.MatchedEventHandler.Matcher>} matchers
-    @return {este.event.MatchedEventHandler}
+    @param {Array.<este.event.MatchedHandler.Matcher>} matchers
+    @return {este.event.MatchedHandler}
   ###
   _.create = (element, matchers) ->
     new _ element, matchers, _.getChildIndex
@@ -65,7 +65,7 @@ goog.scope ->
   _::element
 
   ###*
-    @type {Array.<este.event.MatchedEventHandler.Matcher>}
+    @type {Array.<este.event.MatchedHandler.Matcher>}
   ###
   _::matchers
 
@@ -126,4 +126,4 @@ goog.scope ->
 ###*
   @typedef {{id: string, container: string, child: string, link: string}}
 ###
-este.event.MatchedEventHandler.Matcher
+este.event.MatchedHandler.Matcher

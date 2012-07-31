@@ -1,6 +1,6 @@
-suite 'este.event.MatchedEventHandler', ->
+suite 'este.event.MatchedHandler', ->
 
-  MatchedEventHandler = este.event.MatchedEventHandler
+  MatchedEventHandler = este.event.MatchedHandler
   el = null
   matchers = null
   handler = null
@@ -10,7 +10,7 @@ suite 'este.event.MatchedEventHandler', ->
       attachEvent: ->
 
   arrange = (index) ->
-    handler = new este.event.MatchedEventHandler el, matchers, -> index
+    handler = new este.event.MatchedHandler el, matchers, -> index
 
   suite 'click on A in second LI.someClass of UL#someId', ->
     test 'should fire type: click, id: "123", childIndex: 1', (done) ->
