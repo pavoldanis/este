@@ -205,5 +205,11 @@ suite 'este.router.SimpleRouter', ->
         called = true
       router.start()
       router.remove 'user/:user'
-      dispatchHistoryNavigateEvent 'user/joe'
+      dispatchHistoryNavigateEvent 'users/joe'
       assert.isFalse called
+
+  suite 'navigate', ->
+    test 'should call setToken on history object', (done) ->
+      history.setToken = ->
+        done()
+      router.navigate 'foo'

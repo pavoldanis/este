@@ -1,5 +1,6 @@
 ###*
   @fileoverview este.router.SimpleRouter.
+  @see ../demos/simplerouter.html
 ###
 goog.provide 'este.router.SimpleRouter'
 
@@ -50,6 +51,7 @@ class este.router.SimpleRouter extends este.Base
     @param {string} token
   ###
   navigate: (token) ->
+    @history.setToken token
 
   ###*
     Start routing.
