@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.Base. Lightweight base for classes using events.
+  @fileoverview Subclass if you need dispatch or listen events.
 ###
 goog.provide 'este.Base'
 
