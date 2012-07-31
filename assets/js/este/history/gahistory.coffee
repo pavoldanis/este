@@ -7,15 +7,18 @@
 goog.provide 'este.history.GAHistory'
 
 goog.require 'este.History'
+goog.require 'goog.debug.Logger'
 
 ###*
   @param {string} gaAccountId
-  @param {boolean} forceHash If true, este.History will degrade to hash even if html5history is supported
-  @param {string=} pathPrefix
+  @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
+  The path prefix should start and end with slash.
+  @param {boolean=} forceHash If true, este.History will degrade to hash even
+  if html5history is supported.
   @constructor
   @extends {este.History}
 ###
-este.history.GAHistory = (gaAccountId, forceHash, pathPrefix) ->
+este.history.GAHistory = (gaAccountId, pathPrefix, forceHash) ->
   # Initialize Google Analytics async queue
   if !window['_gaq']
     window['_gaq'] = [];
@@ -24,7 +27,7 @@ este.history.GAHistory = (gaAccountId, forceHash, pathPrefix) ->
   window['_gaq'].push(['_setAccount', gaAccountId]);
 
   # Need to call super constructor after we have gaq as it will trigger onNavigate
-  goog.base @, forceHash, pathPrefix
+  goog.base @, pathPrefix, forceHash
 
   # Start loading the script
   `var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
