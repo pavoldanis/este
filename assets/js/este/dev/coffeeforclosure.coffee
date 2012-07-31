@@ -167,9 +167,9 @@ goog.scope ->
   ###
   _::fullQualifyProperties = (className, namespace) ->
     regex = new RegExp className + '\\.(\\w+)', 'g'
-    @replace regex, (match, prop) ->
-      return match if prop == className
-      return match if prop == '__super__'
+    @replace regex, (match, prop, offset) =>
+      return match if /[\.\w]/.test @source.charAt(offset - 1)
+      return match if prop in [className, '__super__']
       namespace + match
 
   ###*

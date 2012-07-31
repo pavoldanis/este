@@ -30,6 +30,7 @@ suite 'este.dev.CoffeeForClosure', ->
       var Person;
 
       goog.provide('example.Person');
+      goog.provide('example.Person.EventType');
 
       example.Person = (function() {
         /**
@@ -39,6 +40,8 @@ suite 'este.dev.CoffeeForClosure', ->
 
         function Person(name) {
           this.name = name;
+          var foo = bla.Person.isSupported();
+          var foo = bla.SomePerson.isSupported();
           this.bla = {};
           this.fok = '$' // dollar sucks for some reason
         }
@@ -76,6 +79,7 @@ suite 'este.dev.CoffeeForClosure', ->
       
 
       goog.provide('example.Person');
+      goog.provide('example.Person.EventType');
 
       
         /**
@@ -85,6 +89,8 @@ suite 'este.dev.CoffeeForClosure', ->
 
         example.Person = function(name) {
           this.name = name;
+          var foo = bla.Person.isSupported();
+          var foo = bla.SomePerson.isSupported();
           this.bla = {};
           this.fok = '$' // dollar sucks for some reason
         }
