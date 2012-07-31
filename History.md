@@ -1,3 +1,12 @@
+##07/31/12
+
+  - `este.dev.CoffeeForClosure` handles also namespaces
+  - shorter este.events handlers names, for example
+    - `este.events.TapEventHandler` to `este.events.TapHandler`
+  - `este.events.TapHandler` demo added
+  - links to demos added, e.g. @see ../demos/lightbox.html etc.
+  - `este.History` refactored
+
 ##07/28/12
 
   - breaking changes: `este.oop` removed, `este.mvc.*` renamed
