@@ -90,7 +90,6 @@ class este.Model extends goog.events.EventTarget
     @schema ?= {}
     json['id'] ?= goog.string.getRandomString()
     @setInternal json
-    return
 
   ###*
     @enum {string}
