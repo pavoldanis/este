@@ -88,7 +88,8 @@ goog.scope ->
   ###
   window.mlog = ->
     message = goog.array.toArray(arguments).join()
-    document.getElementById('devlog').innerHTML = message
+    el = document.getElementById 'devlog'
+    el.innerHTML = message
 
   return
 
