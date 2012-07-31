@@ -3,6 +3,7 @@
 		You can listen what you want with custom filters.
 		Much better solution than querySelectorAll based. Similar to Diego Perini
 		bottom-up approach.
+	@see ../demos/delegation.html
 ###
 goog.provide 'este.events.Delegation'
 goog.provide 'este.events.Delegation.create'
