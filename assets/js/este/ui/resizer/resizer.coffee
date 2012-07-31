@@ -3,6 +3,7 @@
 	todo
 		mouse cursor style is missing on handles when reached from out,
 		chrome rendering bug probably
+	@see ../demos/resizer.html
 ###
 goog.provide 'este.ui.Resizer'
 

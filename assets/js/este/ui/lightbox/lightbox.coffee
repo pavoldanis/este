@@ -2,6 +2,7 @@
 	@fileoverview Canonical lightbox.
 	todo
 		check on iPad, try mousedown
+	@see ../demos/lightbox.html
 ###
 goog.provide 'este.ui.Lightbox'
 
