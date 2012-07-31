@@ -13,7 +13,7 @@
   todo
     tests
     consider outerHTML optimalization
-
+  @see ../demos/dommerge.html
 ###
 goog.provide 'este.dom.merge'
 goog.provide 'este.dom.Merge'
