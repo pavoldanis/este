@@ -62,6 +62,19 @@ suite 'este.router.SimpleRouter', ->
       testRoute 'user/:user', 'user/joe'
       testRoute 'user/:user', 'user/satriani'
 
+    suite 'show should not be called with sensitive true', ->
+      testRoute = (path, token) ->
+        test "path: '#{path}' should match token: '#{token}'", (done) ->
+          router.add path, (->), hide: ->
+            done()
+          , sensitive: true
+          router.start()
+          dispatchHistoryNavigateEvent token
+      testRoute 'Foo', 'foo'
+      testRoute 'Bla', 'bla'
+      testRoute 'User/:user', 'user/joe'
+      testRoute 'User/:user', 'user/satriani'
+
     suite 'hide should work', ->
       testRoute = (path, token) ->
         test "path: '#{path}' should match token: '#{token}'", (done) ->
