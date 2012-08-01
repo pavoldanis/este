@@ -1,20 +1,31 @@
 suite 'este.router.SimpleRouter', ->
-  
+
   SimpleRouter = este.router.SimpleRouter
   history = null
+  tapHandler = null
   router = null
 
   setup ->
     history =
+      setToken: (token) ->
+        dispatchHistoryNavigateEvent token
+      dispose: ->
       setEnabled: ->
       addEventListener: ->
-    router = new este.router.SimpleRouter history
+    tapHandler =
+      dispose: ->
+      addEventListener: ->
+    router = new este.router.SimpleRouter history, tapHandler
 
   dispatchHistoryNavigateEvent = (token) ->
     goog.events.fireListeners history, 'navigate', false,
       type: 'navigate'
       token: token
-      target: history
+
+  dispatchTapHandlerTapEvent = (target) ->
+    goog.events.fireListeners tapHandler, 'tap', false,
+      type: 'tap'
+      target: target
 
   suite 'constructor', ->
     test 'should work', ->
@@ -30,6 +41,11 @@ suite 'este.router.SimpleRouter', ->
   suite 'dispose', ->
     test 'should call history.dispose', (done) ->
       history.dispose = ->
+        done()
+      router.dispose()
+
+    test 'should call tapHandler.dispose', (done) ->
+      tapHandler.dispose = ->
         done()
       router.dispose()
 
@@ -70,6 +86,55 @@ suite 'este.router.SimpleRouter', ->
         dispatchHistoryNavigateEvent 'foo'
         assert.equal count, 2
 
+  suite 'routing via history navigate event', ->
+    suite 'show should work', ->
+      testRoute = (path, token) ->
+        test "path: '#{path}', token: '#{token}'", (done) ->
+          router.add path, ->
+            done()
+          router.start()
+          dispatchTapHandlerTapEvent
+            nodeType: 1
+            getAttribute: (name) ->
+              return token if name == 'este-href'
+      testRoute 'foo', 'foo'
+      testRoute 'bla', 'bla'
+      testRoute 'user/:user', 'user/joe'
+      testRoute 'user/:user', 'user/satriani'
+
+    suite 'show should work', ->
+      testRoute = (path, token) ->
+        test "path: '#{path}', token: '#{token}'", (done) ->
+          router.add path, ->
+            done()
+          router.start()
+          dispatchTapHandlerTapEvent
+            nodeType: 1
+            getAttribute: ->
+            parentNode:
+              nodeType: 1
+              getAttribute: (name) ->
+                return token if name == 'este-href'
+      testRoute 'foo', 'foo'
+      testRoute 'bla', 'bla'
+      testRoute 'user/:user', 'user/joe'
+      testRoute 'user/:user', 'user/satriani'
+
+    suite 'hide should work', ->
+      testRoute = (path, token) ->
+        test "path: '#{path}' should match token: '#{token}'", (done) ->
+          router.add path, (->), hide: ->
+            done()
+          router.start()
+          dispatchTapHandlerTapEvent
+            nodeType: 1
+            getAttribute: (name) ->
+              return token if name == 'este-href'
+      testRoute 'foo', 'bla'
+      testRoute 'bla', 'foo'
+      testRoute 'user/:user', 'product/joe'
+      testRoute 'user/:user', 'product/satriani'
+
   suite 'pathname parsing', ->
     suite 'user/:user', ->
       test 'should work', (done) ->
@@ -86,7 +151,7 @@ suite 'este.router.SimpleRouter', ->
           done()
         router.start()
         dispatchHistoryNavigateEvent 'users'
-    
+
       test 'should work with id', (done) ->
         router.add 'users/:id?', (params) ->
           assert.equal params['id'], 1
@@ -210,6 +275,7 @@ suite 'este.router.SimpleRouter', ->
 
   suite 'navigate', ->
     test 'should call setToken on history object', (done) ->
-      history.setToken = ->
+      history.setToken = (token) ->
+        assert.equal token, 'foo'
         done()
       router.navigate 'foo'

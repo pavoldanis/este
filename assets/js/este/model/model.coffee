@@ -69,11 +69,12 @@
 goog.provide 'este.Model'
 goog.provide 'este.Model.EventType'
 
-goog.require 'goog.events.EventTarget'
-goog.require 'goog.string'
 goog.require 'este.json'
+goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
+goog.require 'goog.string'
 
+goog.require 'este.model.getters'
 goog.require 'este.model.setters'
 goog.require 'este.model.validators'
 

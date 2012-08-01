@@ -1,3 +1,7 @@
+##08/01/12
+  - `este.router.SimpleRouter` released
+  - `este.mvc` namespaces removed
+
 ##07/31/12
 
   - `este.dev.CoffeeForClosure` handles also namespaces
@@ -81,5 +85,5 @@
       - refactored and speeded up, many bugs were fixed
       - documentation
       - onfilechange unit testing is faster
-      - debug option, detail time durations for each command 
+      - debug option, detail time durations for each command
       - `deps.js` is defined for all `assets/js` subdirectories

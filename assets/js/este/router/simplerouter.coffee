@@ -6,15 +6,19 @@ goog.provide 'este.router.SimpleRouter'
 
 goog.require 'este.Base'
 goog.require 'este.array'
+goog.require 'este.events.TapHandler'
+goog.require 'este.router.Route'
+goog.require 'goog.dom'
 
 class este.router.SimpleRouter extends este.Base
 
   ###*
     @param {este.History} history
+    @param {este.events.TapHandler} tapHandler
     @constructor
     @extends {este.Base}
   ###
-  constructor: (@history) ->
+  constructor: (@history, @tapHandler) ->
     super
     @routes = []
 
@@ -23,6 +27,12 @@ class este.router.SimpleRouter extends este.Base
     @protected
   ###
   history: null
+
+  ###*
+    @type {este.events.TapHandler}
+    @protected
+  ###
+  tapHandler: null
 
   ###*
     @type {Array.<este.router.Route>}
@@ -34,10 +44,12 @@ class este.router.SimpleRouter extends este.Base
     @param {string|RegExp} path
     @param {Function} show
     @param {este.router.Route.Options} options
+    @return {este.router.SimpleRouter}
   ###
   add: (path, show, options = {}) ->
     route = new este.router.Route path, show, options
     @routes.push route
+    @
 
   ###*
     @param {string|RegExp} path
@@ -59,7 +71,8 @@ class este.router.SimpleRouter extends este.Base
   start: ->
     @history.setEnabled true
     @getHandler().
-      listen(@history, 'navigate', @onHistoryNavigate)
+      listen(@history, 'navigate', @onHistoryNavigate).
+      listen(@tapHandler, 'tap', @onTapHandlerTap)
     return
 
   ###*
@@ -68,6 +81,38 @@ class este.router.SimpleRouter extends este.Base
   ###
   onHistoryNavigate: (e) ->
     @processRoutes e.token
+
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @protected
+  ###
+  onTapHandlerTap: (e) ->
+    token = @tryGetToken e.target
+    return if !token
+    @history.setToken token
+
+  ###*
+    Anchor can be any element with 'este-href' attribute. Classic anchor is not
+    sufficient for rich client navigation.
+    - native anchors have some nasty behaviour on mobile devices
+    - native anchors can't be nested (like anchor in anchor)
+    - clickable table rows sucks, tr can't have href
+    Why traditional href behaviour isn't overridden? Because sometimes we still
+    need classic non-ajax anchors.
+    @param {Node} target
+    @return {string}
+    @protected
+  ###
+  tryGetToken: (target) ->
+    href = ''
+    goog.dom.getAncestor target, (node) ->
+      return false if node.nodeType != 1
+      href = node.getAttribute('este-href') ||
+        # for validation zealots
+        node.getAttribute('data-este-href')
+      !!href
+    , true
+    href
 
   ###*
     @param {string} token
@@ -84,132 +129,6 @@ class este.router.SimpleRouter extends este.Base
   ###
   disposeInternal: ->
     @history.dispose()
+    @tapHandler.dispose()
     super
     return
-
-###*
-  @fileoverview este.router.Route.
-###
-goog.provide 'este.router.Route'
-
-class este.router.Route
-
-  ###*
-    @param {string|RegExp} path
-    @param {Function} show
-    @param {este.router.Route.Options} options
-    @constructor
-  ###
-  constructor: (@path, @show, options) ->
-    @hide ?= options.hide
-    @keys = []
-    @regexp = @pathToRegexp path, options.sensitive, options.strict
-
-  ###*
-    @typedef {{
-      sensitive: (boolean|undefined),
-      strict: (boolean|undefined),
-      hide: (Function|undefined)
-    }}
-  ###
-  @Options
-
-  ###*
-    @type {string|RegExp}
-  ###
-  path: null
-
-  ###*
-    @type {Function}
-    @protected
-  ###
-  show: null
-
-  ###*
-    @type {Function|undefined}
-    @protected
-  ###
-  hide: null
-
-  ###*
-    @type {RegExp}
-    @protected
-  ###
-  regexp: null
-
-  ###*
-    @type {Array.<Object>}
-    @protected
-  ###
-  keys: null
-
-  ###*
-    @param {string|RegExp} path
-    @param {boolean=} sensitive
-    @param {boolean=} strict
-    @return {RegExp}
-    @protected
-  ###
-  pathToRegexp: (path, sensitive, strict) ->
-    return path if path instanceof RegExp
-    path = path.
-      concat(if strict then '' else '/?').
-      replace(/\/\(/g, '(?:/').
-      replace(/\+/g, '__plus__').
-      replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g,
-        (_, slash, format, key, capture, optional) =>
-          @keys.push name: key, optional: !!optional
-          slash ||= ''
-          (if optional then '' else slash) +
-          ('(?:') +
-          (if optional then slash else '') +
-          (format || '') +
-          (capture || (format && '([^/.]+?)' || '([^/]+?)')) +
-          (')') +
-          (optional || '')
-        ).
-      replace(/([\/.])/g, '\\$1').
-      replace(/__plus__/g, '(.+)').
-      replace(/\*/g, '(.*)')
-    new RegExp "^#{path}$", if sensitive then '' else 'i'
-
-  ###*
-    @param {string} path
-  ###
-  process: (path) ->
-    matches = @getMatches path
-    if matches
-      params = @getParams matches
-      @show params
-      return
-    @hide() if @hide
-
-  ###*
-    @param {string} path
-    @return {Array.<string>}
-    @protected
-  ###
-  getMatches: (path) ->
-    qsIndex = path.indexOf '?'
-    pathname = if qsIndex > -1 then path.slice(0, qsIndex) else path
-    @regexp.exec pathname
-
-  ###*
-    @param {Array.<string>} matches
-    @return {Array}
-    @protected
-  ###
-  getParams: (matches) ->
-    params = []
-    for match, i in matches
-      continue if !i
-      key = @keys[i - 1]
-      value = if typeof(match) == 'string'
-        decodeURIComponent match
-      else
-        match
-      if key
-        params[key.name] ?= value
-      else
-        params.push value
-    params
