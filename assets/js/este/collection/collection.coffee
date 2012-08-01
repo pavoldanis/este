@@ -22,27 +22,24 @@ goog.provide 'este.Collection'
 goog.require 'goog.array'
 goog.require 'goog.events.EventTarget'
 
-###*
-  @param {Array=} array
-  @param {Function=} model
-  @constructor
-  @extends {goog.events.EventTarget}
-###
-este.Collection = (array, @model = null) ->
-  goog.base @
-  @array = []
-  @addMany array if array
-  return
+class este.Collection extends goog.events.EventTarget
 
-goog.inherits este.Collection, goog.events.EventTarget
-  
-goog.scope ->
-  `var _ = este.Collection`
+  ###*
+    @param {Array=} array
+    @param {Function=} model
+    @constructor
+    @extends {goog.events.EventTarget}
+  ###
+  constructor:  (array, @model = null) ->
+    goog.base @
+    @array = []
+    @addMany array if array
+    return
 
   ###*
     @enum {string}
   ###
-  _.EventType =
+  @EventType:
     ADD: 'add'
     REMOVE: 'remove'
     CHANGE: 'change'
@@ -51,44 +48,45 @@ goog.scope ->
     @type {Array}
     @protected
   ###
-  _::array
+  array: null
 
   ###*
     @type {Function}
     @protected
   ###
-  _::model
+  model: null
 
   ###*
     @type {Function}
     @protected
   ###
-  _::sortBy = (item) -> item
+  sortBy: (item) ->
+    item
 
   ###*
     todo: check date
     @type {Function}
     @protected
   ###
-  _::sortCompare = goog.array.defaultCompare
+  sortCompare: goog.array.defaultCompare
 
   ###*
     @type {boolean}
     @protected
   ###
-  _::sortReversed = false
+  sortReversed: false
 
   ###*
     @param {...*} var_args
   ###
-  _::add = (var_args) ->
+  add: (var_args) ->
     @addMany arguments
     return
 
   ###*
     @param {goog.array.ArrayLike} array Objects to add.
   ###
-  _::addMany = (array) ->
+  addMany: (array) ->
     added = []
     for item in array
       item = new @model item if @model && !(item instanceof @model)
@@ -98,7 +96,7 @@ goog.scope ->
     @array.push.apply @array, added
     @sortInternal()
     @dispatchEvent
-      type: _.EventType.ADD
+      type: Collection.EventType.ADD
       added: added
     @dispatchChangeEvent added
 
@@ -106,14 +104,14 @@ goog.scope ->
     @param {*} object Object to remove.
     @return {boolean} True if an element was removed.
   ###
-  _::remove = (object) ->
+  remove: (object) ->
     @removeMany [object]
 
   ###*
     @param {goog.array.ArrayLike} array Objects to remove.
     @return {boolean} True if any element was removed.
   ###
-  _::removeMany = (array) ->
+  removeMany: (array) ->
     removed = []
     for item in array
       removed.push item if goog.array.remove @array, item
@@ -121,7 +119,7 @@ goog.scope ->
         item.setParentEventTarget null
     return false if !removed.length
     @dispatchEvent
-      type: _.EventType.REMOVE
+      type: Collection.EventType.REMOVE
       removed: removed
     @dispatchChangeEvent removed
     true
@@ -129,7 +127,7 @@ goog.scope ->
   ###*
     @param {Function} callback
   ###
-  _::removeIf = (callback) ->
+  removeIf: (callback) ->
     toRemove = goog.array.filter @array, callback
     @removeMany toRemove
 
@@ -138,43 +136,43 @@ goog.scope ->
     @param {Array} items
     @protected
   ###
-  _::dispatchChangeEvent = (items) ->
+  dispatchChangeEvent: (items) ->
     @dispatchEvent
-      type: _.EventType.CHANGE
+      type: Collection.EventType.CHANGE
       items: items
 
   ###*
     @param {*} object The object for which to test.
     @return {boolean} true if obj is present.
   ###
-  _::contains = (object) ->
+  contains: (object) ->
     goog.array.contains @array, object
 
   ###*
     @param {number} index
     @return {*}
   ###
-  _::at = (index) ->
+  at: (index) ->
     @array[index]
 
   ###*
     @return {number}
   ###
-  _::getLength = ->
+  getLength: ->
     @array.length
 
   ###*
     Serialize into JSON.
     @return {Array}
   ###
-  _::toJson = ->
+  toJson: ->
     return @array.slice 0 if !@model
     item.toJson() for item in @array
 
   ###*
     Clear collection.
   ###
-  _::clear = ->
+  clear: ->
     @removeMany @array.slice 0
 
   ###*
@@ -182,7 +180,7 @@ goog.scope ->
     @param {Function} fn
     @return {*}
   ###
-  _::find = (fn) ->
+  find: (fn) ->
     for item in @array
       return item if fn item
     return
@@ -192,7 +190,7 @@ goog.scope ->
     @param {*} id
     @return {*}
   ###
-  _::findById = (id) ->
+  findById: (id) ->
     for item in @array
       itemId = if @model then item.get('id') else item.id
       return item if itemId == id
@@ -201,7 +199,7 @@ goog.scope ->
   ###*
     @param {{by: Function, compare: Function, reversed: boolean}=} options
   ###
-  _::sort = (options) ->
+  sort: (options) ->
     @sortBy = options.by if options?.by != undefined
     @sortCompare = options.compare if options?.compare != undefined
     @sortReversed = options.reversed if options?.reversed != undefined
@@ -212,7 +210,7 @@ goog.scope ->
   ###*
     @protected
   ###
-  _::sortInternal = ->
+  sortInternal: ->
     return if !@sortBy || !@sortCompare
     @array.sort (a, b) =>
       a = @sortBy a
@@ -220,15 +218,3 @@ goog.scope ->
       @sortCompare a, b
     @array.reverse() if @sortReversed
     return
-
-  return
-
-
-
-
-
-
-
-
-
-
