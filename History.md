@@ -1,3 +1,6 @@
+##08/02/12
+  - Mocha and Closure updated
+
 ##08/01/12
   - `este.router.SimpleRouter` released
   - `este.mvc` namespaces removed
