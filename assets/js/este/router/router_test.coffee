@@ -1,6 +1,6 @@
-suite 'este.router.SimpleRouter', ->
+suite 'este.router.Router', ->
 
-  SimpleRouter = este.router.SimpleRouter
+  Router = este.router.Router
   history = null
   tapHandler = null
   router = null
@@ -15,7 +15,7 @@ suite 'este.router.SimpleRouter', ->
     tapHandler =
       dispose: ->
       addEventListener: ->
-    router = new este.router.SimpleRouter history, tapHandler
+    router = new Router history, tapHandler
 
   dispatchHistoryNavigateEvent = (token) ->
     goog.events.fireListeners history, 'navigate', false,
@@ -29,7 +29,7 @@ suite 'este.router.SimpleRouter', ->
 
   suite 'constructor', ->
     test 'should work', ->
-      assert.instanceOf router, este.router.SimpleRouter
+      assert.instanceOf router, este.router.Router
 
   suite 'start', ->
     test 'should call history.setEnabled with true', (done) ->

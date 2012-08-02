@@ -1,8 +1,8 @@
 ###*
-  @fileoverview este.router.SimpleRouter.
-  @see ../demos/simplerouter.html
+  @fileoverview este.router.Router.
+  @see ../demos/router.html
 ###
-goog.provide 'este.router.SimpleRouter'
+goog.provide 'este.router.Router'
 
 goog.require 'este.Base'
 goog.require 'este.array'
@@ -10,7 +10,7 @@ goog.require 'este.events.TapHandler'
 goog.require 'este.router.Route'
 goog.require 'goog.dom'
 
-class este.router.SimpleRouter extends este.Base
+class este.router.Router extends este.Base
 
   ###*
     @param {este.History} history
@@ -44,7 +44,7 @@ class este.router.SimpleRouter extends este.Base
     @param {string|RegExp} path
     @param {Function} show
     @param {este.router.Route.Options} options
-    @return {este.router.SimpleRouter}
+    @return {este.router.Router}
   ###
   add: (path, show, options = {}) ->
     route = new este.router.Route path, show, options

@@ -2,7 +2,7 @@
 <head>
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-  <title>este.router.createSimpleRouter</title>
+  <title>este.router.Router</title>
   <style>
     [este-href] {
       text-decoration: underline;
@@ -21,11 +21,11 @@
   <script>
     goog.require('este.dev.Monitor.create')
     goog.require('goog.Uri')
-    goog.require('este.router.createSimpleRouter')
+    goog.require('este.router.create')
   </script>
 </head>
 <body>
-  <h1>este.router.createSimpleRouter</h1>
+  <h1>este.router.Router</h1>
   <p id='links'>
     <a este-href='kittens' title='Kittens'>Kittens</a> |
     <a este-href='puppies' title='Puppies'>Puppies</a> |
@@ -48,7 +48,7 @@
     este.dev.Monitor.create()
 
     var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var router = este.router.createSimpleRouter(document.body, pathPrefix)
+    var router = este.router.create(document.body, pathPrefix)
     var cur = 'kittens'
     var show = function(id) {
       console.log('show: ' + id)
