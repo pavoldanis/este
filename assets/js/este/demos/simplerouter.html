@@ -48,7 +48,7 @@
     este.dev.Monitor.create()
 
     var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var router = new este.router.createSimpleRouter(document.body, pathPrefix)
+    var router = este.router.createSimpleRouter(document.body, pathPrefix)
     var cur = 'kittens'
     var show = function(id) {
       console.log('show: ' + id)
