@@ -275,6 +275,15 @@ suite 'este.router.Router', ->
         router.start()
         dispatchHistoryNavigateEvent 'user/12.json'
 
+    suite 'regex foo', ->
+      test 'should work', (done) ->
+        router.add /foo\/(\w+)\/(\w+)/, (params) ->
+          assert.equal params[0], 'adam'
+          assert.equal params[1], 'eva'
+          done()
+        router.start()
+        dispatchHistoryNavigateEvent 'foo/adam/eva'
+
   suite 'remove route', ->
     test 'should work for string route', ->
       called = false
