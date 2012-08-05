@@ -8,6 +8,7 @@
 				// *.js we don't want to see because we have CoffeeScript
 				"assets/js/app/*.js",
 				"assets/js/este/*.js",
+				"assets/js/estemvclab/*.js",
 				"assets/js/deps.js",
 				// *.css we don't want to see because we have Stylus
 				"assets/css/*.css"

@@ -19,4 +19,3 @@ este.router.create = (element, pathPrefix, forceHash) ->
   history = new este.History pathPrefix, forceHash
   tapHandler = new este.events.TapHandler element ? document.body
   new este.router.Router history, tapHandler
-
