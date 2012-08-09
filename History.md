@@ -1,3 +1,10 @@
+##08/09/12
+  - este mvc first demo released
+  - git ignores fixed, no need to specify another namespaces
+  - page.js removed, use este.router.Router
+  - Google Closure updated
+  - mocked Elemented firstChild and lastChild
+
 ##08/02/12
   - Mocha and Closure updated
 
