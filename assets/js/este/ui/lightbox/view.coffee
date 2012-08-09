@@ -103,7 +103,7 @@ goog.scope ->
 				@moveToNextImage true
 			when 'este-ui-lightbox-close'
 				@dispatchCloseEvent()
-	
+
 	###*
 		@param {goog.events.BrowserEvent} e
 		@protected
