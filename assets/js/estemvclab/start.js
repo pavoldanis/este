@@ -17,12 +17,13 @@ goog.require('estemvclab.contact.View');
 
 
 estemvclab.start = function(data) {
-  var aboutView, contactView, myApp;
-  myApp = este.app.create();
+  var aboutView, appEl, contactView, myApp;
   aboutView = new estemvclab.about.View;
   contactView = new estemvclab.contact.View;
   aboutView.contactView = contactView;
   contactView.aboutView = aboutView;
+  appEl = document.getElementById('app');
+  myApp = este.app.create(appEl);
   myApp.addViews([aboutView, contactView]);
   return myApp.start();
 };

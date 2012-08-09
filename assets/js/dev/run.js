@@ -11,7 +11,7 @@
   Workflow
     'node run app'
       to start app development
-    
+
     'node run app --deploy'
       build scripts with closure compiler
       [project].html will use one compiled script
@@ -36,10 +36,11 @@
       u know
 
   todo
+    run deps only if needed, browser reload before tests
     remove python dependency, much faster deps
     closure rewrites in separate dir
     check windows platform
-    delete .css on start
+    consider delete .css on start
 */
 
 var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,

@@ -24,19 +24,18 @@ estemvclab.start = (data) ->
   #   ]
   #   myestemvclab.start()
 
-  myApp = este.app.create()
-
   aboutView = new estemvclab.about.View
   contactView = new estemvclab.contact.View
 
   aboutView.contactView = contactView
   contactView.aboutView = aboutView
 
+  appEl = document.getElementById 'app'
+  myApp = este.app.create appEl
   myApp.addViews [
     aboutView
     contactView
   ]
-
   myApp.start()
 
 # ensures the symbol will be visible after compiler renaming

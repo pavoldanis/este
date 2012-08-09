@@ -19,6 +19,17 @@ class estemvclab.contact.View extends este.View
   ###
   aboutView: null
 
-  show: ->
-    super
-    document.title = 'show contact'
+  ###*
+    @param {number} timeout
+  ###
+  show: (timeout) ->
+    # @
+    setTimeout goog.bind(@onLoaded, @, timeout), 2000
+
+  ###*
+    @param {number} count
+    @protected
+  ###
+  onLoaded: (count) ->
+    document.title = 'show contact' + count
+    @done()

@@ -34,8 +34,17 @@ goog.require('este.View');
   estemvclab.about.View.prototype.contactView = null;
 
   estemvclab.about.View.prototype.show = function() {
-    estemvclab.about.View.superClass_.show.apply(this, arguments);
-    return document.title = 'show about';
+    return setTimeout(goog.bind(this.onLoaded, this), 2000);
+  };
+
+  /**
+    @protected
+  */
+
+
+  estemvclab.about.View.prototype.onLoaded = function() {
+    document.title = 'show about';
+    return this.done();
   };
 
   

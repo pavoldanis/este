@@ -10,7 +10,7 @@
   Workflow
     'node run app'
       to start app development
-    
+
     'node run app --deploy'
       build scripts with closure compiler
       [project].html will use one compiled script
@@ -35,10 +35,11 @@
       u know
 
   todo
+    run deps only if needed, browser reload before tests
     remove python dependency, much faster deps
     closure rewrites in separate dir
     check windows platform
-    delete .css on start
+    consider delete .css on start
 
 ###
 fs = require 'fs'
@@ -99,7 +100,7 @@ buildNamespaces = do ->
 Commands =
   projectTemplate: (callback) ->
     timestamp = Date.now().toString 36
-    
+
     if options.deploy
       scripts = """
         <script src='/#{options.outputFilename}?build=#{timestamp}'></script>
@@ -113,7 +114,7 @@ Commands =
       """
 
     filePath = "./#{options.project}-template.html"
-    
+
     if fs.existsSync filePath
       file = fs.readFileSync filePath, 'utf8'
       file = file.replace /###CLOSURESCRIPTS###/g, scripts
@@ -128,7 +129,7 @@ Commands =
     for jsPath in getPaths 'assets', ['.js']
       fs.unlinkSync jsPath
     callback()
-  
+
   coffeeScripts: "node assets/js/dev/node_modules/coffee-script/bin/coffee
     --compile
     --bare
@@ -141,7 +142,7 @@ Commands =
       paths = [path]
     else
       paths = (path for path in getPaths 'assets', ['.js'])
-    
+
     for path in paths
       if  !options.nocoffeefix &&
           path.indexOf('coffeeforclosure_test.js') == -1 &&
@@ -150,7 +151,7 @@ Commands =
             file = fs.readFileSync path, 'utf8'
             file = coffeeForClosure file
             fs.writeFileSync path, file, 'utf8'
-    
+
     callback()
 
   soyTemplates: (callback) ->
@@ -164,13 +165,13 @@ Commands =
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
     #{depsNamespaces}
     > assets/js/deps.js"
-  
+
   closureCompilation: (callback) ->
     if options.debug
       flags = '--formatting=PRETTY_PRINT --debug=true'
     else
       flags = '--define=goog.DEBUG=false'
-    
+
     flagsText = ''
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
 
@@ -191,11 +192,11 @@ Commands =
 
     # strip all loggers from compiled code
     if !options.debug
-      # todo: fix brittle closure debug stuff removing 
+      # todo: fix brittle closure debug stuff removing
       for jsPath in getPaths 'assets', ['.js'], false, false
         source = fs.readFileSync jsPath, 'utf8'
         continue if source.indexOf('this.logger_.') == -1
-        
+
         # preserve google closure scripts
         # we dont want to modify submodule
         if jsPath.indexOf('google-closure/') != -1
@@ -288,7 +289,7 @@ setOptions = (args) ->
         options.project = arg
 
   path = "assets/js/#{options.project}"
-  
+
   if !fs.existsSync path
     console.log "Project directory #{path} does not exists."
     return false
@@ -305,12 +306,12 @@ setOptions = (args) ->
 
 startServer = ->
   server = http.createServer (request, response) ->
-    
+
     filePath = '.' + request.url
     filePath = "./#{options.project}.html" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
     extname = pathModule.extname filePath
-    
+
     switch extname
       when '.js'
         contentType = 'text/javascript'
@@ -324,7 +325,7 @@ startServer = ->
         contentType = 'image/jpeg'
       else
         contentType = 'text/html'
-    
+
     fs.exists filePath, (exists) ->
       if !exists
         response.writeHead 404
@@ -339,7 +340,7 @@ startServer = ->
         response.writeHead 200, 'Content-Type': contentType
         response.end content, 'utf-8'
     return
-      
+
   wsServer = ws.attach server
   wsServer.on 'connection', (p_socket) ->
     socket = p_socket
@@ -379,11 +380,11 @@ watchPaths = (callback) ->
   # todo
   # devCoffees = fs.readdirSync "assets/js/dev/*.coffee"
   # console.log devCoffees
-  paths.push 'assets/js/dev/run.coffee' 
-  paths.push 'assets/js/dev/mocks.coffee' 
-  paths.push 'assets/js/dev/deploy.coffee' 
-  paths.push 'assets/js/dev/tests.coffee' 
-  paths.push 'assets/js/dev/livereload.coffee' 
+  paths.push 'assets/js/dev/run.coffee'
+  paths.push 'assets/js/dev/mocks.coffee'
+  paths.push 'assets/js/dev/deploy.coffee'
+  paths.push 'assets/js/dev/tests.coffee'
+  paths.push 'assets/js/dev/livereload.coffee'
   for path in paths
     continue if watchPaths['$' + path]
     watchPaths['$' + path] = true
@@ -404,7 +405,7 @@ onPathChange = (path, dir) ->
     return
 
   commands = {}
-  
+
   addBrowserLiveReloadCommand = (action) ->
     commands["reload browser"] = (callback) ->
       notifyClient action
@@ -415,7 +416,7 @@ onPathChange = (path, dir) ->
       if path == "#{options.project}-template.html"
         commands['projectTemplate'] = Commands.projectTemplate
       addBrowserLiveReloadCommand 'page'
-    
+
     when '.coffee'
       commands["coffeeScript: #{path}"] = "
         node assets/js/dev/node_modules/coffee-script/bin/coffee
@@ -430,20 +431,20 @@ onPathChange = (path, dir) ->
         commands["closureCompilation"] = Commands.closureCompilation
       else
         addBrowserLiveReloadCommand 'page'
-    
+
     when '.styl'
       commands["stylusStyle: #{path}"] = "
         node assets/js/dev/node_modules/stylus/bin/stylus
           --compress #{path}"
       addBrowserLiveReloadCommand 'styles'
-    
+
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
       commands["closureDeps"] = Commands.closureDeps
       if options.deploy
         commands["closureCompilation"] = Commands.closureCompilation
       addBrowserLiveReloadCommand 'page'
-    
+
     else
       return
 
@@ -462,7 +463,7 @@ runCommands = (commands, complete, errors = []) ->
   commandsRunning = true
   for name, command of commands
     break
-  
+
   if !command
     commandsRunning = false
     if options.verbose && !booting
@@ -472,7 +473,7 @@ runCommands = (commands, complete, errors = []) ->
 
   if name == 'closureCompilation'
     console.log 'Compiling, please wait...'
-  
+
   commandStartTime = Date.now()
   nextCommands = {}
   nextCommands[k] = v for k, v of commands when k != name

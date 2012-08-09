@@ -20,5 +20,14 @@ class estemvclab.about.View extends este.View
   contactView: null
 
   show: ->
-    super
+    setTimeout goog.bind(@onLoaded, @), 2000
+
+  ###*
+    @protected
+  ###
+  onLoaded: ->
     document.title = 'show about'
+    # todo:
+    # getHandler().listen @element, 'click', -> @contactView.show 45
+    # todo2: rewrite it to handle specific click automaticaly
+    @done()
