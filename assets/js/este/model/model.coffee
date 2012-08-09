@@ -1,69 +1,17 @@
 ###*
   @fileoverview Model with attributes and schema.
-  
-  Why not plain objects?
-    - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash/
-    - reusable setters, getters, and validators (=schema)
-    - strings are fine for uncompiled properties from DOM and server
 
-  Example
-    Person = (firstName, lastName, age) ->
-      goog.base @,
-        'firstName': firstName
-        'lastName': lastName
-        'age': age
-      return
-    
-    Person::schema = 
-      'firstName':
-        'set': este.model.setters.trim
-        'validators':
-          'required': este.model.validators.required
-      'lastName':
-        'set': este.model.setters.trim
-        'validators':
-          'required': este.model.validators.required
-      'name':
-        'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
-      'age':
-        'get': (age) -> Number age
+  Why not plain JS objects?
+    - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
+    - reusable setters, getters, and validators
+    - strings are good for uncompiled properties from DOM and server
 
-  How validation works.
-    - invalid values are not set
-    - there are methods with validation: set and validate
-    - both of them returns errors or null
-    - set method validates only passed values
-    - validate method use all defined validators
-    - errors object example
-        name:
-          required: true
-
-  Validation example
-    # new objects or object from JSON
-    joe = new Person json
-    errors = joe.validate()
-    alert goog.object.getKeys errors if errors
-
-    # modify existing object
-    errors = joe.set json
-    alert goog.object.getKeys errors if errors
-
-  Change event example
-    joe = new Person 'Joe', 'Satriani', 55
-    goog.events.listen joe, 'change', (e) ->
-      if 'firstName' of e.changed
-        cookie.set key, value
-    joe.set 'firstName', 'Pepa'
-
-  Tips
-    - modify complex object
-      joe.get('items').add 'foo'
-    - 'inherit' schema?
-      Use goog.object.extend.
+  tips
+    modify complex object: joe.get('items').add 'foo'
+    use goog.object.extend to 'inherit' schema
 
   todo
-    validation and its messages with locals aka "#{prop} can not be blank"
-    consider model.bind 'firstName', (firstName) -> ..
+    - example
 ###
 
 goog.provide 'este.Model'
