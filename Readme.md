@@ -1,5 +1,5 @@
 
-Este - Google Closure project boilerplate and dev stack
+Este.js - more than JS framework
 -------------------------------------------------------
 
 It's my beloved development stack. Run one script, to compile Coffeescript,
@@ -7,8 +7,12 @@ Stylus, Soy templates, update deps.js, run insanely fast unit tests,
 automatically just on file change. One console output, to rule them all.
 Browser is automatically reloaded when needed. Tested on mac, linux, win.
 
+It's well documented and tested javascript framework written in statically
+typed CoffeeScript. It allows you to write powerful and efficient code for
+mobile devices and browsers.
+
 ###How to use it?
-  
+
   - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
   - `git clone http://github.com/Steida/este.git`
   - `cd este`
@@ -28,14 +32,14 @@ Node run options described in `assets/js/dev/run.coffee`.
   - localization
 
 ###Recommended editor: [Sublime Text](http://www.sublimetext.com)
-  
+
 Must-have packages
 
   - Package Control
   - CoffeeScript
   - Stylus
   - SoyTemplate (install from here https://github.com/anvie/SoyTemplate)
-  
+
 Recommended packages
 
   - Clipboard History
@@ -45,10 +49,10 @@ Recommended packages
   - SideBarGit, like Tortoise inside Sublimetext
   - sublime-github, to create and browse GitHub Gists.
   - Jade
-  
+
 My settings and snippets [here](https://github.com/Steida/Sublimetext-user-settings).
 
-## License 
+## License
 
 (The MIT License)
 
