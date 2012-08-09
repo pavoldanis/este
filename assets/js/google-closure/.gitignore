@@ -1,0 +1,7 @@
+!*.*
+.DS_Store
+closure/bin/build/depstree.pyc
+closure/bin/build/jscompiler.pyc
+closure/bin/build/source.pyc
+closure/bin/build/treescan.pyc
+closure/bin/calcdeps.py
