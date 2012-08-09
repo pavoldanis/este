@@ -21,14 +21,23 @@ class Element
 	appendChild: (node) ->
 		@childNodes.push node
 		node.parentNode = @
+		@firstChild = @childNodes[0]
+		@lastChild = @childNodes[@childNodes.length - 1]
 		node
 	removeChild: (node) ->
+		idx = @childNodes.indexOf node
+		@childNodes.splice idx, 1
 		node.parentNode = null
+		@firstChild = @childNodes[0]
+		@lastChild = @childNodes[@childNodes.length - 1]
 		node
 	insertBefore: (newElement, referenceElement) ->
 		idx = @childNodes.indexOf referenceElement
 		@childNodes.splice idx, 0, newElement
 		newElement.parentNode = @
+		@firstChild = @childNodes[0]
+		@lastChild = @childNodes[@childNodes.length - 1]
+		newElement
 	addEventListener: ->
 	querySelector: ->
 	querySelectorAll: ->
@@ -62,7 +71,7 @@ class Document
 				getPropertyValue: -> 0
 			style[k] = v for k, v of element.__style
 			style
-	
+
 global.createMockDocument = ->
 	new Document
 global.document = global.createMockDocument()
