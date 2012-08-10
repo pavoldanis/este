@@ -7,9 +7,11 @@ Stylus, Soy templates, update deps.js, run insanely fast unit tests,
 automatically just on file change. One console output, to rule them all.
 Browser is automatically reloaded when needed. Tested on mac, linux, win.
 
-It's well documented and tested javascript framework written in statically
-typed CoffeeScript. It allows you to write powerful and efficient code for
-mobile devices and browsers.
+It contains well documented and tested javascript framework written in
+statically typed CoffeeScript. It allows you to write powerful and efficient code for mobile devices and browsers.
+
+It's boilerplaite for mobile first MVC web application with unique features
+towards better user experience.
 
 ###How to use it?
 
