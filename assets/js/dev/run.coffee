@@ -35,10 +35,11 @@
       u know
 
   todo
-    run deps only if needed, browser reload before tests
-    remove python dependency, much faster deps
-    closure rewrites in separate dir
-    check windows platform
+    run deps only if needed
+    reload browser before tests
+    remove python dependency
+    closure rewrites in separate dir? hmm.
+    recheck windows platform
     consider delete .css on start
 
 ###
