@@ -52,7 +52,7 @@ Recommended packages
   - sublime-github, to create and browse GitHub Gists.
   - Jade
 
-My settings and snippets [here](https://github.com/Steida/Sublimetext-user-settings).
+My settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings).
 
 ## License
 
