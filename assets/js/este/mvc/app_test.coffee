@@ -28,23 +28,6 @@ suite 'este.mvc.App', ->
       assert.instanceOf app, App
 
   suite 'start', ->
-    test 'should instantiate views with fn', ->
-      args = []
-      view1 = (show) ->
-        args.push show
-        fetch: ->
-      view2 = (show) ->
-        args.push show
-        fetch: ->
-      view3 = (show) ->
-        args.push show
-        fetch: ->
-      app.views = [view1, view2, view3]
-      app.start()
-      assert.isFunction args[0]
-      assert.isFunction args[1]
-      assert.isFunction args[2]
-
     test 'should call fetch(params, done) on view1', (done) ->
       view1 = (app) ->
         fetch: (params, p_done) ->

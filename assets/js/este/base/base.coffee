@@ -13,7 +13,7 @@ class este.Base extends goog.events.EventTarget
     @extends {goog.events.EventTarget}
   ###
   constructor: ->
-    super
+    super()
 
   ###*
     @type {goog.events.EventHandler}

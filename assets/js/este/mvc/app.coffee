@@ -90,7 +90,10 @@ class este.mvc.App extends este.Base
   ###
   instantiateViews: ->
     show = goog.bind @show, @
-    @viewsInstances = (new view show for view in @views)
+    @viewsInstances = (for View in @views
+      view = new View
+      view.show = show
+      view)
 
   ###*
     @param {este.mvc.View} view

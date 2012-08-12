@@ -5,6 +5,7 @@
     use data store for CRUD
       ds.fetch app.user.Model, 3
     async
+    add interface
   WARNING: This is still highly experimental.
 ###
 goog.provide 'este.mvc.View'
@@ -14,20 +15,17 @@ goog.require 'este.Base'
 class este.mvc.View extends este.Base
 
   ###*
-    @param {Function} show
-    @param {Element=} element
     @constructor
     @extends {este.Base}
   ###
-  constructor: (@show, element) ->
-    super
-    @element = element ? document.createElement 'div'
+  constructor: ->
+    super()
+    @element = document.createElement 'div'
 
   ###*
     @type {Function}
-    @protected
   ###
-  show: null
+  show: goog.abstractMethod
 
   ###*
     @type {Element}

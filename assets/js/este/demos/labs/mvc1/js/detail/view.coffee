@@ -8,13 +8,11 @@ goog.require 'este.mvc.View'
 class este.demos.labs.mvc1.detail.View extends este.mvc.View
 
   ###*
-    @param {Function} show
-    @param {Element=} element
     @constructor
     @extends {este.mvc.View}
   ###
-  constructor: (@show, element) ->
-    super @show, element
+  constructor: ->
+    super()
 
   ###*
     @inheritDoc

@@ -9,12 +9,11 @@ suite 'este.mvc.View', ->
   setup ->
     show = ->
     el = {}
-    view = new View show, el
+    view = new View
 
   suite 'constructor', ->
     test 'should work', ->
       assert.instanceOf view, View
-      assert.equal el, view.element
 
     test 'should work with show, el should be created', ->
       view = new View show
