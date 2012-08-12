@@ -71,6 +71,7 @@ options =
   debug: false
   deploy: false
   buildonly: false
+  only: ''
 
 socket = null
 startTime = Date.now()
@@ -177,7 +178,14 @@ Commands =
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
 
     # just for este development, require all namespaces for compilation
-    if options.project == 'este'
+    # this is used when closure is updated, in we want to recompile
+    # everything just for sure that everything works
+    if options.only
+      startjs = ["goog.provide('#{options.project}.start');"]
+      startjs.push "goog.require('#{options.only}');"
+      source = startjs.join '\n'
+      fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
+    else if options.project == 'este'
       deps = tests.getDeps()
       namespaces = []
       for k, v of deps
@@ -286,6 +294,8 @@ setOptions = (args) ->
         options.buildonly = true
       when '--nocoffeefix'
         options.nocoffeefix = true
+      when '--only'
+        options.only = args.shift()
       else
         options.project = arg
 

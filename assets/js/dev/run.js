@@ -36,10 +36,11 @@
       u know
 
   todo
-    run deps only if needed, browser reload before tests
-    remove python dependency, much faster deps
-    closure rewrites in separate dir
-    check windows platform
+    run deps only if needed
+    reload browser before tests
+    remove python dependency
+    closure rewrites in separate dir? hmm.
+    recheck windows platform
     consider delete .css on start
 */
 
@@ -84,7 +85,8 @@ options = {
   verbose: false,
   debug: false,
   deploy: false,
-  buildonly: false
+  buildonly: false,
+  only: ''
 };
 
 socket = null;
@@ -222,7 +224,12 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
-    if (options.project === 'este') {
+    if (options.only) {
+      startjs = ["goog.provide('" + options.project + ".start');"];
+      startjs.push("goog.require('" + options.only + "');");
+      source = startjs.join('\n');
+      fs.writeFileSync("./assets/js/" + options.project + "/start.js", source, 'utf8');
+    } else if (options.project === 'este') {
       deps = tests.getDeps();
       namespaces = [];
       for (k in deps) {
@@ -344,6 +351,9 @@ setOptions = function(args) {
         break;
       case '--nocoffeefix':
         options.nocoffeefix = true;
+        break;
+      case '--only':
+        options.only = args.shift();
         break;
       default:
         options.project = arg;
