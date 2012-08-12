@@ -27,7 +27,7 @@ este.demos.labs.mvc1.start = (data) ->
   ]
 
   goog.events.listen myApp, 'fetch', ->
-    progressEl.innerHTML = 'loading ' + new Date().getMilliseconds()
+    progressEl.innerHTML = 'loading'
   goog.events.listen myApp, 'fetched', ->
     progressEl.innerHTML = 'loaded'
 
