@@ -35,7 +35,7 @@ Node run options described in `assets/js/dev/run.coffee`.
 
 ###Blog
 
-Este.js [blog](http://estejs.tumblr.com).
+[http://estejs.tumblr.com/](http://estejs.tumblr.com).
 
 ###Recommended editor: [Sublime Text](http://www.sublimetext.com)
 
