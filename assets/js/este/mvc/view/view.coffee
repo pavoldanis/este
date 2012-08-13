@@ -23,6 +23,11 @@ class este.mvc.View extends este.Base
     @element = document.createElement 'div'
 
   ###*
+    @type {?string}
+  ###
+  url: null
+
+  ###*
     @type {Function}
   ###
   show: goog.abstractMethod

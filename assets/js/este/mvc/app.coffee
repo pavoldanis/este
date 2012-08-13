@@ -104,17 +104,30 @@ class este.mvc.App extends este.Base
     # todo: map params to named load args
     @requestedView = view
     @dispatchEvent App.EventType.FETCH
-    view.fetch params, goog.bind @onViewFetched, @, view
+    view.fetch params, goog.bind @onViewFetched, @, view, params
 
   ###*
     @param {este.mvc.View} view
+    @param {Object=} params
     @protected
   ###
-  onViewFetched: (view) ->
+  onViewFetched: (view, params) ->
     requestedView = @requestedView
     @requestedView = null if view == requestedView
     return if view != requestedView
+    @switchView view, params
+
+  ###*
+    @param {este.mvc.View} view
+    @param {Object=} params
+    @protected
+  ###
+  switchView: (view, params) ->
     @dispatchEvent App.EventType.FETCHED
+    # if view.url
+    #   foo bla
+    #   mix url and params
+    #   router.foo url
     @layout.setActive view
 
   ###*

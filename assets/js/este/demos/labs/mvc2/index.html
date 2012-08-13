@@ -1,0 +1,23 @@
+<!doctype html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+  <title>este.demos.labs.mvc2</title>
+  <style>
+  </style>
+  <script src='/assets/js/dev/livereload.js'></script>
+  <script src='/assets/js/google-closure/closure/goog/base.js'></script>
+  <script src='/assets/js/deps.js'></script>
+  <script>
+    goog.require('este.demos.labs.mvc2.start')
+  </script>
+</head>
+<body>
+  <h1>este.demos.labs.mvc2</h1>
+  <p>
+    Demo with URL projection. Check browser forward and back buttons behaviour. pushState used where available, hash as fallback.
+  </p>
+  <div style='background: yellow' id='progress'></div>
+  <div id='app'></div>
+  <script>este.demos.labs.mvc2.start()</script>
+</body>
