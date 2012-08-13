@@ -7,62 +7,52 @@
     clone.innerHTML = html
     element and clone are normalized
     then clone is merged with element, see mergeInternal
-    only changed elements are changed
-    node, the order in dom is important
+    only changed elements are touched
 
   todo
     tests
+    better algorithm for temporally injected nodes
     consider outerHTML optimalization
   @see ../demos/dommerge.html
 ###
-goog.provide 'este.dom.merge'
+
 goog.provide 'este.dom.Merge'
+goog.provide 'este.dom.merge'
 
 goog.require 'este.dom'
 goog.require 'este.json'
 
-###*
-  @param {Element} element
-  @param {string} html
-###
-este.dom.merge = (element, html) ->
-  merge = new este.dom.Merge element, html
-  merge.merge()
-  return
+class este.dom.Merge
 
-###*
-  @param {Element} element
-  @param {string} html
-  @constructor
-###
-este.dom.Merge = (@element, @html) ->
-  return
-
-goog.scope ->
-  `var _ = este.dom.Merge`
+  ###*
+    @param {Element} element
+    @param {string} html
+    @constructor
+  ###
+  constructor: (@element, @html) ->
 
   ###*
     @type {Element}
     @protected
   ###
-  _::element
+  element: null
 
   ###*
     @type {string}
     @protected
   ###
-  _::html
+  html: ''
 
   ###*
     Merge html into element.
   ###
-  _::merge = ->
+  merge: ->
     clone = @element.cloneNode false
     clone.innerHTML = @html
-    
+
     clone.normalize()
     @element.normalize()
-    
+
     @mergeInternal @element, clone
 
   ###*
@@ -70,7 +60,7 @@ goog.scope ->
     @param {Element} from
     @protected
   ###
-  _::mergeInternal = (to, from) ->
+  mergeInternal: (to, from) ->
     toNodes = goog.array.toArray to.childNodes
     fromNodes = goog.array.toArray from.childNodes
 
@@ -103,18 +93,17 @@ goog.scope ->
     @param {Element} fromNode
     @protected
   ###
-  _::mergeAttributes = (toNode, fromNode) ->
+  mergeAttributes: (toNode, fromNode) ->
     toNodeAttributes = (attr.name for attr in toNode.attributes)
     toNode.removeAttribute name for name in toNodeAttributes
     toNode.setAttribute attr.name, attr.value for attr in fromNode.attributes
     toNode.value = fromNode.value if fromNode.tagName in ['INPUT', 'TEXTAREA']
 
+###*
+  @param {Element} element
+  @param {string} html
+###
+este.dom.merge = (element, html) ->
+  merge = new este.dom.Merge element, html
+  merge.merge()
   return
-
-
-  
-
-
-
-
-
