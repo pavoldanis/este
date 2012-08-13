@@ -1,52 +1,56 @@
 ###*
-  @fileoverview Dev monitor. Use mlog as console.log.
+  @fileoverview Dev monitor. Small console output at right bottom of screen.
+  Useful for mobile development. It also shows total count of registered
+  listeners. It's useful to see it and be sure, that app does not leak.
+  ex.
+    mlog 'foo'
 ###
 goog.provide 'este.dev.Monitor'
 goog.provide 'este.dev.Monitor.create'
 
 goog.require 'goog.ui.Component'
 
-###*
-  @constructor
-  @extends {goog.ui.Component}
-###
-este.dev.Monitor = ->
-  return
+class este.dev.Monitor extends goog.ui.Component
 
-goog.inherits este.dev.Monitor, goog.ui.Component
-  
-goog.scope ->
-  `var _ = este.dev.Monitor`
+  ###*
+    @constructor
+    @extends {goog.ui.Component}
+  ###
+  constructor: ->
+    super
 
-  _.create = ->
-    monitor = new _
+  ###*
+    @return {este.dev.Monitor}
+  ###
+  @create = ->
+    monitor = new Monitor
     monitor.decorate document.body
     monitor
 
   ###*
     @type {Element}
   ###
-  _::monitor
+  monitor: null
 
   ###*
     @type {Node}
   ###
-  _::left
+  left: null
 
   ###*
     @type {Node}
   ###
-  _::right
+  right: null
 
   ###*
     @type {?number}
   ###
-  _::timer
+  timer: null
 
   ###*
     @inheritDoc
   ###
-  _::decorateInternal = (element) ->
+  decorateInternal: (element) ->
     goog.base @, 'decorateInternal', element
     @monitor = @dom_.createDom 'div'
       # absolute instead of fixed, because obsolete mobile devices
@@ -64,32 +68,35 @@ goog.scope ->
     , 500
     return
 
-  _::enterDocument = ->
+  ###*
+    @inheritDoc
+  ###
+  enterDocument: ->
     goog.base @, 'enterDocument'
     @getHandler().
       listen(window, 'scroll', @onWindowScroll)
     return
 
-  _::onWindowScroll = (e) ->
+  ###*
+    @protected
+  ###
+  onWindowScroll: (e) ->
     bottom = -@dom_.getDocumentScroll().y
     @monitor.style.bottom = (bottom + 10) + 'px'
 
   ###*
     @inheritDoc
   ###
-  _::disposeInternal = ->
+  disposeInternal: ->
     clearInterval @timer
     @getElement().removeChild @monitor
     goog.base @, 'disposeInternal'
     return
 
   ###*
-    For mobile development
+    Useful for mobile development, where console.log sucks.
   ###
   window.mlog = ->
     message = goog.array.toArray(arguments).join()
     el = document.getElementById 'devlog'
     el.innerHTML = message
-
-  return
-
