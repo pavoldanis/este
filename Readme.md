@@ -13,10 +13,6 @@ statically typed CoffeeScript. It allows you to write powerful and efficient cod
 It's boilerplaite for mobile first MVC web application with unique features
 towards better user experience.
 
-####Blog
-
-Este.js [blog](http://estejs.tumblr.com)
-
 ###How to use it?
 
   - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
@@ -36,6 +32,10 @@ Node run options described in `assets/js/dev/run.coffee`.
 
   - TodoMVC (mobile version)
   - localization
+
+###Blog
+
+Este.js [blog](http://estejs.tumblr.com).
 
 ###Recommended editor: [Sublime Text](http://www.sublimetext.com)
 
