@@ -31,7 +31,7 @@ class este.Collection extends goog.events.EventTarget
     @extends {goog.events.EventTarget}
   ###
   constructor:  (array, @model = null) ->
-    goog.base @
+    super()
     @array = []
     @addMany array if array
     return

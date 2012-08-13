@@ -20,7 +20,7 @@ class este.events.Delegation extends goog.events.EventTarget
 		@extends {goog.events.EventTarget}
 	###
 	constructor: (@element, @eventTypes) ->
-		goog.base @
+		super()
 		@listenKey_ = goog.events.listen @element, @eventTypes, @
 
 	###*
@@ -98,7 +98,7 @@ class este.events.Delegation extends goog.events.EventTarget
 		@inheritDoc
 	###
 	disposeInternal: ->
-		goog.base @, 'disposeInternal'
+		super()
 		goog.events.unlistenByKey @listenKey_
 		delete @listenKey_
 		return

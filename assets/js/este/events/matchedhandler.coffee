@@ -29,7 +29,7 @@ class este.events.MatchedHandler extends goog.events.EventTarget
     @extends {goog.events.EventTarget}
   ###
   constructor: (@element, @matchers, @getChildIndex, opt_eventType) ->
-    goog.base @
+    super()
     @listenKey_ = goog.events.listen @element, opt_eventType ? 'click', @
     return
 

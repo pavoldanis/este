@@ -18,7 +18,7 @@ class este.events.DomReadyHandler extends goog.events.EventTarget
     @extends {goog.events.EventTarget}
   ###
   constructor: ->
-    goog.base @
+    super()
     if document.readyState == 'complete'
       setTimeout =>
         @dispatchReadyEvent()

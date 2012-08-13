@@ -51,7 +51,7 @@ class este.dev.Monitor extends goog.ui.Component
     @inheritDoc
   ###
   decorateInternal: (element) ->
-    goog.base @, 'decorateInternal', element
+    super element
     @monitor = @dom_.createDom 'div'
       # absolute instead of fixed, because obsolete mobile devices
       'style': 'white-space: nowrap; font-size: 10px; position: absolute; z-index: 9999999999999; opacity: .8; max-width: 100%; right: 10px; bottom: 0; background-color: #eee; color: #000; padding: .7em;'
@@ -72,7 +72,7 @@ class este.dev.Monitor extends goog.ui.Component
     @inheritDoc
   ###
   enterDocument: ->
-    goog.base @, 'enterDocument'
+    super()
     @getHandler().
       listen(window, 'scroll', @onWindowScroll)
     return
@@ -90,7 +90,7 @@ class este.dev.Monitor extends goog.ui.Component
   disposeInternal: ->
     clearInterval @timer
     @getElement().removeChild @monitor
-    goog.base @, 'disposeInternal'
+    super()
     return
 
   ###*

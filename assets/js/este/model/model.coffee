@@ -34,7 +34,7 @@ class este.Model extends goog.events.EventTarget
     @extends {goog.events.EventTarget}
   ###
   constructor: (json = {}) ->
-    goog.base @
+    super()
     @attributes = {}
     @schema ?= {}
     json['id'] ?= goog.string.getRandomString()
