@@ -1,8 +1,7 @@
 ###*
-	@fileoverview Simple and very useful event delegation.
-		You can listen what you want with custom filters.
-		Much better solution than querySelectorAll based. Similar to Diego Perini
-		bottom-up approach.
+	@fileoverview Simple and very useful event delegation. You can listen what
+	you want with custom filters. Much better solution than querySelectorAll
+	based. Similar to Diego Perini bottom-up approach.
 	@see ../demos/delegation.html
 ###
 goog.provide 'este.events.Delegation'
@@ -12,27 +11,24 @@ goog.require 'goog.events.EventTarget'
 goog.require 'goog.events'
 goog.require 'goog.dom'
 
-###*
-	@param {Element} element
-	@param {Array.<string>} eventTypes
-	@constructor
-	@extends {goog.events.EventTarget}
-###
-este.events.Delegation = (@element, @eventTypes) ->
-	goog.base @
-	@listenKey_ = goog.events.listen @element, @eventTypes, @
+class este.events.Delegation extends goog.events.EventTarget
 
-goog.inherits este.events.Delegation, goog.events.EventTarget
-	
-goog.scope ->
-	`var _ = este.events.Delegation`
+	###*
+		@param {Element} element
+		@param {Array.<string>} eventTypes
+		@constructor
+		@extends {goog.events.EventTarget}
+	###
+	constructor: (@element, @eventTypes) ->
+		goog.base @
+		@listenKey_ = goog.events.listen @element, @eventTypes, @
 
 	###*
 		@param {Element} element
 		@param {Array.<string>} eventTypes
 		@return {este.events.Delegation}
 	###
-	_.create = (element, eventTypes, targetFilter, targetParentFilter) ->
+	@create: (element, eventTypes, targetFilter, targetParentFilter) ->
 		delegation = new este.events.Delegation element, eventTypes
 		delegation.targetFilter = targetFilter
 		delegation.targetParentFilter = targetParentFilter
@@ -41,35 +37,35 @@ goog.scope ->
 	###*
 		@type {Element}
 	###
-	_::element
+	element: null
 
 	###*
 		@type {Array.<string>} eventTypes
 	###
-	_::eventTypes
+	eventTypes: null
 
 	###*
 		@param {Node} node
 		@return {boolean}
 	###
-	_::targetFilter = (node) -> true
+	targetFilter: (node) -> true
 
 	###*
 		@param {Node} node
 		@return {boolean}
 	###
-	_::targetParentFilter = (node) -> true
+	targetParentFilter: (node) -> true
 
 	###*
 		@type {?number}
 		@private
 	###
-	_::listenKey_
+	listenKey_: null
 
 	###*
 		@param {goog.events.BrowserEvent} e
 	###
-	_::handleEvent = (e) ->
+	handleEvent: (e) ->
 		return if !@matchFilter e
 		@dispatchEvent e
 
@@ -77,7 +73,7 @@ goog.scope ->
 		@param {goog.events.BrowserEvent} e
 		@return {boolean} True for match
 	###
-	_::matchFilter = (e) ->
+	matchFilter: (e) ->
 		targetMatched = false
 		targetParentMatched = false
 		element = e.target
@@ -99,12 +95,10 @@ goog.scope ->
 		true
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::disposeInternal = ->
+	disposeInternal: ->
 		goog.base @, 'disposeInternal'
 		goog.events.unlistenByKey @listenKey_
 		delete @listenKey_
 		return
-
-	return
