@@ -2,98 +2,90 @@ suite 'este.router.Route', ->
 
   Route = este.router.Route
 
+  testData = null
   route = null
 
   setup ->
+    setupTestData()
     route = new Route '', (->), {}
+
+  setupTestData = ->
+    testData =
+      'user/joe':
+        path: 'user/:user'
+        params: user: 'joe'
+
+      'users':
+        path: 'users/:id?'
+        params: id: undefined
+
+      'users/1':
+        path: 'users/:id?'
+        params: id: '1'
+
+      'assets/este.js':
+        path: 'assets/*'
+        params: ['este.js']
+
+      'assets/steida.js':
+        path: 'assets/*.*'
+        params: ['steida', 'js']
+
+      'assets/js/este.js':
+        path: 'assets/*'
+        params: ['js/este.js']
+
+      'assets/js/steida.js':
+        path: 'assets/*.*'
+        params: ['js/steida', 'js']
+
+      'user/1':
+        path: 'user/:id/:operation?'
+        params: id: '1', operation: undefined
+
+      'user/1/edit':
+        path: 'user/:id/:operation?'
+        params: id: '1', operation: 'edit'
+
+      'products.json':
+        path: 'products.:format'
+        params: format: 'json'
+
+      'products.xml':
+        path: 'products.:format'
+        params: format: 'xml'
+
+      'products':
+        path: 'products.:format?'
+        params: format: undefined
+
+      'user/12':
+        path: 'user/:id.:format?'
+        params: id: '12', format: undefined
+
+      'user/12.json':
+        path: 'user/:id.:format?'
+        params: id: '12', format: 'json'
+
+      'foo/adam/eva':
+        path: /foo\/(\w+)\/(\w+)/
+        params: ['adam', 'eva']
 
   suite 'constructor', ->
     test 'should work', ->
       assert.instanceOf route, Route
 
-  testRoute = (path, url, show, hide) ->
-    route = new Route path, show, hide: hide ? ->
-    route.process url
-
   suite 'process', ->
-    test 'user/:user - user/joe', (done) ->
-      testRoute 'user/:user', 'user/joe', (params) ->
-        assert.equal params['user'], 'joe'
-        done()
+    test 'testData should work', ->
+      length = 0
+      for url, data of testData
+        route = new Route data.path, (params) ->
+          assert.deepEqual params, data.params
+          length++
+        , {}
+        route.process url
+      assert.equal length, goog.object.getKeys(testData).length
 
-    test 'users/:id? - users', (done) ->
-      testRoute 'users/:id?', 'users', (params) ->
-        assert.isUndefined params['id']
-        done()
-
-    test 'users/:id? - users/1', (done) ->
-      testRoute 'users/:id?', 'users/1', (params) ->
-        assert.equal params['id'], 1
-        done()
-
-    test 'assets/* - assets/este.js', (done) ->
-      testRoute 'assets/*', 'assets/este.js', (fileName) ->
-        assert.equal fileName, 'este.js'
-        done()
-
-    test 'assets/* - assets/js/este.js', (done) ->
-      testRoute 'assets/*', 'assets/js/este.js', (path) ->
-        assert.equal path, 'js/este.js'
-        done()
-
-    test 'assets/*.* - assets/este.js', (done) ->
-      testRoute 'assets/*.*', 'assets/este.js', (params) ->
-        assert.equal params[0], 'este'
-        assert.equal params[1], 'js'
-        done()
-
-    test 'assets/*.* - assets/js/este.js', (done) ->
-      testRoute 'assets/*.*', 'assets/js/este.js', (params) ->
-        assert.equal params[0], 'js/este'
-        assert.equal params[1], 'js'
-        done()
-
-    test 'user/:id/:operation? - user/1', (done) ->
-      testRoute 'user/:id/:operation?', 'user/1', (params) ->
-        assert.equal params['id'], 1
-        assert.isUndefined params['operation']
-        done()
-
-    test 'user/:id/:operation? - user/1/edit', (done) ->
-      testRoute 'user/:id/:operation?', 'user/1/edit', (params) ->
-        assert.equal params['id'], 1
-        assert.equal params['operation'], 'edit'
-        done()
-
-    test 'products.:format - products.json', (done) ->
-      testRoute 'products.:format', 'products.json', (params) ->
-        assert.equal params['format'], 'json'
-        done()
-
-    test 'products.:format - products.xml', (done) ->
-      testRoute 'products.:format', 'products.xml', (params) ->
-        assert.equal params['format'], 'xml'
-        done()
-
-    test 'products.:format? - products', (done) ->
-      testRoute 'products.:format?', 'products', (params) ->
-        assert.isUndefined params['format']
-        done()
-
-    test 'user/:id.:format? - user/12', (done) ->
-      testRoute 'user/:id.:format?', 'user/12', (params) ->
-        assert.equal params['id'], '12'
-        assert.isUndefined params['format']
-        done()
-
-    test 'user/:id.:format? - user/12.json', (done) ->
-      testRoute 'user/:id.:format?', 'user/12.json', (params) ->
-        assert.equal params['id'], '12'
-        assert.equal params['format'], 'json'
-        done()
-
-    test '/foo\/(\w+)\/(\w+)/ - foo/adam/eva', (done) ->
-      testRoute /foo\/(\w+)\/(\w+)/, 'foo/adam/eva', (params) ->
-        assert.equal params[0], 'adam'
-        assert.equal params[1], 'eva'
-        done()
+  # suite 'getLink', ->
+  #   test 'should work', ->
+  #     assert.ok 0
