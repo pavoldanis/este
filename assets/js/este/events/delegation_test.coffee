@@ -1,6 +1,7 @@
 suite 'este.events.Delegation', ->
 
 	Delegation = este.events.Delegation
+
 	element = null
 	delegation = null
 
@@ -11,7 +12,7 @@ suite 'este.events.Delegation', ->
 			el.className == 'target'
 		delegation.targetParentFilter = (el) ->
 			el.className == 'parent'
-	
+
 	suite 'Delegation.create', ->
 		test 'should return delegation', ->
 			delegation = new Delegation element, ['click', 'mouseover', 'mouseout']
@@ -48,7 +49,7 @@ suite 'este.events.Delegation', ->
 				type: 'click'
 				target: {}
 			assert.isFalse called
-		
+
 		test 'on element with className .target and without parent className .parent', ->
 			called = false
 			goog.events.listenOnce delegation, 'click', -> called = true
@@ -71,8 +72,8 @@ suite 'este.events.Delegation', ->
 				type: 'mouseover'
 				relatedTarget: target
 				target:
-					parentNode: target						
-			assert.isFalse called			
+					parentNode: target
+			assert.isFalse called
 
 	suite 'should not dispatch mouseout', ->
 		test 'on element inside target', ->
@@ -86,9 +87,8 @@ suite 'este.events.Delegation', ->
 				type: 'mouseout'
 				relatedTarget: target
 				target:
-					parentNode: target						
-			assert.isFalse called			
-	
+					parentNode: target
+			assert.isFalse called
 
 
 
@@ -100,5 +100,5 @@ suite 'este.events.Delegation', ->
 
 
 
-			
-			
+
+
