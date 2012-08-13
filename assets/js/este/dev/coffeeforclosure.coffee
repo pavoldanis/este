@@ -1,5 +1,12 @@
 ###*
   @fileoverview Fix CoffeeScript compiled code for Closure Compiler.
+  Only Class needs to be fixed, because compiler does not like
+  immediately-invoked function expressions (IIFE), which has to be
+  removed. Note that you can still reference Class without whole namespace.
+  It means, you can still write
+    Foo.EventType.CLICK
+  instead of long
+    very.long.namespace.Foo.EventType.CLICK
 
 ###
 goog.provide 'este.dev.coffeeForClosure'
@@ -66,22 +73,22 @@ goog.scope ->
       lastState = @source
 
       superClass = @getSuperClass className
-      
+
       if superClass
         @removeCoffeeExtends className
         @removeInjectedExtendsCode className
       else
         @removeClassVar className
-      
+
       namespace = @getNamespaceFromWrapper className
       @fullQualifyProperties className, namespace
       @fullQualifyConstructor className, namespace
       @fullQualifyNew className, namespace
-      
+
       if superClass
         @addGoogInherits className, namespace, superClass
         @fixSuperClassReference className, namespace
-      
+
       @removeWrapper className, namespace, superClass
 
     @restoreReplaces()
@@ -120,7 +127,7 @@ goog.scope ->
       var #{className},
         __hasProp = {}.hasOwnProperty,
         __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };"""
-    
+
     @remove """
       var __hasProp = {}.hasOwnProperty,
         __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };"""
@@ -160,7 +167,7 @@ goog.scope ->
       break if letter in [' ', ';', '\n']
       letters.unshift letter
     letters.join ''
-    
+
   ###*
     @param {string} className
     @param {string} namespace
@@ -261,7 +268,7 @@ goog.scope ->
     @source = @source.replace /xn2fs07c6n7ldollar_sucks_for_regexps/g,
       (match) => "$"
     return
-  
+
   return
 
 # just for sake of the Compiler
