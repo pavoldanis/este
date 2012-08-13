@@ -13,7 +13,7 @@
       to start app development
 
     'node run app --deploy'
-      build scripts with closure compiler
+      build and statically check source code
       [project].html will use one compiled script
       goog.DEBUG == false (code using that will be stripped)
 
