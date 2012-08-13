@@ -6,7 +6,7 @@ goog.provide 'este.router.Route'
 class este.router.Route
 
   ###*
-    @param {string|RegExp} path
+    @param {string} path
     @param {Function} show
     @param {este.router.Route.Options} options
     @constructor
@@ -14,7 +14,7 @@ class este.router.Route
   constructor: (@path, @show, options) ->
     @hide ?= options.hide
     @keys = []
-    @regexp = @pathToRegexp path, options.sensitive, options.strict
+    @pathToRegexp options.sensitive, options.strict
 
   ###*
     @typedef {{
@@ -26,9 +26,9 @@ class este.router.Route
   @Options
 
   ###*
-    @type {string|RegExp}
+    @type {string}
   ###
-  path: null
+  path: ''
 
   ###*
     @type {Function}
@@ -55,16 +55,42 @@ class este.router.Route
   keys: null
 
   ###*
-    @param {string|RegExp} path
+    @param {string} path
+  ###
+  process: (path) ->
+    matches = @getMatches path
+    if matches
+      params = @getParams matches
+      @show params
+      return
+    @hide() if @hide
+
+  ###*
+    @param {Object} params
+    @return {string}
+  ###
+  getPath: (params) ->
+    path = @path
+    if params.length
+      index = 0
+      path = path.replace /\*/g, -> params[index++]
+    else
+      for key, value of params
+        value = '' if value == undefined
+        regex = new RegExp "\\:#{key}"
+        path = path.replace regex, value
+    path = path.slice 0, -1 if path.charAt(path.length - 1) == '?'
+    path = path.slice 0, -1 if path.charAt(path.length - 1) in ['/', '.']
+    path
+
+  ###*
     @param {boolean=} sensitive
     @param {boolean=} strict
-    @return {RegExp}
     @protected
   ###
-  pathToRegexp: (path, sensitive, strict) ->
-    return path if path instanceof RegExp
+  pathToRegexp: (sensitive, strict) ->
     # regexes from expressjs
-    path = path.
+    regexPath = @path.
       concat(if strict then '' else '/?').
       replace(/\/\(/g, '(?:/').
       replace(/\+/g, '__plus__').
@@ -83,18 +109,7 @@ class este.router.Route
       replace(/([\/.])/g, '\\$1').
       replace(/__plus__/g, '(.+)').
       replace(/\*/g, '(.*)')
-    new RegExp "^#{path}$", if sensitive then '' else 'i'
-
-  ###*
-    @param {string} path
-  ###
-  process: (path) ->
-    matches = @getMatches path
-    if matches
-      params = @getParams matches
-      @show params
-      return
-    @hide() if @hide
+    @regexp = new RegExp "^#{regexPath}$", if sensitive then '' else 'i'
 
   ###*
     @param {string} path

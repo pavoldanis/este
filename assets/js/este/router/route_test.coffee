@@ -67,16 +67,17 @@ suite 'este.router.Route', ->
         path: 'user/:id.:format?'
         params: id: '12', format: 'json'
 
-      'foo/adam/eva':
-        path: /foo\/(\w+)\/(\w+)/
-        params: ['adam', 'eva']
+      # todo: add regex routes
+      # 'foo/adam/eva':
+      #   path: /foo\/(\w+)\/(\w+)/
+      #   params: ['adam', 'eva']
 
   suite 'constructor', ->
     test 'should work', ->
       assert.instanceOf route, Route
 
   suite 'process', ->
-    test 'testData should work', ->
+    test 'parsing should work', ->
       length = 0
       for url, data of testData
         route = new Route data.path, (params) ->
@@ -86,6 +87,9 @@ suite 'este.router.Route', ->
         route.process url
       assert.equal length, goog.object.getKeys(testData).length
 
-  # suite 'getLink', ->
-  #   test 'should work', ->
-  #     assert.ok 0
+  suite 'getPath', ->
+    test 'serialization should work', ->
+      for url, data of testData
+        route = new Route data.path, (->), {}
+        assert.deepEqual url, route.getPath data.params
+      return

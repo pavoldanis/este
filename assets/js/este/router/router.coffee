@@ -41,7 +41,7 @@ class este.router.Router extends este.Base
   routes: null
 
   ###*
-    @param {string|RegExp} path
+    @param {string} path
     @param {Function} show
     @param {este.router.Route.Options} options
     @return {este.router.Router}
