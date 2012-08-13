@@ -1,6 +1,7 @@
-suite 'este.event.MatchedHandler', ->
+suite 'este.events.MatchedHandler', ->
 
-  MatchedEventHandler = este.event.MatchedHandler
+  MatchedEventHandler = este.events.MatchedHandler
+
   el = null
   matchers = null
   handler = null
@@ -10,7 +11,7 @@ suite 'este.event.MatchedHandler', ->
       attachEvent: ->
 
   arrange = (index) ->
-    handler = new este.event.MatchedHandler el, matchers, -> index
+    handler = new este.events.MatchedHandler el, matchers, -> index
 
   suite 'click on A in second LI.someClass of UL#someId', ->
     test 'should fire type: click, id: "123", childIndex: 1', (done) ->
@@ -47,7 +48,7 @@ suite 'este.event.MatchedHandler', ->
       ]
       arrange 1
       target =
-        tagName: 'A'  
+        tagName: 'A'
         parentNode:
           tagName: 'LI'
           className: 'someClass'
@@ -61,6 +62,3 @@ suite 'este.event.MatchedHandler', ->
       goog.events.fireListeners el, 'click', false,
         type: 'click'
         target: target
-          
-
-    

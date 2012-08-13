@@ -1,7 +1,7 @@
 ###*
   @fileoverview Event matched by a simple selector, ex.:
-  handler = new este.event.MatchedHandler el, [
-    id: 123 
+  handler = new este.events.MatchedHandler el, [
+    id: 123
     container: '.pw1001'
     child: '.highlightEbook'
     link: 'a'
@@ -11,38 +11,35 @@
     #e.id == 123
     #e.childIndex = 1
 ###
-goog.provide 'este.event.MatchedHandler'
-goog.provide 'este.event.MatchedHandler.create'
-goog.provide 'este.event.MatchedHandler.Matcher'
+goog.provide 'este.events.MatchedHandler'
+goog.provide 'este.events.MatchedHandler.create'
+goog.provide 'este.events.MatchedHandler.Matcher'
 
 goog.require 'goog.events.EventTarget'
 goog.require 'este.dom'
 
-###*
-  @param {Element} element
-  @param {Array.<este.event.MatchedHandler.Matcher>} matchers
-  @param {Function} getChildIndex
-  @param {string=} opt_eventType
-  @constructor
-  @extends {goog.events.EventTarget}
-###
-este.event.MatchedHandler = (@element, @matchers, @getChildIndex, opt_eventType) ->
-  goog.base @
-  @listenKey_ = goog.events.listen @element, opt_eventType ? 'click', @
-  return
-
-goog.inherits este.event.MatchedHandler, goog.events.EventTarget
-  
-goog.scope ->
-  `var _ = este.event.MatchedHandler`
+class este.events.MatchedHandler extends goog.events.EventTarget
 
   ###*
     @param {Element} element
-    @param {Array.<este.event.MatchedHandler.Matcher>} matchers
-    @return {este.event.MatchedHandler}
+    @param {Array.<este.events.MatchedHandler.Matcher>} matchers
+    @param {Function} getChildIndex
+    @param {string=} opt_eventType
+    @constructor
+    @extends {goog.events.EventTarget}
   ###
-  _.create = (element, matchers) ->
-    new _ element, matchers, _.getChildIndex
+  constructor: (@element, @matchers, @getChildIndex, opt_eventType) ->
+    goog.base @
+    @listenKey_ = goog.events.listen @element, opt_eventType ? 'click', @
+    return
+
+  ###*
+    @param {Element} element
+    @param {Array.<este.events.MatchedHandler.Matcher>} matchers
+    @return {este.events.MatchedHandler}
+  ###
+  @create: (element, matchers) ->
+    new MatchedHandler element, matchers, MatchedHandler.getChildIndex
 
   ###*
     Compute child index, no CSS selector engine, solid and fast.
@@ -51,39 +48,39 @@ goog.scope ->
     @param {string} childMatcher
     @return {number}
   ###
-  _.getChildIndex = (container, child, childMatcher) ->
+  @getChildIndex: (container, child, childMatcher) ->
     index = 0
     for item in goog.array.toArray container.getElementsByTagName '*'
       if este.dom.matchQueryParts item, childMatcher
-        return index if item == child 
+        return index if item == child
         index++
     -1
 
   ###*
     @type {Element}
   ###
-  _::element
+  element: null
 
   ###*
-    @type {Array.<este.event.MatchedHandler.Matcher>}
+    @type {Array.<este.events.MatchedHandler.Matcher>}
   ###
-  _::matchers
+  matchers: null
 
   ###*
     @type {Function}
   ###
-  _::getChildIndex
+  getChildIndex: null
 
   ###*
     @type {?number}
     @private
   ###
-  _::listenKey_
+  listenKey_: null
 
   ###*
     @param {goog.events.BrowserEvent} e
   ###
-  _::handleEvent = (e) ->
+  handleEvent: (e) ->
     target = e.target
     ancestors = este.dom.getAncestors target, true, true
     for matcher in @matchers
@@ -106,7 +103,7 @@ goog.scope ->
         id: matcher['id']
         childIndex: childIndex
       return
-    ancestors.reverse()  
+    ancestors.reverse()
     @dispatchEvent
       target: target
       type: e.type
@@ -115,15 +112,13 @@ goog.scope ->
   ###*
     @override
   ###
-  _::disposeInternal = ->
-    goog.base @, 'disposeInternal'
+  disposeInternal: ->
+    super()
     goog.events.unlistenByKey @listenKey_
     delete @listenKey_
     return
 
-  return
-
 ###*
   @typedef {{id: string, container: string, child: string, link: string}}
 ###
-este.event.MatchedHandler.Matcher
+este.events.MatchedHandler.Matcher
