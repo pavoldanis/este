@@ -15,5 +15,5 @@ goog.scope ->
   ###
   _.parseInt = (value) ->
     parseInt value, 10
-  
+
   return

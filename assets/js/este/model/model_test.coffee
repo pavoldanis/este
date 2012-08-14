@@ -9,7 +9,7 @@ suite 'este.Model', ->
   trimSetter = (value) -> goog.string.trim value || ''
   requiredValidator = (value) -> value && goog.string.trim(value).length
 
-  Person::schema = 
+  Person::schema =
     'firstName':
       'set': trimSetter
       'validators':
@@ -89,7 +89,7 @@ suite 'este.Model', ->
         'id': json.id
         'name': 'undefined undefined'
       assert.deepEqual json, attrs
-    
+
     test 'should return setted attributes json and metas', ->
       json = person.toJson()
       attrs =
@@ -104,7 +104,7 @@ suite 'este.Model', ->
     test 'should work', ->
       assert.isTrue person.has 'age'
       assert.isFalse person.has 'fooBlaBlaFoo'
-    
+
     test 'should work even for keys which are defined on Object.prototype.', ->
       assert.isFalse person.has 'toString'
       assert.isFalse person.has 'constructor'
@@ -184,7 +184,7 @@ suite 'este.Model', ->
         errors = person.set 'firstName', null
         assert.deepEqual errors,
           firstName: required: true
-        assert.equal person.get('firstName'), 'Joe' 
+        assert.equal person.get('firstName'), 'Joe'
 
         errors = person.set 'firstName', 'Pepa'
         assert.deepEqual errors, null
