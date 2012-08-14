@@ -205,7 +205,7 @@ goog.scope ->
     @protected
   ###
   _::addGoogInherits = (className, namespace, superClass) ->
-    # match constructor
+    # match begin of constructor
     regex = new RegExp "#{namespace}#{className} = function\\(", 'g'
     index = @source.search regex
     return if index == -1
@@ -214,9 +214,17 @@ goog.scope ->
     # can contains everything. Luckily, indentation works for us.
     lines = @source.slice(index).split '\n'
 
-    for line, i in lines
-      index += line.length + 1
-      break if line == '  }'
+    # handle empty constructors
+    endsWith = (str, suffix) ->
+      l = str.length - suffix.length
+      l >= 0 && str.indexOf(suffix, l) == l
+    
+    if endsWith lines[0], ') {}'
+      index += lines[0].length + 1
+    else
+      for line, i in lines
+        index += line.length + 1
+        break if line == '  }'
 
     inherits = "\n  goog.inherits(#{namespace + className}, #{superClass});\n"
     @source = @source.slice(0, index) + inherits + @source.slice index

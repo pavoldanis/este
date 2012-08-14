@@ -1,3 +1,5 @@
+# warning:
+#   do not save this file with "trim_trailing_white_space_on_save" == true
 suite 'este.dev.CoffeeForClosure', ->
   
   CoffeeForClosure = este.dev.CoffeeForClosure
@@ -132,10 +134,7 @@ suite 'este.dev.CoffeeForClosure', ->
         */
 
 
-        function Person(name) {
-          this.name = name;
-          this.bla = {};
-        }
+        function Person(name) {}
 
         /**
           @enum {string}
@@ -178,10 +177,7 @@ suite 'este.dev.CoffeeForClosure', ->
         */
 
 
-        example.Person = function(name) {
-          this.name = name;
-          this.bla = {};
-        }
+        example.Person = function(name) {}
 
         goog.inherits(example.Person, este.Foo);
 
