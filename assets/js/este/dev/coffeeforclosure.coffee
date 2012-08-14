@@ -7,35 +7,26 @@
     Foo.EventType.CLICK
   instead of long
     very.long.namespace.Foo.EventType.CLICK
-
 ###
-goog.provide 'este.dev.coffeeForClosure'
+
 goog.provide 'este.dev.CoffeeForClosure'
+goog.provide 'este.dev.coffeeForClosure'
 
-###*
-  @param {string} source
-###
-este.dev.coffeeForClosure = (source) ->
-  coffeeForClosure = new este.dev.CoffeeForClosure source
-  coffeeForClosure.fixClass()
+class este.dev.CoffeeForClosure
 
-###*
-  @param {string} source
-  @constructor
-###
-este.dev.CoffeeForClosure = (@source) ->
-  # consider newlines canonization
-  # str.replace(/(\r\n|\r|\n)/g, '\n');
-  @replaces = []
-  return
-
-goog.scope ->
-  `var _ = este.dev.CoffeeForClosure`
+  ###*
+    @param {string} source
+    @constructor
+  ###
+  constructor: (@source) ->
+    # consider newlines canonization
+    # str.replace(/(\r\n|\r|\n)/g, '\n');
+    @replaces = []
 
   ###*
     @type {string}
   ###
-  _.random = do ->
+  @random: do ->
     x = 2147483648
     Math.floor(Math.random() * x).toString(36) +
     Math.abs(Math.floor(Math.random() * x) ^ goog.now()).toString(36)
@@ -44,24 +35,24 @@ goog.scope ->
     @type {string}
     @protected
   ###
-  _::source
+  source: ''
 
   ###*
     @type {string}
     @protected
   ###
-  _::random
+  random: ''
 
   ###*
     @type {Array}
     @protected
   ###
-  _::replaces
+  replaces: null
 
   ###*
     @return {string}
   ###
-  _::fixClass = ->
+  fixClass: ->
     original = @source
 
     @storeReplaces()
@@ -99,14 +90,14 @@ goog.scope ->
   ###*
     @return {string|undefined}
   ###
-  _::getClassName = ->
+  getClassName: ->
     @source.match(/function ([A-Z][\w]*)/)?[1]
 
   ###*
     @param {string} className
     @return {string}
   ###
-  _::getSuperClass = (className) ->
+  getSuperClass: (className) ->
     regex = new RegExp "return #{className};[\\s]*\\}\\)\\(([\\w\\.]+)\\);"
     matches = @source.match regex
     return '' if !matches
@@ -115,14 +106,14 @@ goog.scope ->
   ###*
     @param {string} className
   ###
-  _::removeCoffeeExtends = (className) ->
+  removeCoffeeExtends: (className) ->
     regex = new RegExp "__extends\\(#{className}, _super\\);", 'g'
     @remove regex
 
   ###*
     @param {string} className
   ###
-  _::removeInjectedExtendsCode = (className) ->
+  removeInjectedExtendsCode: (className) ->
     @remove """
       var #{className},
         __hasProp = {}.hasOwnProperty,
@@ -135,7 +126,7 @@ goog.scope ->
   ###*
     @param {string} className
   ###
-  _::removeClassVar = (className) ->
+  removeClassVar: (className) ->
     regex = new RegExp "var #{className};", 'g'
     @remove regex
 
@@ -143,7 +134,7 @@ goog.scope ->
     @param {string|RegExp} value
     @protected
   ###
-  _::remove = (value) ->
+  remove: (value) ->
     @replace value, ''
 
   ###*
@@ -151,14 +142,14 @@ goog.scope ->
     @param {string|Function} string
     @protected
   ###
-  _::replace = (value, string) ->
+  replace: (value, string) ->
     @source = @source.replace value, string
 
   ###*
     @param {string} className
     @return {string}
   ###
-  _::getNamespaceFromWrapper = (className) ->
+  getNamespaceFromWrapper: (className) ->
     regex = new RegExp "#{className} = \\(function\\((_super)?\\) \\{"
     index = @source.search regex
     return '' if index == -1
@@ -172,7 +163,7 @@ goog.scope ->
     @param {string} className
     @param {string} namespace
   ###
-  _::fullQualifyProperties = (className, namespace) ->
+  fullQualifyProperties: (className, namespace) ->
     regex = new RegExp className + '\\.(\\w+)', 'g'
     @replace regex, (match, prop, offset) =>
       return match if /[\.\w]/.test @source.charAt(offset - 1)
@@ -183,7 +174,7 @@ goog.scope ->
     @param {string} className
     @param {string} namespace
   ###
-  _::fullQualifyConstructor = (className, namespace) ->
+  fullQualifyConstructor: (className, namespace) ->
     regex = new RegExp "function #{className}", 'g'
     if namespace
       @replace regex, namespace + className + ' = function'
@@ -194,7 +185,7 @@ goog.scope ->
     @param {string} className
     @param {string} namespace
   ###
-  _::fullQualifyNew = (className, namespace) ->
+  fullQualifyNew: (className, namespace) ->
     regex = new RegExp "new #{className}", 'g'
     @replace regex, "new #{namespace}#{className}"
 
@@ -204,7 +195,7 @@ goog.scope ->
     @param {string} superClass
     @protected
   ###
-  _::addGoogInherits = (className, namespace, superClass) ->
+  addGoogInherits: (className, namespace, superClass) ->
     # match begin of constructor
     regex = new RegExp "#{namespace}#{className} = function\\(", 'g'
     index = @source.search regex
@@ -218,7 +209,7 @@ goog.scope ->
     endsWith = (str, suffix) ->
       l = str.length - suffix.length
       l >= 0 && str.indexOf(suffix, l) == l
-    
+
     if endsWith lines[0], ') {}'
       index += lines[0].length + 1
     else
@@ -234,7 +225,7 @@ goog.scope ->
     @param {string} namespace
     @protected
   ###
-  _::fixSuperClassReference = (className, namespace) ->
+  fixSuperClassReference: (className, namespace) ->
     regex = new RegExp "#{className}\\.__super__", 'g'
     @replace regex, "#{namespace}#{className}\.superClass_"
 
@@ -243,7 +234,7 @@ goog.scope ->
     @param {string} namespace
     @param {string} superClass
   ###
-  _::removeWrapper = (className, namespace, superClass) ->
+  removeWrapper: (className, namespace, superClass) ->
     # intro
     regex = new RegExp "#{namespace}#{className} = \\(function\\((_super)?\\) \\{"
     @remove regex
@@ -254,36 +245,36 @@ goog.scope ->
   ###*
     @protected
   ###
-  _::storeReplaces = ->
+  storeReplaces: ->
     @source = @source.replace /\$/g, (match) =>
       "xn2fs07c6n7ldollar_sucks_for_regexps"
 
     @source = @source.replace /\/\*[^*]*\*+([^\/][^*]*\*+)*\//g,
-      (match) => "#{_.random}#{@replaces.push match}#{_.random}"
+      (match) => "#{CoffeeForClosure.random}#{@replaces.push match}#{CoffeeForClosure.random}"
 
     # http://blog.stevenlevithan.com/archives/match-quoted-string
     @source = @source.replace /(["'])(?:(?=(\\?))\2.)*?\1/g, (match) =>
-      "#{_.random}#{@replaces.push match}#{_.random}"
+      "#{CoffeeForClosure.random}#{@replaces.push match}#{CoffeeForClosure.random}"
 
     # todo: add regex for regex
 
   ###*
     @protected
   ###
-  _::restoreReplaces = ->
+  restoreReplaces: ->
     for replace, i in @replaces
-      @source = @source.replace "#{_.random}#{i + 1}#{_.random}", replace
+      @source = @source.replace "#{CoffeeForClosure.random}#{i + 1}#{CoffeeForClosure.random}", replace
     @source = @source.replace /xn2fs07c6n7ldollar_sucks_for_regexps/g,
       (match) => "$"
     return
 
-  return
+###*
+  @param {string} source
+###
+este.dev.coffeeForClosure = (source) ->
+  coffeeForClosure = new este.dev.CoffeeForClosure source
+  coffeeForClosure.fixClass()
 
 # just for sake of the Compiler
 exports = exports || {}
 exports.coffeeForClosure = este.dev.coffeeForClosure
-
-
-
-
-
