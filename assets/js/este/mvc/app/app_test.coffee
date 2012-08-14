@@ -3,6 +3,7 @@ suite 'este.mvc.App', ->
   App = este.mvc.App
 
   layout = null
+  router = null
   app = null
   view1 = null
   view2 = null
@@ -11,7 +12,9 @@ suite 'este.mvc.App', ->
   setup ->
     layout =
       setActive: (view) ->
-    app = new App layout
+    router =
+      routeNavigate: (url, params) ->
+    app = new App layout, [], router
     arrangeViews()
 
   arrangeViews = ->
@@ -53,6 +56,16 @@ suite 'este.mvc.App', ->
         assert.instanceOf view, view1
         done()
       app.show view1
+
+    test 'should call router.projectUrl view1, params', (done) ->
+      app.start()
+      view1::url = 'fok'
+      params = {}
+      router.routeNavigate = (url, p_params) ->
+        assert.equal url, 'fok'
+        assert.equal p_params, params
+        done()
+      app.show view1, params
 
     test 'should dispatch fetch and fetched events', ->
       calls = []

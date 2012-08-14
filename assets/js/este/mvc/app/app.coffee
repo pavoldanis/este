@@ -127,18 +127,17 @@ class este.mvc.App extends este.Base
   ###
   switchView: (view, params) ->
     @dispatchEvent App.EventType.FETCHED
-    @projectUrl view if view.url
+    @projectUrl view, params
     @layout.setActive view
 
   ###*
     @param {este.mvc.View} view
+    @param {Object=} params
     @protected
   ###
-  projectUrl: (view) ->
-    # if view.url
-    #   foo bla
-    #   mix url and params
-    #   router.foo url
+  projectUrl: (view, params) ->
+    return if !view.url
+    @router.routeNavigate view.url, params
 
   ###*
     @protected
