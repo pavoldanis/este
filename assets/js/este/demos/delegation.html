@@ -24,7 +24,7 @@
 		<em>Inner mousehover events are ignored.</em>
 	</div>
 	<script>
-		
+
 		delegation = new este.events.Delegation(document.body, ['mouseover', 'mouseout']);
 		delegation.targetFilter = function(el) {
 			return el.tagName == 'DIV'
@@ -32,10 +32,10 @@
 		goog.events.listen(delegation, ['mouseover', 'mouseout'], function(e) {
 			console.log(e.type);
 		});
-	
+
 		setInterval(function() {
 			document.title = goog.events.getTotalListenerCount();
 		}, 100);
 
-	</script>	
+	</script>
 </body>
