@@ -6,7 +6,7 @@
       ds.fetch app.user.Model, 3
     async
     add interface
-  WARNING: This is still highly experimental.
+  WARNING: This is still experimental.
 ###
 goog.provide 'este.mvc.View'
 

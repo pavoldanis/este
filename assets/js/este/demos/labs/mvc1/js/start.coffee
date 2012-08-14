@@ -7,8 +7,7 @@ goog.provide 'este.demos.labs.mvc1.start'
 goog.require 'este.demos.labs.mvc1.detail.View'
 goog.require 'este.demos.labs.mvc1.listing.View'
 goog.require 'este.dev.Monitor.create'
-goog.require 'este.mvc.App'
-goog.require 'este.mvc.Layout'
+goog.require 'este.mvc.app.create'
 
 ###*
   @param {Object} data JSON from server
@@ -20,8 +19,7 @@ este.demos.labs.mvc1.start = (data) ->
   progressEl = document.getElementById 'progress'
 
   appEl = document.getElementById 'app'
-  layout = new este.mvc.Layout appEl
-  myApp = new este.mvc.App layout, [
+  myApp = este.mvc.app.create appEl, [
     este.demos.labs.mvc1.listing.View
     este.demos.labs.mvc1.detail.View
   ]
