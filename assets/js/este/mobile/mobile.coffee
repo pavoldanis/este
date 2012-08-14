@@ -35,7 +35,7 @@ goog.scope ->
   # emulate first feature http://taptaptap.com/blog/10-useful-iphone-tips-and-tricks/
   # function tapToTop(scrollableElement) {
   #   var currentOffset = scrollableElement.scrollTop
-    
+
   #   // Animate to position 0 with a transform.
   #   scrollableElement.style.webkitTransition =
   #       '-webkit-transform 300ms ease-out';
@@ -43,7 +43,7 @@ goog.scope ->
   #       'webkitTransitionEnd', onAnimationEnd, false);
   #   scrollableElement.style.webkitTransform =
   #       'translate3d(0, ' + (-currentOffset) +'px,0)';
-      
+
   #   function onAnimationEnd() {
   #     // Animation is complete, swap transform with
   #     // change in scrollTop after removing transition.
