@@ -81,7 +81,7 @@ class este.ui.lightbox.View extends goog.ui.Component
 		@inheritDoc
 	###
 	enterDocument: ->
-		goog.base @, 'enterDocument'
+		super()
 		@getHandler().
 			listen(@getElement(), 'click', @onClick).
 			listen(@dom_.getDocument(), 'keydown', @onDocumentKeydown)

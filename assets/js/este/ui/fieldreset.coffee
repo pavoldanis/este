@@ -97,5 +97,5 @@ class este.ui.FieldReset extends goog.ui.Component
   ###
   disposeInternal: ->
     @inputHandler.dispose()
-    goog.base @, 'disposeInternal'
+    super()
     return

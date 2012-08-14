@@ -223,5 +223,5 @@ class este.ui.resizer.Handles extends goog.ui.Component
 		@dom_.removeNode @horizontal
 		@dom_.removeNode @vertical
 		@dragger.dispose() if @dragger
-		goog.base @, 'disposeInternal'
+		super()
 		return

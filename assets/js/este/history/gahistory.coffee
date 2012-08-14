@@ -9,43 +9,38 @@ goog.provide 'este.history.GAHistory'
 goog.require 'este.History'
 goog.require 'goog.debug.Logger'
 
-###*
-  @param {string} gaAccountId
-  @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
-  The path prefix should start and end with slash.
-  @param {boolean=} forceHash If true, este.History will degrade to hash even
-  if html5history is supported.
-  @constructor
-  @extends {este.History}
-###
-este.history.GAHistory = (gaAccountId, pathPrefix, forceHash) ->
-  # Initialize Google Analytics async queue
-  if !window['_gaq']
-    window['_gaq'] = [];
-
-  # Set the tracker ID
-  window['_gaq'].push(['_setAccount', gaAccountId]);
-
-  # Need to call super constructor after we have gaq as it will trigger onNavigate
-  goog.base @, pathPrefix, forceHash
-
-  # Start loading the script
-  `var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);`
-
-  return
-
-goog.inherits este.history.GAHistory, este.History
-
-goog.scope ->
-  `var _ = este.history.GAHistory`
+class este.history.GAHistory extends este.History
 
   ###*
-    @param {goog.history.Event} e
+    @param {string} gaAccountId
+    @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
+    The path prefix should start and end with slash.
+    @param {boolean=} forceHash If true, este.History will degrade to hash even
+    if html5history is supported.
+    @constructor
+    @extends {este.History}
   ###
-  _::onNavigate = (e) ->
-    goog.base @, 'onNavigate', e
+  constructor: (gaAccountId, pathPrefix, forceHash) ->
+    # Initialize Google Analytics async queue
+    window['_gaq'] = [] if !window['_gaq']
+
+    # Set the tracker ID
+    window['_gaq'].push(['_setAccount', gaAccountId]);
+
+    # todo: make test
+    # Need to call super constructor after we have gaq as it will trigger onNavigate
+    # super pathPrefix, forceHash
+
+    # Start loading the script
+    `var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);`
+
+  ###*
+    @inheritDoc
+  ###
+  onNavigate: (e) ->
+    super e
 
     # Compute the URL of the page; if app is running using hash-based history,
     # it will be tracked as html5 history based (i.e. no hashes, full URLs)
@@ -57,9 +52,6 @@ goog.scope ->
 
   ###*
     @type {goog.debug.Logger}
-    @private 
+    @private
   ###
-  _::logger_ = goog.debug.Logger.getLogger 'este.history.GAHistory'
-
-
-  return
+  logger_: goog.debug.Logger.getLogger 'este.history.GAHistory'

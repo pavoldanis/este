@@ -65,7 +65,7 @@ class este.ui.FormsPersister extends goog.ui.Component
     @inheritDoc
   ###
   decorateInternal: (element) ->
-    goog.base @, 'decorateInternal', element
+    super element
     path = @getElementDomPath()
     data = @storage.get path.join()
     return if !data
@@ -106,7 +106,7 @@ class este.ui.FormsPersister extends goog.ui.Component
     @inheritDoc
   ###
   enterDocument: ->
-    goog.base @, 'enterDocument'
+    super()
     @focusHandler = new goog.events.FocusHandler @getElement()
     @getHandler().
       listen(@focusHandler, 'focusin', @onFocusin).
@@ -118,7 +118,7 @@ class este.ui.FormsPersister extends goog.ui.Component
   ###
   exitDocument: ->
     @focusHandler.dispose()
-    goog.base @, 'exitDocument'
+    super()
     return
 
   ###*
