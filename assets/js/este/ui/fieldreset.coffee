@@ -1,58 +1,54 @@
 ###*
-  @fileoverview
+  @fileoverview este.ui.FieldReset.
 ###
 goog.provide 'este.ui.FieldReset'
 
-goog.require 'goog.events.InputHandler'
-goog.require 'goog.ui.Component'
-goog.require 'goog.string'
-goog.require 'goog.dom.classes'
 goog.require 'este.mobile'
+goog.require 'goog.dom.classes'
+goog.require 'goog.events.InputHandler'
+goog.require 'goog.string'
+goog.require 'goog.ui.Component'
 
-###*
-  @param {Element} element
-  @constructor
-  @extends {goog.ui.Component}
-###
-este.ui.FieldReset = (element) ->
-  @inputHandler = new goog.events.InputHandler element
-  @resetBtn = goog.dom.createDom 'div', 'este-reset'
-  @decorate element
-  return
+class este.ui.FieldReset extends goog.ui.Component
 
-goog.inherits este.ui.FieldReset, goog.ui.Component
-  
-goog.scope ->
-  `var _ = este.ui.FieldReset`
+  ###*
+    @param {Element} element
+    @constructor
+    @extends {goog.ui.Component}
+  ###
+  constructor: (element) ->
+    @inputHandler = new goog.events.InputHandler element
+    @resetBtn = goog.dom.createDom 'div', 'este-reset'
+    @decorate element
 
   ###*
     @type {string}
   ###
-  _.className = 'este-empty'
+  @className: 'este-empty'
 
   ###*
     @enum {string}
   ###
-  _.EventType =
+  @EventType:
     INPUT: 'input'
 
   ###*
     @type {goog.events.InputHandler}
     @protected
   ###
-  _::inputHandler
+  inputHandler: null
 
   ###*
     @type {Element}
     @protected
   ###
-  _::resetBtn
+  resetBtn: null
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::enterDocument = ->
-    goog.base @, 'enterDocument'
+  enterDocument: ->
+    super()
     @getHandler().
       listen(@inputHandler, 'input', @onInputHandlerInput).
       listen(@resetBtn, este.mobile.tapEvent, @onResetBtnTap)
@@ -60,48 +56,46 @@ goog.scope ->
     return
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::canDecorate = (element) ->
+  canDecorate: (element) ->
     element.tagName in ['INPUT', 'TEXTAREA']
 
   ###*
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  _::onInputHandlerInput = (e) ->
+  onInputHandlerInput: (e) ->
     @update()
-    @dispatchEvent _.EventType.INPUT
+    @dispatchEvent FieldReset.EventType.INPUT
 
   ###*
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  _::onResetBtnTap = (e) ->
+  onResetBtnTap: (e) ->
     # prevents paste bubble in ios5 emulator (didnt tested on real iphone still...)
     e.preventDefault()
     @getElement().value = ''
     @update()
     @getElement().focus()
-    @dispatchEvent _.EventType.INPUT
+    @dispatchEvent FieldReset.EventType.INPUT
 
   ###*
     @protected
   ###
-  _::update = ->
+  update: ->
     isEmpty = !goog.string.trim(@getElement().value).length
-    goog.dom.classes.enable @getElement(), _.className, isEmpty
+    goog.dom.classes.enable @getElement(), FieldReset.className, isEmpty
     if isEmpty
       goog.dom.removeNode @resetBtn
     else
       goog.dom.insertSiblingAfter @resetBtn, @getElement()
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::disposeInternal = ->
+  disposeInternal: ->
     @inputHandler.dispose()
     goog.base @, 'disposeInternal'
     return
-
-  return
