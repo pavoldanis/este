@@ -87,9 +87,9 @@ suite 'este.router.Route', ->
         route.process url
       assert.equal length, goog.object.getKeys(testData).length
 
-  suite 'getPath', ->
+  suite 'getUrl', ->
     test 'serialization should work', ->
       for url, data of testData
         route = new Route data.path, (->), {}
-        assert.deepEqual url, route.getPath data.params
+        assert.deepEqual url, route.getUrl data.params
       return

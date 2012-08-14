@@ -69,7 +69,7 @@ class este.router.Route
     @param {Object} params
     @return {string}
   ###
-  getPath: (params) ->
+  getUrl: (params) ->
     path = @path
     if params.length
       index = 0
