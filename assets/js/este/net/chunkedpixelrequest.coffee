@@ -9,54 +9,52 @@ goog.provide 'este.net.ChunkedPixelRequest.create'
 goog.require 'este.string'
 goog.require 'este.json'
 
-###*
-  @param {string} uri
-  @param {Function} randomStringFactory
-  @param {Function} srcCallback
-  @constructor
-###
-este.net.ChunkedPixelRequest = (@uri, @randomStringFactory, @srcCallback) ->
-  return
+class este.net.ChunkedPixelRequest
 
-goog.scope ->
-  `var _ = este.net.ChunkedPixelRequest`
+  ###*
+    @param {string} uri
+    @param {Function} randomStringFactory
+    @param {Function} srcCallback
+    @constructor
+  ###
+  constructor: (@uri, @randomStringFactory, @srcCallback) ->
 
   ###*
     @param {string} uri
     @return {este.net.ChunkedPixelRequest}
   ###
-  _.create = (uri) ->
+  @create: (uri) ->
     srcCallback = (src) ->
       # new Image 1, 1 because that's how GA does it.
       img = new Image 1, 1
       img.src = src
       return
-    new _ uri, goog.string.getRandomString, srcCallback
+    new ChunkedPixelRequest uri, goog.string.getRandomString, srcCallback
 
   ###*
     @type {number} http://support.microsoft.com/kb/208427
   ###
-  _.MAX_CHUNK_SIZE = 1900
+  @MAX_CHUNK_SIZE: 1900
 
   ###*
     @type {string}
   ###
-  _::uri
+  uri: ''
 
   ###*
     @type {Function}
   ###
-  _::randomStringFactory
+  randomStringFactory: null
 
   ###*
     @type {Function}
   ###
-  _::srcCallback
+  srcCallback: null
 
   ###*
     @param {Object} payload
   ###
-  _::send = (payload) ->
+  send: (payload) ->
     chunks = @getChunks payload
     randomString = @randomStringFactory()
     for chunk in chunks
@@ -74,18 +72,6 @@ goog.scope ->
     @return {Array.<Object>}
     @protected
   ###
-  _::getChunks = (payload) ->
+  getChunks: (payload) ->
     str = este.json.stringify payload
-    este.string.chunkToObject str, _.MAX_CHUNK_SIZE
-
-  return
-
-
-
-
-
-
-
-
-
-
+    este.string.chunkToObject str, ChunkedPixelRequest.MAX_CHUNK_SIZE
