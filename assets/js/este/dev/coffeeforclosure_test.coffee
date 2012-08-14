@@ -168,7 +168,7 @@ suite 'este.dev.CoffeeForClosure', ->
 
       goog.provide('example.Person');
 
-      
+
 
         
 
