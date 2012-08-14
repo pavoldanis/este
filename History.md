@@ -1,3 +1,8 @@
+##08/14/12
+  - Closure class syntax updated to CoffeeScript
+  - bug in coffee4class fixed, empty constructors works now
+  - Chai.js updated to 1.2.0
+
 ##08/09/12
   - este mvc first demo released
   - git ignores fixed, no need to specify another namespaces
