@@ -13,7 +13,7 @@ suite 'este.mvc.App', ->
     layout =
       setActive: (view) ->
     router =
-      routeNavigate: (url, params) ->
+      pathNavigate: (url, params) ->
     app = new App layout, [], router
     arrangeViews()
 
@@ -61,7 +61,7 @@ suite 'este.mvc.App', ->
       app.start()
       view1::url = 'fok'
       params = {}
-      router.routeNavigate = (url, p_params) ->
+      router.pathNavigate = (url, p_params) ->
         assert.equal url, 'fok'
         assert.equal p_params, params
         done()

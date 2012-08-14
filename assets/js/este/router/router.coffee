@@ -1,12 +1,16 @@
 ###*
   @fileoverview este.router.Router.
   @see ../demos/router.html
+
+  todo
+    use model for routes list, since route path is string and there
+    is no reason to have same named paths. Also, it will be save for
+    toString etc. routes
 ###
 goog.provide 'este.router.Router'
 
 goog.require 'este.Base'
 goog.require 'este.array'
-goog.require 'este.events.TapHandler'
 goog.require 'este.router.Route'
 goog.require 'goog.dom'
 
@@ -64,6 +68,23 @@ class este.router.Router extends este.Base
   ###
   navigate: (token) ->
     @history.setToken token
+
+  ###*
+    @param {string} path
+    @param {Object=} params
+  ###
+  pathNavigate: (path, params) ->
+    route = @findRoute path
+    return if !route
+    @navigate route.getUrl params
+
+  ###*
+    @param {string} path
+    @protected
+  ###
+  findRoute: (path) ->
+    goog.array.find @routes, (item) ->
+      item.path == path
 
   ###*
     Start routing.

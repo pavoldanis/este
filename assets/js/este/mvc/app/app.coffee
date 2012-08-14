@@ -96,7 +96,16 @@ class este.mvc.App extends este.Base
     @viewsInstances = (for View in @views
       view = new View
       view.show = show
+      if view.url
+        @router.add view.url, @onViewShow
       view)
+
+  ###*
+    @param {goog.events.Event} e
+    @protected
+  ###
+  onViewShow: (e) ->
+
 
   ###*
     @param {este.mvc.View} view
@@ -137,7 +146,7 @@ class este.mvc.App extends este.Base
   ###
   projectUrl: (view, params) ->
     return if !view.url
-    @router.routeNavigate view.url, params
+    @router.pathNavigate view.url, params
 
   ###*
     @protected

@@ -165,3 +165,11 @@ suite 'este.router.Router', ->
         assert.equal token, 'foo'
         done()
       router.navigate 'foo'
+
+  suite 'pathNavigate', ->
+    test 'should call setToken on history object', (done) ->
+      history.setToken = (token) ->
+        assert.equal token, 'user/joe'
+        done()
+      router.add 'user/:name', ->
+      router.pathNavigate 'user/:name', name: 'joe'

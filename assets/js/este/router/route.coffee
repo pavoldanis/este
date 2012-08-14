@@ -66,10 +66,10 @@ class este.router.Route
     @hide() if @hide
 
   ###*
-    @param {Object} params
+    @param {Object=} params
     @return {string}
   ###
-  getUrl: (params) ->
+  getUrl: (params = {}) ->
     path = @path
     if params.length
       index = 0
