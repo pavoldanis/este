@@ -1,7 +1,5 @@
 ###*
-  @fileoverview Este dev stack library.
-
+  @fileoverview Este.js framework.
   @author daniel@steigerwald.cz (Daniel Steigerwald)
-  @author jiri.kopsa(at)proactify.com (Jiří Kopsa)
 ###
 goog.provide 'este'

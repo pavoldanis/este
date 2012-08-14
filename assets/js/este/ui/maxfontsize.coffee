@@ -1,3 +1,6 @@
+###*
+  @fileoverview este.ui.maxFontSize.
+###
 goog.provide 'este.ui.maxFontSize'
 
 goog.require 'goog.dom.classes'

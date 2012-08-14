@@ -1,7 +1,8 @@
 ###*
   Inspired from Modernizr
   este.userAgent.propagateSupport 'overflowScrolling'
-  document.title = goog.dom.classes.has document.documentElement, 'support-overflow-scrolling'
+  document.title = goog.dom.classes.has document.documentElement,
+    'support-overflow-scrolling'
 ###
 goog.provide 'este.userAgent'
 
@@ -11,10 +12,19 @@ goog.require 'goog.string'
 goog.scope ->
   `var _ = este.userAgent`
 
+  ###*
+    @type {Array.<string>}
+  ###
   _.vendorPrefixes = 'Webkit Moz O ms'.split ' '
 
+  ###*
+    @type {Element}
+  ###
   _.testElement = document.createElement 'div'
 
+  ###*
+    @type {Object}
+  ###
   _.testStyle = _.testElement.style
 
   ###*
@@ -38,4 +48,3 @@ goog.scope ->
     goog.dom.classes.add document.documentElement, 'support-' + prop
 
   return
-  
