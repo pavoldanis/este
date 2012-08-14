@@ -4,9 +4,9 @@
 
   note
     not tested in IE, but it should work in IE>8 and be easily fixable for rest
-  
+
   todo
-    add expiration!
+    add expiration
     improve field dom path (consider: url, form name, etc.)
     check&fix IE (http://stackoverflow.com/a/266252/233902)
   @see ../demos/formspersister.html
@@ -22,28 +22,23 @@ goog.require 'goog.events.FocusHandler'
 goog.require 'goog.events.InputHandler'
 goog.require 'este.storage.create'
 
-###*
-  @param {boolean=} session
-  @constructor
-  @extends {goog.ui.Component}
-###
-este.ui.FormsPersister = (session = false) ->
-  goog.base @
-  @storage = este.storage.createCollectable 'este-ui-formspersister', session
-  return
+class este.ui.FormsPersister extends goog.ui.Component
 
-goog.inherits este.ui.FormsPersister, goog.ui.Component
-
-goog.scope ->
-  `var _ = este.ui.FormsPersister`
-  `var forms = goog.dom.forms`
+  ###*
+    @param {boolean=} session
+    @constructor
+    @extends {goog.ui.Component}
+  ###
+  constructor: (session = false) ->
+    super()
+    @storage = este.storage.createCollectable 'este-ui-formspersister', session
 
   ###*
     @param {Element} element
     @param {boolean=} session
     @return {este.ui.FormsPersister}
   ###
-  _.create = (element, session) ->
+  @create: (element, session) ->
     persist = new este.ui.FormsPersister session
     persist.decorate element
     persist
@@ -52,24 +47,24 @@ goog.scope ->
     Minimal client storage ftw.
     @type {number}
   ###
-  _::expirationTime = 1000 * 60 * 60 * 24 * 30
+  expirationTime: 1000 * 60 * 60 * 24 * 30
 
   ###*
     @type {goog.storage.CollectableStorage}
     @protected
   ###
-  _::storage
+  storage: null
 
   ###*
     @type {goog.events.FocusHandler}
     @protected
   ###
-  _::focusHandler
+  focusHandler: null
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::decorateInternal = (element) ->
+  decorateInternal: (element) ->
     goog.base @, 'decorateInternal', element
     path = @getElementDomPath()
     data = @storage.get path.join()
@@ -82,7 +77,7 @@ goog.scope ->
     @param {Object} data
     @protected
   ###
-  _::retrieve = (data) ->
+  retrieve: (data) ->
     for formPath, fields of data
       form = este.dom.getElementByDomPathIndex formPath.split ','
       continue if !form || !form.elements
@@ -95,22 +90,22 @@ goog.scope ->
       for name, value of fields
         field = fieldsMap[name]?[0]
         continue if !field
-        
+
         switch field.type
           when 'radio'
             for el in fieldsMap[name]
-              forms.setValue el, el.value == value
+              goog.dom.forms.setValue el, el.value == value
           when 'checkbox'
             for el in fieldsMap[name]
-              forms.setValue el, goog.array.contains value, el.value
+              goog.dom.forms.setValue el, goog.array.contains value, el.value
           else
-            forms.setValue field, value
+            goog.dom.forms.setValue field, value
     return
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::enterDocument = ->
+  enterDocument: ->
     goog.base @, 'enterDocument'
     @focusHandler = new goog.events.FocusHandler @getElement()
     @getHandler().
@@ -119,9 +114,9 @@ goog.scope ->
     return
 
   ###*
-    @override
+    @inheritDoc
   ###
-  _::exitDocument = ->
+  exitDocument: ->
     @focusHandler.dispose()
     goog.base @, 'exitDocument'
     return
@@ -130,7 +125,7 @@ goog.scope ->
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  _::onFocusin = (e) ->
+  onFocusin: (e) ->
     `var target = /** @type {Element} */ (e.target)`
     return if !(target.tagName in ['INPUT', 'TEXTAREA'])
     @registerInputHander target
@@ -139,7 +134,7 @@ goog.scope ->
     @param {Element} field
     @protected
   ###
-  _::registerInputHander = (field) ->
+  registerInputHander: (field) ->
     handler = new goog.events.InputHandler field
     @getHandler().listen handler, 'input', @onFieldInput
     @getHandler().listenOnce field, 'blur', (e) ->
@@ -149,7 +144,7 @@ goog.scope ->
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  _::onFieldInput = (e) ->
+  onFieldInput: (e) ->
     `var target = /** @type {Element} */ (e.target)`
     @storeField target
 
@@ -157,7 +152,7 @@ goog.scope ->
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  _::onChange = (e) ->
+  onChange: (e) ->
     `var target = /** @type {Element} */ (e.target)`
     @storeField target
 
@@ -165,7 +160,7 @@ goog.scope ->
     @param {Element} field
     @protected
   ###
-  _::storeField = (field) ->
+  storeField: (field) ->
     formDomPath = este.dom.getDomPathIndexes field.form
     name = field.name
     value = @getFieldValue field
@@ -176,7 +171,7 @@ goog.scope ->
     @param {string} name
     @param {string|Array.<string>} value
   ###
-  _::store = (formDomPath, name, value) ->
+  store: (formDomPath, name, value) ->
     path = @getElementDomPath()
     key = path.join()
     storage = @storage.get key
@@ -189,7 +184,7 @@ goog.scope ->
     @return {Array.<number>}
     @protected
   ###
-  _::getElementDomPath = ->
+  getElementDomPath: ->
     este.dom.getDomPathIndexes @getElement()
 
   ###*
@@ -197,13 +192,11 @@ goog.scope ->
     @return {string|Array.<string>}
     @protected
   ###
-  _::getFieldValue = (field) ->
+  getFieldValue: (field) ->
     if field.type == 'checkbox'
       values = []
       for el in field.form.elements when el.name == field.name
-        value = forms.getValue el
+        value = goog.dom.forms.getValue el
         values.push value if value?
       return values
-    forms.getValue field
-
-  return
+    goog.dom.forms.getValue field
