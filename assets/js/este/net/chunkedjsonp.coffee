@@ -12,16 +12,14 @@ goog.require 'goog.net.Jsonp'
 goog.require 'este.string'
 goog.require 'este.json'
 
-###*
-  @param {Function} jsonpFactory
-  @param {Function} randomStringFactory
-  @constructor
-###
-este.net.ChunkedJsonp = (@jsonpFactory, @randomStringFactory) ->
-  return
-  
-goog.scope ->
-  `var _ = este.net.ChunkedJsonp`
+class este.net.ChunkedJsonp
+
+  ###*
+    @param {Function} jsonpFactory
+    @param {Function} randomStringFactory
+    @constructor
+  ###
+  constructor: (@jsonpFactory, @randomStringFactory) ->
 
   ###*
     @param {goog.Uri|string} uri The Uri of the server side code that receives
@@ -29,42 +27,42 @@ goog.scope ->
     @param {string=} opt_callbackParamName The parameter name that is used to
     specify the callback. Defaults to "callback".
   ###
-  _.create = (uri, opt_callbackParamName) ->
+  @create: (uri, opt_callbackParamName) ->
     jsonpFactory = ->
       new goog.net.Jsonp uri, opt_callbackParamName
-    new _ jsonpFactory, goog.string.getRandomString
+    new ChunkedJsonp jsonpFactory, goog.string.getRandomString
 
   ###*
     @type {number} http://support.microsoft.com/kb/208427
   ###
-  _.MAX_CHUNK_SIZE = 1900
+  @MAX_CHUNK_SIZE: 1900
 
   ###*
     @type {Function}
     @protected
   ###
-  _::jsonpFactory
+  jsonpFactory: null
 
   ###*
     @type {Function}
     @protected
   ###
-  _::randomStringFactory
+  randomStringFactory: null
 
   ###*
     @param {Object} payload
     @param {Function=} opt_replyCallback
   ###
-  _::send = (payload, opt_replyCallback) ->
+  send: (payload, opt_replyCallback) ->
     chunks = @getChunks payload
     randomString = @randomStringFactory()
     callCount = 0
-    
+
     jsonpReplyCallback = ->
       callCount++
       if callCount == chunks.length
         opt_replyCallback.apply null, arguments
-    
+
     for chunk in chunks
       jsonp = @jsonpFactory()
       jsonpPayload =
@@ -83,19 +81,6 @@ goog.scope ->
     @return {Array.<Object>}
     @protected
   ###
-  _::getChunks = (payload) ->
+  getChunks: (payload) ->
     str = este.json.stringify payload
-    este.string.chunkToObject str, _.MAX_CHUNK_SIZE
-    
-  return
-
-
-
-
-
-
-
-
-
-
-
+    este.string.chunkToObject str, ChunkedJsonp.MAX_CHUNK_SIZE
