@@ -49,8 +49,8 @@ suite 'este.ui.resizer.Handles', ->
 		test 'should create instance', ->
 			handles = Handles.create()
 			assert.instanceOf handles, Handles
-	
-	suite '#decorate', ->
+
+	suite 'decorate', ->
 		test 'should render vertical and horizontal handles', ->
 			assert.equal handles.vertical.nodeType, 1
 			assert.equal handles.horizontal.nodeType, 1
@@ -80,7 +80,7 @@ suite 'este.ui.resizer.Handles', ->
 			assert.equal handles.vertical.parentNode, element
 			assert.equal handles.horizontal.parentNode, element
 
-	suite '#update', ->
+	suite 'update', ->
 		test 'should update handles bounds', ->
 			element.offsetLeft = 30
 			element.offsetTop = 40
@@ -94,7 +94,7 @@ suite 'este.ui.resizer.Handles', ->
 			assert.equal handles.vertical.style.top, '40px'
 			assert.equal handles.vertical.style.height, '210px'
 
-	suite '#dispose', ->
+	suite 'dispose', ->
 		test 'should dispose handles', ->
 			handles.dispose()
 			assert.isNull handles.vertical.parentNode
@@ -102,7 +102,7 @@ suite 'este.ui.resizer.Handles', ->
 			assert.isFalse goog.events.hasListener handles.vertical, 'mouseout', false
 			assert.isFalse goog.events.hasListener handles.horizontal, 'mouseout', false
 
-	suite '#isHandle', ->
+	suite 'isHandle', ->
 		test 'should return true for handle element', ->
 			assert.isTrue handles.isHandle handles.vertical
 			assert.isTrue handles.isHandle handles.horizontal
@@ -200,9 +200,9 @@ suite 'este.ui.resizer.Handles', ->
 			element.offsetTop = 40
 			element.offsetWidth = 110
 			element.offsetHeight = 210
-			
+
 			handles.update()
-			
+
 			assert.equal handles.horizontal.style.left, '30px'
 			assert.equal handles.horizontal.style.top, '250px'
 			assert.equal handles.horizontal.style.width, '110px'
@@ -212,7 +212,7 @@ suite 'este.ui.resizer.Handles', ->
 
 			fireMouseDownOnVerticalHandle()
 			goog.events.fireListeners dragger, 'start', false, {}
-			
+
 			element.offsetLeft = 31
 			element.offsetTop = 42
 			element.offsetWidth = 113
@@ -273,7 +273,7 @@ suite 'este.ui.resizer.Handles', ->
 			goog.events.fireListeners dragger, 'start', false, {}
 			goog.events.fireListeners dragger, 'end', false, {}
 
-	suite '#dispose', ->
+	suite 'dispose', ->
 		test 'should dispose dragger too', (done) ->
 			fireMouseDownOnVerticalHandle()
 			dragger.dispose = -> done()

@@ -1,8 +1,5 @@
 ###*
 	@fileoverview
-	todo
-		mouse cursor style is missing on handles when reached from out,
-		chrome rendering bug probably
 	@see ../demos/resizer.html
 ###
 goog.provide 'este.ui.Resizer'
@@ -12,101 +9,100 @@ goog.require 'goog.ui.Component'
 goog.require 'este.events.Delegation.create'
 goog.require 'este.ui.resizer.Handles.create'
 
-###*
-	@param {Function}	delegationFactory
-	@param {Function}	handlesFactory
-	@constructor
-	@extends {goog.ui.Component}
-###
-este.ui.Resizer = (@delegationFactory, @handlesFactory) ->
-	goog.base @
-	return
+class este.ui.Resizer extends goog.ui.Component
 
-goog.inherits este.ui.Resizer, goog.ui.Component
-	
-goog.scope ->
-	`var _ = este.ui.Resizer`
+	###*
+		@param {Function}	delegationFactory
+		@param {Function}	handlesFactory
+		@constructor
+		@extends {goog.ui.Component}
+	###
+	constructor: (@delegationFactory, @handlesFactory) ->
+		super()
 
 	###*
 		@return {este.ui.Resizer}
-	###	
-	_.create = ->
-		resizer = new _ este.events.Delegation.create, este.ui.resizer.Handles.create
-		resizer
+	###
+	@create: ->
+		new Resizer este.events.Delegation.create, este.ui.resizer.Handles.create
 
 	###*
 		@enum {string}
 	###
-	_.EventType =
+	@EventType:
 		RESIZEEND: 'resizeend'
 
 	###*
 		@type {Function}
+		@protected
 	###
-	_::delegationFactory
+	delegationFactory: null
 
 	###*
 		@type {Function}
+		@protected
 	###
-	_::handlesFactory
+	handlesFactory: null
 
 	###*
 		@type {number}
 	###
-	_::minimalWidth = 5
+	minimalWidth: 5
 
 	###*
 		@type {number}
 	###
-	_::minimalHeight = 5
+	minimalHeight: 5
 
 	###*
 		@type {Element}
+		@protected
 	###
-	_::activeElement
+	activeElement: null
 
 	###*
 		@type {goog.math.Size}
+		@protected
 	###
-	_::activeElementSize
+	activeElementSize: null
 
 	###*
 		@param {Element} element
 		@return {boolean}
 	###
-	_::targetFilter = (element) ->
+	targetFilter: (element) ->
 		true
 
 	###*
 		@param {Element} element
 		@return {boolean}
 	###
-	_::targetParentFilter = (element) ->
+	targetParentFilter: (element) ->
 		true
 
 	###*
 		@type {este.events.Delegation}
 		@protected
 	###
-	_::delegation
+	delegation: null
 
 	###*
 		@type {este.ui.resizer.Handles}
 		@protected
 	###
-	_::handles
+	handles: null
 
 	###*
 		@type {boolean}
 		@protected
 	###
-	_::dragging = false
+	dragging: false
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::enterDocument = ->
-		goog.base @, 'enterDocument'
+	enterDocument: ->
+		super()
 		events = ['mouseover', 'mouseout']
 		@delegation = @delegationFactory @getElement(), events, @targetFilter, @targetParentFilter
 		@getHandler().
@@ -115,10 +111,10 @@ goog.scope ->
 		return
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::exitDocument = ->
-		goog.base @, 'exitDocument'
+	exitDocument: ->
+		super()
 		@delegation.dispose()
 		@handles.dispose() if @handles
 		return
@@ -127,7 +123,7 @@ goog.scope ->
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	_::onDelegationMouseOver = (e) ->
+	onDelegationMouseOver: (e) ->
 		return if @dragging
 		@handles.dispose() if @handles
 		@handles = @handlesFactory()
@@ -142,22 +138,24 @@ goog.scope ->
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	_::onDelegationMouseOut = (e) ->
+	onDelegationMouseOut: (e) ->
 		return if @dragging || @handles.isHandle e.relatedTarget
 		@handles.dispose()
 
 	###*
 		@param {goog.events.BrowserEvent} e
+		@protected
 	###
-	_::onDragStart = (e) ->
+	onDragStart: (e) ->
 		`var el = /** @type {Element} */ (e.element)`
 		@activeElementSize = goog.style.getContentBoxSize el
 		@dragging = true
-		
+
 	###*
 		@param {Object} e
+		@protected
 	###
-	_::onDrag = (e) ->
+	onDrag: (e) ->
 		width = Math.max @minimalWidth, @activeElementSize.width + e.width
 		height = Math.max @minimalHeight, @activeElementSize.height + e.height
 		if e.element.tagName != 'IMG'
@@ -169,29 +167,15 @@ goog.scope ->
 			e.element.style.height = 'auto'
 		else
 			e.element.style.width = 'auto'
-			e.element.style.height = height + 'px'			
+			e.element.style.height = height + 'px'
 
 	###*
 		@param {Object} e
+		@protected
 	###
-	_::onDragEnd = (e) ->
+	onDragEnd: (e) ->
 		@dragging = false
 		@handles.dispose() if e.close
 		@dispatchEvent
-			type: _.EventType.RESIZEEND
+			type: Resizer.EventType.RESIZEEND
 			element: e.element
-
-	return
-
-
-
-
-
-
-
-
-
-
-
-
-

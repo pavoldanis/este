@@ -1,7 +1,7 @@
 suite 'este.ui.Lightbox', ->
 
 	Lightbox = este.ui.Lightbox
-	
+
 	handler = null
 	element = null
 	view = null
@@ -13,7 +13,7 @@ suite 'este.ui.Lightbox', ->
 
 	fireViewCloseEvent = ->
 		goog.events.fireListeners view, 'close', false, {}
-			
+
 	setup ->
 		handler =
 			decorate: ->
@@ -35,14 +35,14 @@ suite 'este.ui.Lightbox', ->
 		test 'should create lightbox instance with object graph', ->
 			lightbox = Lightbox.create()
 			assert.instanceOf lightbox, Lightbox
-	
-	suite '#decorate()', ->
+
+	suite 'decorate()', ->
 		test 'should decorate handler with its element', (done) ->
 			handler.decorate = (el) ->
 				assert.equal el, element
 				done()
 			lightbox.decorate element
-		
+
 	suite 'handler click event', ->
 		test 'should call viewFactory with current anchor and array of anchors', (done) ->
 			currentAnchor = {}
@@ -57,7 +57,7 @@ suite 'este.ui.Lightbox', ->
 			fireHandlerClickEvent
 				currentAnchor: currentAnchor
 				anchors: anchors
-		
+
 		test 'should add view as child', ->
 			lightbox.decorate element
 			fireHandlerClickEvent()
@@ -68,7 +68,7 @@ suite 'este.ui.Lightbox', ->
 			lightbox.decorate element
 			fireHandlerClickEvent()
 
-	suite '#close', ->
+	suite 'close', ->
 		test 'should remove shown view', ->
 			lightbox.decorate element
 			# show view

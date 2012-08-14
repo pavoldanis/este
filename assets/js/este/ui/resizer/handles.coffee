@@ -1,8 +1,5 @@
 ###*
-	@fileoverview
-
-	todo
-		drag cursor does not work in mac chrome
+	@fileoverview este.ui.resizer.Handles'
 ###
 goog.provide 'este.ui.resizer.Handles'
 goog.provide 'este.ui.resizer.Handles.create'
@@ -10,37 +7,31 @@ goog.provide 'este.ui.resizer.Handles.create'
 goog.require 'goog.ui.Component'
 goog.require 'goog.fx.Dragger'
 goog.require 'goog.math.Coordinate'
-
 goog.require 'este.ui.InvisibleOverlay.create'
 
-###*
-	@param {Function} draggerFactory
-	@param {Function} invisibleOverlayFactory
-	@constructor
-	@extends {goog.ui.Component}
-###
-este.ui.resizer.Handles = (@draggerFactory, @invisibleOverlayFactory) ->
-	return
+class este.ui.resizer.Handles extends goog.ui.Component
 
-goog.inherits este.ui.resizer.Handles, goog.ui.Component
-	
-goog.scope ->
-	`var _ = este.ui.resizer.Handles`
-	`var style = goog.style`
+	###*
+		@param {Function} draggerFactory
+		@param {Function} invisibleOverlayFactory
+		@constructor
+		@extends {goog.ui.Component}
+	###
+	constructor: (@draggerFactory, @invisibleOverlayFactory) ->
 
 	###*
 		@return {este.ui.resizer.Handles}
 	###
-	_.create = ->
+	@create = ->
 		draggerFactory = ->
 			dragger = new goog.fx.Dragger document.createElement 'div'
 			dragger
-		new _ draggerFactory, este.ui.InvisibleOverlay.create
+		new Handles draggerFactory, este.ui.InvisibleOverlay.create
 
 	###*
 		@enum {string}
 	###
-	_.EventType =
+	@EventType:
 		# just relayed event from handles elements
 		MOUSEOUT: 'mouseout'
 		START: 'start'
@@ -50,48 +41,48 @@ goog.scope ->
 	###*
 		@type {Element}
 	###
-	_::vertical
+	vertical: null
 
 	###*
 		@type {Element}
 	###
-	_::horizontal
+	horizontal: null
 
 	###*
 		@type {Element}
 	###
-	_::activeHandle
+	activeHandle: null
 
 	###*
 		@type {Function}
 	###
-	_::draggerFactory
+	draggerFactory: null
 
 	###*
 		@type {Function}
 	###
-	_::invisibleOverlayFactory
+	invisibleOverlayFactory: null
 
 	###*
 		@type {goog.fx.Dragger}
 	###
-	_::dragger
+	dragger: null
 
 	###*
-		@type {!goog.math.Coordinate}
+		@type {goog.math.Coordinate}
 	###
-	_::dragMouseStart
+	dragMouseStart: null
 
 	###*
 		@type {este.ui.InvisibleOverlay}
 	###
-	_::invisibleOverlay
+	invisibleOverlay: null
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::decorateInternal = (element) ->
-		goog.base @, 'decorateInternal', element
+	decorateInternal: (element) ->
+		super element
 		@createHandles()
 		@update()
 		return
@@ -99,7 +90,7 @@ goog.scope ->
 	###*
 		@protected
 	###
-	_::createHandles = ->
+	createHandles: ->
 		@vertical = @dom_.createDom 'div', 'este-resizer-handle-vertical'
 		@horizontal = @dom_.createDom 'div', 'este-resizer-handle-horizontal'
 		parent = @getElement().offsetParent || @getElement()
@@ -108,22 +99,23 @@ goog.scope ->
 
 	###*
 		Update handles bounds.
+		@protected
 	###
-	_::update = ->
+	update: ->
 		el = @getElement()
-		left = el.offsetLeft 
-		top = el.offsetTop 
-		style.setPosition @horizontal, left, top + el.offsetHeight
-		style.setWidth @horizontal, el.offsetWidth
+		left = el.offsetLeft
+		top = el.offsetTop
+		goog.style.setPosition @horizontal, left, top + el.offsetHeight
+		goog.style.setWidth @horizontal, el.offsetWidth
 
-		style.setPosition @vertical, left + el.offsetWidth, top
-		style.setHeight @vertical, el.offsetHeight
+		goog.style.setPosition @vertical, left + el.offsetWidth, top
+		goog.style.setHeight @vertical, el.offsetHeight
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::enterDocument = ->
-		goog.base @, 'enterDocument'
+	enterDocument: ->
+		super()
 		@getHandler().
 			listen(@horizontal, 'mousedown', @onHorizontalMouseDown).
 			listen(@vertical, 'mousedown', @onVerticalMouseDown).
@@ -133,29 +125,32 @@ goog.scope ->
 
 	###*
 		@param {goog.events.BrowserEvent} e
+		@protected
 	###
-	_::onHorizontalMouseDown = (e) ->
+	onHorizontalMouseDown: (e) ->
 		@activeHandle = @horizontal
 		@startDrag e
 
 	###*
 		@param {goog.events.BrowserEvent} e
+		@protected
 	###
-	_::onVerticalMouseDown = (e) ->
+	onVerticalMouseDown: (e) ->
 		@activeHandle = @vertical
 		@startDrag e
 
 	###*
 		@param {goog.events.BrowserEvent} e
+		@protected
 	###
-	_::onMouseOut = (e) ->
+	onMouseOut: (e) ->
 		@dispatchEvent e
 
 	###*
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	_::startDrag = (e) ->
+	startDrag: (e) ->
 		@dragger = @draggerFactory()
 		@getHandler().
 			listen(@dragger, 'start', @onDragStart).
@@ -167,7 +162,7 @@ goog.scope ->
 		@param {goog.fx.DragEvent} e
 		@protected
 	###
-	_::onDragStart = (e) ->
+	onDragStart: (e) ->
 		@invisibleOverlay = @invisibleOverlayFactory()
 		@addChild @invisibleOverlay, false
 		@invisibleOverlay.render @dom_.getDocument().body
@@ -176,19 +171,20 @@ goog.scope ->
 		@dispatchEvent
 			element: @getElement()
 			vertical: @activeHandle == @vertical
-			type: _.EventType.START
+			type: Handles.EventType.START
 
 	###*
 		@param {goog.fx.DragEvent} e
 		@protected
 	###
-	_::onDrag = (e) ->
+	onDrag: (e) ->
 		mouseCoord = new goog.math.Coordinate e.clientX, e.clientY
-		difference = goog.math.Coordinate.difference mouseCoord, @dragMouseStart
+		`var dragMouseStart = /** @type {!goog.math.Coordinate} */ (this.dragMouseStart)`
+		difference = goog.math.Coordinate.difference mouseCoord, dragMouseStart
 		@dispatchEvent
 			element: @getElement()
 			vertical: @activeHandle == @vertical
-			type: _.EventType.DRAG
+			type: Handles.EventType.DRAG
 			width: difference.x
 			height: difference.y
 		@update()
@@ -197,12 +193,12 @@ goog.scope ->
 		@param {goog.fx.DragEvent} e
 		@protected
 	###
-	_::onDragEnd = (e) ->
+	onDragEnd: (e) ->
 		@removeChild @invisibleOverlay, true
 		@dragger.dispose()
 		@dispatchEvent
 			element: @getElement()
-			type: _.EventType.END
+			type: Handles.EventType.END
 			close: @shouldClose e
 
 	###*
@@ -210,45 +206,22 @@ goog.scope ->
 		@return {boolean}
 		@protected
 	###
-	_::shouldClose = (e) ->
+	shouldClose: (e) ->
 		el = @dom_.getDocument().elementFromPoint e.clientX, e.clientY
 		!(el in [@horizontal, @vertical])
 
 	###*
-		@override
+		@param {Node} element
 	###
-	_::disposeInternal = ->
+	isHandle: (element) ->
+		element in [@vertical, @horizontal]
+
+	###*
+		@inheritDoc
+	###
+	disposeInternal: ->
 		@dom_.removeNode @horizontal
 		@dom_.removeNode @vertical
 		@dragger.dispose() if @dragger
 		goog.base @, 'disposeInternal'
 		return
-
-	###*
-		@param {Node} element
-	###
-	_::isHandle = (element) ->
-		element in [@vertical, @horizontal]
-
-	return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

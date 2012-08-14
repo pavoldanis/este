@@ -10,71 +10,69 @@ goog.require 'goog.ui.Component'
 goog.require 'este.ui.lightbox.AnchorClickHandler'
 goog.require 'este.ui.lightbox.View.create'
 
-###*
-	@param {este.ui.lightbox.AnchorClickHandler} anchorClickHandler
-	@param {Function} viewFactory
-	@constructor
-	@extends {goog.ui.Component}
-###
-este.ui.Lightbox = (@anchorClickHandler, @viewFactory) ->
-	return
+class este.ui.Lightbox extends goog.ui.Component
 
-goog.inherits este.ui.Lightbox, goog.ui.Component
-	
-goog.scope ->
-	`var _ = este.ui.Lightbox`
-	
+	###*
+		@param {este.ui.lightbox.AnchorClickHandler} anchorClickHandler
+		@param {Function} viewFactory
+		@constructor
+		@extends {goog.ui.Component}
+	###
+	constructor: (@anchorClickHandler, @viewFactory) ->
+
 	###*
 		@return {este.ui.Lightbox}
 	###
-	_.create = ->
+	@create: ->
 		handler = new este.ui.lightbox.AnchorClickHandler
 		factory = este.ui.lightbox.View.create
-		new _ handler, factory
+		new Lightbox handler, factory
 
 	###*
 		@type {este.ui.lightbox.AnchorClickHandler}
 	###
-	_::anchorClickHandler
+	anchorClickHandler: null
 
 	###*
 		@type {Function}
 	###
-	_::viewFactory
+	viewFactory: null
 
 	###*
 		@type {este.ui.lightbox.View}
 		@protected
 	###
-	_::view
+	view: null
 
 	###*
-		@override
+		Close view.
 	###
-	_::decorateInternal = (element) ->
-		goog.base @, 'decorateInternal', element
+	close: ->
+		@removeChild @view
+		@view.dispose()
+
+	###*
+		@inheritDoc
+	###
+	decorateInternal: (element) ->
+		super element
 		@anchorClickHandler.decorate element
 		return
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::enterDocument = ->
-		goog.base @, 'enterDocument'
+	enterDocument: ->
+		super()
 		@getHandler().
 			listen(@anchorClickHandler, 'click', @onAnchorClickHandlerClick)
 		return
 
 	###*
 		@param {Object} e
+		@protected
 	###
-	_::onAnchorClickHandlerClick = (e) ->
+	onAnchorClickHandlerClick: (e) ->
 		@view = @viewFactory e.currentAnchor, e.anchors
 		@addChild @view, true
 		@getHandler().listen @view, 'close', @close
-
-	_::close = ->
-		@removeChild @view
-		@view.dispose()
-
-	return

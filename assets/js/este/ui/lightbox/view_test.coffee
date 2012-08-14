@@ -2,7 +2,7 @@ suite 'este.ui.lightbox.View', ->
 
 	View = este.ui.lightbox.View
 	KeyCodes = goog.events.KeyCodes
-	
+
 	normalizeHTML = (str) ->
 		str.replace /\s+/g, ' '
 
@@ -63,7 +63,7 @@ suite 'este.ui.lightbox.View', ->
 	fireDocumentKeydownEvent = (keyCode) ->
 		goog.events.fireListeners view.dom_.getDocument(), 'keydown', false,
 			keyCode: keyCode ? KeyCodes.ESC
-	
+
 	suite 'View.create()', ->
 		test 'should return instance with assigned properties', ->
 			view = View.create firstAnchor, anchors
@@ -71,10 +71,10 @@ suite 'este.ui.lightbox.View', ->
 			assert.equal view.currentAnchor, firstAnchor
 			assert.equal view.anchors, anchors
 
-	suite '#render()', ->
+	suite 'render()', ->
 		test 'should create element with class lightbox', ->
 			assert.equal view.getElement().className, 'este-ui-lightbox'
-		
+
 		test 'should create element with defined innerHTML', ->
 			assert.equal normalizeHTML(view.getElement().innerHTML), htmlFirstAnchor
 
@@ -86,7 +86,7 @@ suite 'este.ui.lightbox.View', ->
 		test '.next should update innerHTML', ->
 			fireViewElementClickEvent 'next'
 			assert.equal normalizeHTML(view.getElement().innerHTML), htmlSecondAnchor
-		
+
 		test '.next two times, should set currentAnchor to secondAnchor', ->
 			fireViewElementClickEvent 'next'
 			fireViewElementClickEvent 'next'
@@ -110,7 +110,7 @@ suite 'este.ui.lightbox.View', ->
 		test 'right arrow should update innerHTML', ->
 			fireDocumentKeydownEvent KeyCodes.RIGHT
 			assert.equal normalizeHTML(view.getElement().innerHTML), htmlSecondAnchor
-		
+
 		test 'right arrow two times, should set currentAnchor to secondAnchor', ->
 			fireDocumentKeydownEvent KeyCodes.RIGHT
 			fireDocumentKeydownEvent KeyCodes.RIGHT
@@ -134,7 +134,7 @@ suite 'este.ui.lightbox.View', ->
 		test 'down arrow should update innerHTML', ->
 			fireDocumentKeydownEvent KeyCodes.DOWN
 			assert.equal normalizeHTML(view.getElement().innerHTML), htmlSecondAnchor
-		
+
 		test 'down arrow two times, should set currentAnchor to secondAnchor', ->
 			fireDocumentKeydownEvent KeyCodes.DOWN
 			fireDocumentKeydownEvent KeyCodes.DOWN

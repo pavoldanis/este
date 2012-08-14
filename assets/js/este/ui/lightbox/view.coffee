@@ -1,5 +1,5 @@
 ###
-	@fileoverview
+	@fileoverview este.ui.lightbox.View.
 ###
 
 goog.provide 'este.ui.lightbox.View'
@@ -8,44 +8,40 @@ goog.provide 'este.ui.lightbox.View.create'
 goog.require 'goog.ui.Component'
 goog.require 'goog.events.KeyCodes'
 
-###*
-	@param {Element} currentAnchor
-	@param {Array.<Element>} anchors
-	@constructor
-	@extends {goog.ui.Component}
-###
-este.ui.lightbox.View = (@currentAnchor, @anchors) ->
-	goog.base @
+class este.ui.lightbox.View extends goog.ui.Component
 
-goog.inherits este.ui.lightbox.View, goog.ui.Component
-
-goog.scope ->
-	`var _ = este.ui.lightbox.View`
-	`var KeyCodes = goog.events.KeyCodes`
+	###*
+		@param {Element} currentAnchor
+		@param {Array.<Element>} anchors
+		@constructor
+		@extends {goog.ui.Component}
+	###
+	constructor: (@currentAnchor, @anchors) ->
+		super()
 
 	###*
 		Factory method.
 		@param {Element} currentAnchor
 		@param {Array.<Element>} anchors
 	###
-	_.create = (currentAnchor, anchors) ->
-		new _ currentAnchor, anchors
+	@create = (currentAnchor, anchors) ->
+		new View currentAnchor, anchors
 
 	###*
 		@type {Element}
 	###
-	_::currentAnchor
+	currentAnchor: null
 
 	###*
 		@type {Array.<Element>}
 	###
-	_::anchors
+	anchors: null
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::createDom = ->
-		goog.base @, 'createDom'
+	createDom: ->
+		super()
 		@getElement().className = 'este-ui-lightbox'
 		@updateInternal()
 		return
@@ -53,7 +49,7 @@ goog.scope ->
 	###*
 		@protected
 	###
-	_::updateInternal = ->
+	updateInternal: ->
 		imageSrc = @currentAnchor.href
 		title = @currentAnchor.title
 		firstDisabled = secondDisabled = ''
@@ -82,9 +78,9 @@ goog.scope ->
 			</div>"
 
 	###*
-		@override
+		@inheritDoc
 	###
-	_::enterDocument = ->
+	enterDocument: ->
 		goog.base @, 'enterDocument'
 		@getHandler().
 			listen(@getElement(), 'click', @onClick).
@@ -95,7 +91,7 @@ goog.scope ->
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	_::onClick = (e) ->
+	onClick: (e) ->
 		switch e.target.className
 			when 'este-ui-lightbox-previous'
 				@moveToNextImage false
@@ -108,20 +104,20 @@ goog.scope ->
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	_::onDocumentKeydown = (e) ->
+	onDocumentKeydown: (e) ->
 		switch e.keyCode
-			when KeyCodes.ESC
+			when goog.events.KeyCodes.ESC
 				@dispatchCloseEvent()
-			when KeyCodes.RIGHT, KeyCodes.DOWN
+			when goog.events.KeyCodes.RIGHT, goog.events.KeyCodes.DOWN
 				@moveToNextImage true
-			when KeyCodes.LEFT, KeyCodes.UP
+			when goog.events.KeyCodes.LEFT, goog.events.KeyCodes.UP
 				@moveToNextImage false
 
 	###*
 		@param {boolean} next
 		@protected
 	###
-	_::moveToNextImage = (next) ->
+	moveToNextImage: (next) ->
 		@setNextCurrentAnchor next
 		@updateInternal()
 
@@ -129,7 +125,7 @@ goog.scope ->
 		@param {boolean} next
 		@protected
 	###
-	_::setNextCurrentAnchor = (next) ->
+	setNextCurrentAnchor: (next) ->
 		idx = goog.array.indexOf @anchors, @currentAnchor
 		if next then idx++ else idx--
 		anchor = @anchors[idx]
@@ -139,7 +135,5 @@ goog.scope ->
 	###*
 		@protected
 	###
-	_::dispatchCloseEvent = ->
+	dispatchCloseEvent: ->
 		@dispatchEvent 'close'
-
-	return

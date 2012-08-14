@@ -14,14 +14,14 @@ suite 'este.ui.InvisibleOverlay', ->
 		test 'should return instance', ->
 			assert.instanceOf overlay, InvisibleOverlay
 
-	suite '#render', ->
+	suite 'render', ->
 		test 'should add styles which makes element invisible with max size and zIndex', ->
 			overlay.render()
 			element = overlay.getElement()
 			assert.equal element.style.cssText, cssText
-			assert.equal goog.style.getOpacity(element), 0			
+			assert.equal goog.style.getOpacity(element), 0
 
-	suite '#decorateElement', ->
+	suite 'decorateElement', ->
 		test 'should add styles which makes element invisible with max size and zIndex', ->
 			overlay.decorate decorateElement
 			assert.equal overlay.getElement().style.cssText, cssText

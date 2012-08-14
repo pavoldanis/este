@@ -14,7 +14,7 @@ suite 'este.ui.Resizer', ->
 
 	fireDelegationMouseOut = ->
 		goog.events.fireListeners delegation, 'mouseout', false, {}
-	
+
 	setup ->
 		element = document.createElement 'div'
 		element.offsetWidth = 50
@@ -33,13 +33,13 @@ suite 'este.ui.Resizer', ->
 				@disposed_ = true
 		handlesFactory = -> handles
 		resizer = new Resizer delegationFactory, handlesFactory
-	
+
 	suite 'Resizer.create', ->
 		test 'should create instance', ->
 			resizer = Resizer.create()
 			assert.instanceOf resizer, Resizer
 
-	suite '#decorate', ->
+	suite 'decorate', ->
 		# maybe we do not need to test if factories was called
 		test 'should call delegationFactory with arguments', (done) ->
 			targetFilter = ->
@@ -57,7 +57,7 @@ suite 'este.ui.Resizer', ->
 			resizer.decorate element
 
 	# we want to be sure that factory is created in enterDocument
-	suite '#enterDocument', ->
+	suite 'enterDocument', ->
 		test 'should call delegationFactory', (done) ->
 			delegationFactory = ->
 				done()
@@ -65,7 +65,7 @@ suite 'este.ui.Resizer', ->
 			resizer = new Resizer delegationFactory, handlesFactory
 			resizer.enterDocument()
 
-	suite '#exitDocument', ->
+	suite 'exitDocument', ->
 		test 'should call dispose on delegation', (done) ->
 			delegation.dispose = -> done()
 			resizer = new Resizer delegationFactory, handlesFactory
@@ -118,7 +118,7 @@ suite 'este.ui.Resizer', ->
 				relatedTarget: relatedTarget
 			assert.isFalse called
 
-	suite '#dispose', ->
+	suite 'dispose', ->
 		test 'should dispose handles on decorated resizer', (done) ->
 			handles.dispose = -> done()
 			resizer = new Resizer delegationFactory, handlesFactory

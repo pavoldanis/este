@@ -1,20 +1,20 @@
 suite 'este.ui.lightbox.AnchorClickHandler', ->
 
 	AnchorClickHandler = este.ui.lightbox.AnchorClickHandler
-	
+
 	element = null
 	handler = null
-	
+
 	setup ->
 		element = document.createElement 'div'
 		handler = new AnchorClickHandler
 		handler.decorate element
 
 	fireClick = (event) ->
-		event.preventDefault ?= -> 
+		event.preventDefault ?= ->
 		goog.events.fireListeners element, 'click', false, event
 
-	suite '#decorate', ->
+	suite 'decorate', ->
 		test 'should register click event', ->
 			listeners = goog.events.getListeners element, 'click', false
 			assert.lengthOf listeners, 1
@@ -34,7 +34,7 @@ suite 'este.ui.lightbox.AnchorClickHandler', ->
 					tagName: 'A'
 					rel: 'lightbox'
 				preventDefault: -> done()
-			
+
 		test 'on element inside of anchor with lightbox rel attribute', (done) ->
 			fireClick
 				target:
@@ -50,7 +50,7 @@ suite 'este.ui.lightbox.AnchorClickHandler', ->
 				target: {}
 				preventDefault: -> called = true
 			assert.isFalse called
-		
+
 		test 'on element inside of not anchor element without lightbox rel attribute', ->
 			called = false
 			fireClick
