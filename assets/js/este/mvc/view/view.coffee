@@ -38,18 +38,24 @@ class este.mvc.View extends este.Base
   element: null
 
   ###*
+    Data passed into 'done' method.
     @type {Object}
-    @protected
   ###
-  params: null
+  viewData: null
 
   ###*
     To be overriden.
+    todo
+      change name? delegate to storage?
+      fix brittleness, too easy to override view state
     @param {Object} params
     @param {Function} done
   ###
-  fetch: (@params, done) ->
-    done()
+  fetch: (params, done) ->
+    # async ajax call for data
+    setTimeout =>
+      done params
+    , 1
 
   ###*
     Override to render view content.

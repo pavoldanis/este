@@ -17,10 +17,10 @@ class este.demos.labs.mvc2.listing.View extends este.mvc.View
   ###*
     @inheritDoc
   ###
-  fetch: (@params, done) ->
+  fetch: (params, done) ->
     # ajax call for data
     setTimeout =>
-      done()
+      done params
     , 2000
 
   ###*

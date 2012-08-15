@@ -77,56 +77,76 @@ suite 'este.mvc.App', ->
 
     test 'should call layout.setActive view2', (done) ->
       app.start()
-      layout.setActive = (view) ->
+      layout.setActive = (view, params) ->
         assert.instanceOf view, view2
+        assert.deepEqual params, id: 1
         done()
-      app.show view2
+      app.show view2, id: 1
 
-  suite 'repeated show with same view', ->
-    test 'show should cancel previous', (done) ->
+  suite 'repeated show with same view and params', ->
+    test 'show should cancel next', (done) ->
       app.start()
-      layout.setActive = (view) ->
+      layout.setActive = (view, params) ->
         assert.instanceOf view, view1
+        assert.deepEqual params, id: 2
         done()
       view1::fetch = (params, p_done) ->
         setTimeout ->
           p_done()
         , 5
-      app.show view1
+      app.show view1, id: 2
       setTimeout ->
-        app.show view1
+        app.show view1, id: 2
+      , 1
+
+  suite 'repeated show with same view and different params', ->
+    test 'show should cancel previous', (done) ->
+      app.start()
+      layout.setActive = (view, params) ->
+        assert.instanceOf view, view1
+        assert.deepEqual params, id: 3
+        done()
+      view1::fetch = (params, p_done) ->
+        setTimeout ->
+          p_done()
+        , 5
+      app.show view1, id: 2
+      setTimeout ->
+        app.show view1, id: 3
       , 1
 
   suite 'second show', ->
-    test 'should cancel previous async', (done) ->
+    test 'should cancel previous', (done) ->
       app.start()
-      layout.setActive = (view) ->
+      layout.setActive = (view, params) ->
         assert.instanceOf view, view2
+        assert.deepEqual params, id: 5
         done()
       view1::fetch = (params, p_done) ->
         setTimeout ->
           p_done()
         , 5
-      app.show view1
+      app.show view1, id: 4
       setTimeout ->
-        app.show view2
+        app.show view2, id: 5
       , 1
 
   suite 'three shows', ->
-    test 'should cancel previous async', (done) ->
+    test 'should cancel previous', (done) ->
       app.start()
-      layout.setActive = (view) ->
+      layout.setActive = (view, params) ->
         assert.instanceOf view, view3
+        assert.deepEqual params, id: 8
         done()
       view1::fetch = view2::fetch = view3::fetch = (params, p_done) ->
         setTimeout ->
           p_done()
         , 4
-      app.show view1
+      app.show view1, id: 6
       setTimeout ->
-        app.show view2
+        app.show view2, id: 7
         setTimeout ->
-          app.show view3
+          app.show view3, id: 8
         , 2
       , 2
 
@@ -146,5 +166,3 @@ suite 'este.mvc.App', ->
         assert.isFalse setActiveCalled
         done()
       , 5
-
-

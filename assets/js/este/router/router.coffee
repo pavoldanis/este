@@ -79,14 +79,6 @@ class este.router.Router extends este.Base
     @navigate route.getUrl params
 
   ###*
-    @param {string} path
-    @protected
-  ###
-  findRoute: (path) ->
-    goog.array.find @routes, (item) ->
-      item.path == path
-
-  ###*
     Start routing.
   ###
   start: ->
@@ -95,6 +87,14 @@ class este.router.Router extends este.Base
       listen(@history, 'navigate', @onHistoryNavigate).
       listen(@tapHandler, 'tap', @onTapHandlerTap)
     return
+
+  ###*
+    @param {string} path
+    @protected
+  ###
+  findRoute: (path) ->
+    goog.array.find @routes, (item) ->
+      item.path == path
 
   ###*
     @param {goog.history.Event} e

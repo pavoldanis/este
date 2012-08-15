@@ -17,10 +17,10 @@ class este.demos.labs.mvc1.detail.View extends este.mvc.View
   ###*
     @inheritDoc
   ###
-  fetch: (@params, done) ->
+  fetch: (params, done) ->
     # ajax call for data
     setTimeout =>
-      done()
+      done params
     , 2000
 
   ###*
@@ -28,7 +28,7 @@ class este.demos.labs.mvc1.detail.View extends este.mvc.View
   ###
   render: ->
     @element.innerHTML = """
-      view: <b>detail, id = #{@params['id']}<br>
+      view: <b>detail, id = #{@viewData['id']}<br>
       <a href='#'>listing</a>
     """
     window['console']['log'] 'detail rendered'

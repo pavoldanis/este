@@ -14,6 +14,7 @@
 goog.provide 'este.mvc.App'
 
 goog.require 'este.Base'
+goog.require 'este.mvc.app.Request'
 
 class este.mvc.App extends este.Base
 
@@ -65,17 +66,19 @@ class este.mvc.App extends este.Base
   viewsInstances: null
 
   ###*
-    @type {este.mvc.View}
+    @type {este.mvc.app.Request}
     @protected
   ###
-  requestedView: null
+  lastRequest: null
 
   ###*
     @param {boolean=} silent
   ###
   start: (silent) ->
     @instantiateViews()
-    @showInternal @viewsInstances[0] if !silent
+    return if silent
+    request = new este.mvc.app.Request @viewsInstances[0]
+    @showInternal request
 
   ###*
     @param {function(new:este.mvc.View)} viewClass
@@ -84,7 +87,8 @@ class este.mvc.App extends este.Base
   show: (viewClass, params) ->
     for instance in @viewsInstances
       if instance instanceof viewClass
-        @showInternal instance, params
+        request = new este.mvc.app.Request instance, params
+        @showInternal request
         break
     return
 
@@ -106,52 +110,49 @@ class este.mvc.App extends este.Base
   ###
   onViewShow: (e) ->
 
-
   ###*
-    @param {este.mvc.View} view
-    @param {Object=} params
+    @param {este.mvc.app.Request} request
     @protected
   ###
-  showInternal: (view, params = null) ->
+  showInternal: (request) ->
     # consider: map params to named args
-    @requestedView = view
+    @lastRequest = request
     @dispatchEvent App.EventType.FETCH
-    view.fetch params, goog.bind @onViewFetched, @, view, params
+    request.fetch goog.bind @onViewFetched, @
 
   ###*
-    @param {este.mvc.View} view
-    @param {Object=} params
+    @param {este.mvc.app.Request} request
+    @param {Object} response
     @protected
   ###
-  onViewFetched: (view, params) ->
-    requestedView = @requestedView
-    @requestedView = null if view == requestedView
-    return if view != requestedView
-    @switchView view, params
+  onViewFetched: (request, response) ->
+    lastRequest = @lastRequest
+    @lastRequest = null if request.equal lastRequest
+    return if !request.equal lastRequest
+    request.setViewData response
+    @switchView request
 
   ###*
-    @param {este.mvc.View} view
-    @param {Object=} params
+    @param {este.mvc.app.Request} request
     @protected
   ###
-  switchView: (view, params) ->
+  switchView: (request) ->
     @dispatchEvent App.EventType.FETCHED
-    @projectUrl view, params
-    @layout.setActive view
+    @projectUrl request
+    @layout.setActive request.view, request.params
 
   ###*
-    @param {este.mvc.View} view
-    @param {Object=} params
+    @param {este.mvc.app.Request} request
     @protected
   ###
-  projectUrl: (view, params) ->
-    return if !view.url
-    @router.pathNavigate view.url, params
+  projectUrl: (request) ->
+    return if !request.view.url
+    @router.pathNavigate request.view.url, request.params
 
   ###*
-    @protected
+    @inheritDoc
   ###
   disposeInternal: ->
     super
-    @requestedView = null
+    @lastRequest = null
     return
