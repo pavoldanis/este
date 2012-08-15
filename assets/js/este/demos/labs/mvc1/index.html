@@ -15,8 +15,12 @@
 <body>
   <h1>este.demos.labs.mvc1</h1>
   <p>
-      MVC demo, no url projection. Last click win. Listing and detail views are async (2s.) Try fast click to see that only last click is processed.
+      Mvc without url projection. Views are async.
   </p>
+  <ul>
+    <li>Try click to 1., then during loading 2. Last click win.</li>
+    <li>Try several click on same item, subsequent clicks during loading are ignored. (open console)</li>
+  </ul>
   <div style='background: yellow' id='progress'></div>
   <div id='app'></div>
   <script>este.demos.labs.mvc1.start()</script>
