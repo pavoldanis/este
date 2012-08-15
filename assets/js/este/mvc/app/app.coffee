@@ -32,8 +32,8 @@ class este.mvc.App extends este.Base
     @enum {string}
   ###
   @EventType:
-    FETCH: 'fetch'
-    FETCHED: 'fetched'
+    BEFORE_VIEW_SHOW: 'beforeviewshow'
+    AFTER_VIEW_SHOW: 'afterviewshow'
 
   ###*
     Server side JSON configuration and seed data injected into page.
@@ -77,6 +77,7 @@ class este.mvc.App extends este.Base
   start: (silent) ->
     @instantiateViews()
     return if silent
+    @router.start()
     request = new este.mvc.app.Request @viewsInstances[0]
     @showInternal request
 
@@ -93,6 +94,7 @@ class este.mvc.App extends este.Base
     return
 
   ###*
+    todo: split it into two methods
     @protected
   ###
   instantiateViews: ->
@@ -100,7 +102,7 @@ class este.mvc.App extends este.Base
     @viewsInstances = (for View in @views
       view = new View
       view.show = show
-      if view.url
+      if view.url?
         @router.add view.url, @onViewShow
       view)
 
@@ -109,7 +111,7 @@ class este.mvc.App extends este.Base
     @protected
   ###
   onViewShow: (e) ->
-    # console.log e
+    console.log 'onViewShow', arguments
 
   ###*
     @param {este.mvc.app.Request} request
@@ -118,7 +120,7 @@ class este.mvc.App extends este.Base
   showInternal: (request) ->
     # consider: map params to named args
     @lastRequest = request
-    @dispatchEvent App.EventType.FETCH
+    @dispatchEvent App.EventType.BEFORE_VIEW_SHOW
     request.fetch goog.bind @onViewFetched, @
 
   ###*
@@ -138,17 +140,10 @@ class este.mvc.App extends este.Base
     @protected
   ###
   switchView: (request) ->
-    @dispatchEvent App.EventType.FETCHED
-    @projectUrl request
+    if request.view.url?
+      @router.pathNavigate request.view.url, request.params
     @layout.setActive request.view, request.params
-
-  ###*
-    @param {este.mvc.app.Request} request
-    @protected
-  ###
-  projectUrl: (request) ->
-    return if !request.view.url
-    @router.pathNavigate request.view.url, request.params
+    @dispatchEvent App.EventType.AFTER_VIEW_SHOW
 
   ###*
     @inheritDoc

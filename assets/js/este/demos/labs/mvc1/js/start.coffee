@@ -24,9 +24,9 @@ este.demos.labs.mvc1.start = (data) ->
     este.demos.labs.mvc1.detail.View
   ]
 
-  goog.events.listen myApp, 'fetch', ->
+  goog.events.listen myApp, 'beforeviewshow', ->
     progressEl.innerHTML = 'loading'
-  goog.events.listen myApp, 'fetched', ->
+  goog.events.listen myApp, 'afterviewshow', ->
     progressEl.innerHTML = 'loaded'
 
   myApp.data = data

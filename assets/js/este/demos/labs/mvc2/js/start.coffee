@@ -25,9 +25,9 @@ este.demos.labs.mvc2.start = (data) ->
   ]
   myApp = este.mvc.app.create appEl, views
 
-  goog.events.listen myApp, 'fetch', ->
+  goog.events.listen myApp, 'beforeviewshow', ->
     progressEl.innerHTML = 'loading'
-  goog.events.listen myApp, 'fetched', ->
+  goog.events.listen myApp, 'afterviewshow', ->
     progressEl.innerHTML = 'loaded'
 
   myApp.data = data

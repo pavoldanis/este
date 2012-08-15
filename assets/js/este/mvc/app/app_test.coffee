@@ -14,6 +14,7 @@ suite 'este.mvc.App', ->
       setActive: (view) ->
     router =
       pathNavigate: (url, params) ->
+      start: ->
     app = new App layout, [], router
     arrangeViews()
 
@@ -57,21 +58,33 @@ suite 'este.mvc.App', ->
         done()
       app.show view1
 
-    test 'should call router.projectUrl view1, params', (done) ->
-      app.start()
-      view1::url = 'fok'
-      params = {}
-      router.pathNavigate = (url, p_params) ->
-        assert.equal url, 'fok'
-        assert.equal p_params, params
-        done()
-      app.show view1, params
+    suite 'view.url = "fok"', ->
+      test 'should call router.pathNavigate url, p_params', (done) ->
+        app.start()
+        view1::url = 'fok'
+        params = {}
+        router.pathNavigate = (url, p_params) ->
+          assert.equal url, 'fok'
+          assert.equal p_params, params
+          done()
+        app.show view1, params
 
-    test 'should dispatch fetch and fetched events', ->
+    suite 'view.url = ""', ->
+      test 'should call router.pathNavigate url, p_params', (done) ->
+        app.start()
+        view1::url = ''
+        params = {}
+        router.pathNavigate = (url, p_params) ->
+          assert.equal url, ''
+          assert.equal p_params, params
+          done()
+        app.show view1, params
+
+    test 'should dispatch beforeviewshow and afterviewshow events', ->
       calls = []
       app.start()
-      goog.events.listenOnce app, 'fetch', -> calls.push 1
-      goog.events.listenOnce app, 'fetched', -> calls.push 2
+      goog.events.listenOnce app, 'beforeviewshow', -> calls.push 1
+      goog.events.listenOnce app, 'afterviewshow', -> calls.push 2
       app.show view1
       assert.deepEqual calls, [1, 2]
 

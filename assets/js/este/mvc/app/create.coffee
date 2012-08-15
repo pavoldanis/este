@@ -16,8 +16,9 @@ goog.require 'goog.string'
   @param {boolean=} forceHash
 ###
 este.mvc.app.create = (element, views, pathPrefix, forceHash) ->
-  layout = new este.mvc.Layout element
   pathPrefix ?= new goog.Uri(document.location.href).getPath()
   pathPrefix += '/' if !goog.string.endsWith pathPrefix, '/'
+
+  layout = new este.mvc.Layout element
   router = este.router.create element, pathPrefix, forceHash
   new este.mvc.App layout, views, router
