@@ -27,8 +27,9 @@ class este.mvc.Layout
 
   ###*
     @param {este.mvc.View} view
+    @param {Object=} params
   ###
-  setActive: (view) ->
+  setActive: (view, params) ->
     goog.dom.removeChildren @element
     if @previousView
       @previousView.exitDocument()
