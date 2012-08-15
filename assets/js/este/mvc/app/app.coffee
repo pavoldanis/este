@@ -99,19 +99,22 @@ class este.mvc.App extends este.Base
   ###
   instantiateViews: ->
     show = goog.bind @show, @
-    @viewsInstances = (for View in @views
+    @viewsInstances = []
+    for View in @views
       view = new View
       view.show = show
       if view.url?
-        @router.add view.url, @onViewShow
-      view)
+        @router.add view.url, goog.bind @onRouterShow, @, view
+      @viewsInstances.push view
+    return
 
   ###*
-    @param {goog.events.Event} e
+    @param {este.mvc.View} view
+    @param {Object|Array} params
     @protected
   ###
-  onViewShow: (e) ->
-    console.log 'onViewShow', arguments
+  onRouterShow: (view, params) ->
+    console.log 'onViewShow', view, params
 
   ###*
     @param {este.mvc.app.Request} request
