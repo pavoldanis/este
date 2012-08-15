@@ -26,7 +26,7 @@ class este.demos.labs.mvc2.detail.View extends este.mvc.View
     # ajax call for data
     setTimeout =>
       done params
-    , 2000
+    , 1000
 
   ###*
     @inheritDoc

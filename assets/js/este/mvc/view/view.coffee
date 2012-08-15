@@ -23,9 +23,9 @@ class este.mvc.View extends este.Base
     @element = document.createElement 'div'
 
   ###*
-    @type {?string}
+    @type {string}
   ###
-  url: null
+  url: ''
 
   ###*
     @type {Function}

@@ -10,8 +10,7 @@ goog.require 'este.router.Router'
 
 ###*
   @param {Element=} element
-  @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
-  The path prefix should start and end with slash.
+  @param {string=} pathPrefix Should start and end with slash.
   @param {boolean=} forceHash
   @return {este.router.Router}
 ###
