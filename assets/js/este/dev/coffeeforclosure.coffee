@@ -84,7 +84,7 @@ class este.dev.CoffeeForClosure
 
     @restoreReplaces()
     if original != @source
-      @source = "// Coffe Class fixed for Closure Compiler by este dev stack\n" + @source
+      @source = "// Coffe Class fixed for Closure Compiler by Este.js\n" + @source
     @source
 
   ###*
