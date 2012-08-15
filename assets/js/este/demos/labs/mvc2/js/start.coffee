@@ -25,9 +25,15 @@ este.demos.labs.mvc2.start = (data) ->
   ]
   myApp = este.mvc.app.create appEl, views
 
+  timer = null
   goog.events.listen myApp, 'beforeviewshow', ->
     progressEl.innerHTML = 'loading'
+    clearInterval timer
+    timer = setInterval ->
+      progressEl.innerHTML += '.'
+    , 250
   goog.events.listen myApp, 'afterviewshow', ->
+    clearInterval timer
     progressEl.innerHTML = 'loaded'
 
   myApp.data = data

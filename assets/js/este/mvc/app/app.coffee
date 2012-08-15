@@ -78,8 +78,8 @@ class este.mvc.App extends este.Base
     @instantiateViews()
     return if silent
     @router.start()
-    request = new este.mvc.app.Request @viewsInstances[0]
-    @showInternal request
+    # request = new este.mvc.app.Request @viewsInstances[0]
+    # @showInternal request
 
   ###*
     @param {function(new:este.mvc.View)} viewClass
@@ -114,7 +114,9 @@ class este.mvc.App extends este.Base
     @protected
   ###
   onRouterShow: (view, params) ->
-    console.log 'onViewShow', view, params
+    request = new este.mvc.app.Request view, params
+    # console.log 'onRouterShow', view, params
+    @showInternal request
 
   ###*
     @param {este.mvc.app.Request} request

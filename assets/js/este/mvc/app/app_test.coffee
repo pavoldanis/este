@@ -31,24 +31,24 @@ suite 'este.mvc.App', ->
     test 'should work', ->
       assert.instanceOf app, App
 
-  suite 'start', ->
-    test 'should call fetch(params, done) on view1', (done) ->
-      view1 = (app) ->
-        fetch: (params, p_done) ->
-          assert.isNull params
-          assert.isFunction p_done
-          done()
-      app.views = [view1]
-      app.start()
+  # suite 'start', ->
+  #   test 'should call fetch(params, done) on view1', (done) ->
+  #     view1 = (app) ->
+  #       fetch: (params, p_done) ->
+  #         assert.isNull params
+  #         assert.isFunction p_done
+  #         done()
+  #     app.views = [view1]
+  #     app.start()
 
-    test 'should not call fetch if silent start', ->
-      called = false
-      view1 = (app) ->
-        fetch: (params, p_done) ->
-          called = true
-      app.views = [view1]
-      app.start true
-      assert.isFalse called
+  #   test 'should not call fetch if silent start', ->
+  #     called = false
+  #     view1 = (app) ->
+  #       fetch: (params, p_done) ->
+  #         called = true
+  #     app.views = [view1]
+  #     app.start true
+  #     assert.isFalse called
 
   suite 'show', ->
     test 'should call layout.setActive view1', (done) ->
