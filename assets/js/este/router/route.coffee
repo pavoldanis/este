@@ -123,11 +123,11 @@ class este.router.Route
 
   ###*
     @param {Array.<string>} matches
-    @return {Array}
+    @return {Object|Array}
     @protected
   ###
   getParams: (matches) ->
-    params = []
+    params = null
     for match, i in matches
       continue if !i
       key = @keys[i - 1]
@@ -136,7 +136,9 @@ class este.router.Route
       else
         match
       if key
-        params[key.name] ?= value
+        params ?= {}
+        params[key.name] = value
       else
+        params ?= []
         params.push value
     params
