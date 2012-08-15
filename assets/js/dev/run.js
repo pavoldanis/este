@@ -378,13 +378,19 @@ setOptions = function(args) {
 startServer = function() {
   var server, wsServer;
   server = http.createServer(function(request, response) {
-    var contentType, extname, filePath;
+    var contentType, extname, filePath, stats;
     filePath = '.' + request.url;
     if (filePath === './') {
       filePath = "./" + options.project + ".html";
     }
     if (filePath.indexOf('?') !== -1) {
       filePath = filePath.split('?')[0];
+    }
+    if (fs.existsSync(filePath)) {
+      stats = fs.statSync(filePath);
+      if (stats.isDirectory()) {
+        filePath = pathModule.join(filePath, 'index.html');
+      }
     }
     extname = pathModule.extname(filePath);
     switch (extname) {
