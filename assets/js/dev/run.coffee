@@ -321,6 +321,12 @@ startServer = ->
     filePath = '.' + request.url
     filePath = "./#{options.project}.html" if filePath is './'
     filePath = filePath.split('?')[0] if filePath.indexOf('?') != -1
+
+    if fs.existsSync filePath
+      stats = fs.statSync filePath
+      if stats.isDirectory()
+        filePath = pathModule.join filePath, 'index.html'
+
     extname = pathModule.extname filePath
 
     switch extname
