@@ -47,7 +47,7 @@ class este.router.Router extends este.Base
   ###*
     @param {string} path
     @param {Function} show
-    @param {este.router.Route.Options} options
+    @param {este.router.Route.Options=} options
     @return {este.router.Router}
   ###
   add: (path, show, options = {}) ->
