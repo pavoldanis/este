@@ -19,10 +19,11 @@ este.demos.labs.mvc2.start = (data) ->
   progressEl = document.getElementById 'progress'
 
   appEl = document.getElementById 'app'
-  myApp = este.mvc.app.create appEl, [
+  views = [
     este.demos.labs.mvc2.listing.View
     este.demos.labs.mvc2.detail.View
   ]
+  myApp = este.mvc.app.create appEl, views
 
   goog.events.listen myApp, 'fetch', ->
     progressEl.innerHTML = 'loading'

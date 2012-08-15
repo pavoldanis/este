@@ -109,6 +109,7 @@ class este.mvc.App extends este.Base
     @protected
   ###
   onViewShow: (e) ->
+    # console.log e
 
   ###*
     @param {este.mvc.app.Request} request
