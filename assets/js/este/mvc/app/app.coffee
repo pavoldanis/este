@@ -1,6 +1,6 @@
 ###*
   @fileoverview Este Mvc App.
-  WARNING: This is still experimental.
+  WARNING: This is experimental.
 ###
 goog.provide 'este.mvc.App'
 
