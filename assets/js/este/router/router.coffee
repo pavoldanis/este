@@ -45,6 +45,12 @@ class este.router.Router extends este.Base
   routes: null
 
   ###*
+    @type {boolean}
+    @protected
+  ###
+  ignoreNextOnHistoryNavigage: false
+
+  ###*
     @param {string} path
     @param {Function} show
     @param {este.router.Route.Options=} options
@@ -64,19 +70,21 @@ class este.router.Router extends este.Base
       item.path == path
 
   ###*
+    @param {string} path
+    @param {Object=} params
+    @param {boolean=} silent
+  ###
+  pathNavigate: (path, params, silent = false) ->
+    route = @findRoute path
+    return if !route
+    @ignoreNextOnHistoryNavigage = silent
+    @navigate route.getUrl params
+
+  ###*
     @param {string} token
   ###
   navigate: (token) ->
     @history.setToken token
-
-  ###*
-    @param {string} path
-    @param {Object=} params
-  ###
-  pathNavigate: (path, params) ->
-    route = @findRoute path
-    return if !route
-    @navigate route.getUrl params
 
   ###*
     Start routing.
@@ -101,6 +109,9 @@ class este.router.Router extends este.Base
     @protected
   ###
   onHistoryNavigate: (e) ->
+    if @ignoreNextOnHistoryNavigage
+      @ignoreNextOnHistoryNavigage = false
+      return
     @processRoutes e.token
 
   ###*

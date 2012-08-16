@@ -166,10 +166,35 @@ suite 'este.router.Router', ->
         done()
       router.navigate 'foo'
 
-  suite 'pathNavigate', ->
+  suite 'pathNavigate user/:name, name: joe', ->
     test 'should call setToken on history object', (done) ->
       history.setToken = (token) ->
         assert.equal token, 'user/joe'
         done()
+      router.start()
       router.add 'user/:name', ->
       router.pathNavigate 'user/:name', name: 'joe'
+
+    test 'should call router show', ->
+      called = false
+      router.start()
+      router.add 'user/:name', ->
+        called = true
+      router.pathNavigate 'user/:name', name: 'joe'
+      assert.isTrue called
+
+  suite 'pathNavigate user/:name, name: joe, true', ->
+    test 'should call setToken on history object', (done) ->
+      history.setToken = (token) ->
+        assert.equal token, 'user/joe'
+        done()
+      router.start()
+      router.add 'user/:name', ->
+      router.pathNavigate 'user/:name', name: 'joe', true
+
+    test 'should not call router show', ->
+      called = false
+      router.start()
+      router.add 'user/:name', -> called = true
+      router.pathNavigate 'user/:name', name: 'joe', true
+      assert.isFalse called
