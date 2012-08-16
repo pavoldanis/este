@@ -13,13 +13,15 @@ suite 'este.mvc.App', ->
     layout =
       setActive: (view) ->
     router =
-      pathNavigate: (url, params) ->
+      add: ->
+      pathNavigate: (url, params, silent) ->
       start: ->
     app = new App layout, [], router
     arrangeViews()
 
   arrangeViews = ->
     view1 = ->
+    view1::url = 'test'
     view1::fetch = (params, done) -> done()
     view2 = ->
     view2::fetch = (params, done) -> done()
@@ -31,24 +33,27 @@ suite 'este.mvc.App', ->
     test 'should work', ->
       assert.instanceOf app, App
 
-  # suite 'start', ->
-  #   test 'should call fetch(params, done) on view1', (done) ->
-  #     view1 = (app) ->
-  #       fetch: (params, p_done) ->
-  #         assert.isNull params
-  #         assert.isFunction p_done
-  #         done()
-  #     app.views = [view1]
-  #     app.start()
+  suite 'start', ->
+    suite 'urlProjectionEnabled == true', ->
+      test 'should call router.start', ->
+        called = false
+        router.start = -> called = true
+        app.start()
+        assert.isTrue called
 
-  #   test 'should not call fetch if silent start', ->
-  #     called = false
-  #     view1 = (app) ->
-  #       fetch: (params, p_done) ->
-  #         called = true
-  #     app.views = [view1]
-  #     app.start true
-  #     assert.isFalse called
+    suite 'urlProjectionEnabled == false', ->
+      test 'should not call router.start', ->
+        called = false
+        router.start = -> called = true
+        app.urlProjectionEnabled = false
+        app.start()
+        assert.isFalse called
+
+      test 'should fetch first view', (done) ->
+        view1::fetch = ->
+          done()
+        app.urlProjectionEnabled = false
+        app.start()
 
   suite 'show', ->
     test 'should call layout.setActive view1', (done) ->
@@ -59,24 +64,26 @@ suite 'este.mvc.App', ->
       app.show view1
 
     suite 'view.url = "fok"', ->
-      test 'should call router.pathNavigate url, p_params', (done) ->
+      test 'should call router.pathNavigate', (done) ->
         app.start()
         view1::url = 'fok'
         params = {}
-        router.pathNavigate = (url, p_params) ->
+        router.pathNavigate = (url, p_params, silent) ->
           assert.equal url, 'fok'
           assert.equal p_params, params
+          assert.isTrue silent
           done()
         app.show view1, params
 
     suite 'view.url = ""', ->
-      test 'should call router.pathNavigate url, p_params', (done) ->
+      test 'should call router.pathNavigate', (done) ->
         app.start()
         view1::url = ''
         params = {}
-        router.pathNavigate = (url, p_params) ->
+        router.pathNavigate = (url, p_params, silent) ->
           assert.equal url, ''
           assert.equal p_params, params
+          assert.isTrue silent
           done()
         app.show view1, params
 
@@ -179,3 +186,24 @@ suite 'este.mvc.App', ->
         assert.isFalse setActiveCalled
         done()
       , 5
+
+  suite 'router show callback', ->
+    test 'should call view.fetch', (done) ->
+      show = null
+      router.add = (path, p_show) ->
+        show = p_show
+      view1::fetch = ->
+        done()
+      app.start()
+      show()
+
+    test 'should not call router.pathNavigate', ->
+      show = null
+      called = false
+      router.add = (path, p_show) ->
+        show = p_show
+      router.pathNavigate = ->
+        called = true
+      app.start()
+      show()
+      assert.isFalse called

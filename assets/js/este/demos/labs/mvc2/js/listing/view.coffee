@@ -15,6 +15,12 @@ class este.demos.labs.mvc2.listing.View extends este.mvc.View
     super()
 
   ###*
+    '' is root.
+    @inheritDoc
+  ###
+  url: ''
+
+  ###*
     @inheritDoc
   ###
   fetch: (params, done) ->
@@ -28,7 +34,7 @@ class este.demos.labs.mvc2.listing.View extends este.mvc.View
   ###
   render: ->
     @element.innerHTML = """
-      view: <b>listing <br>
+      view: listing <br>
       <ul>
         <li><a href='#'>1</a>
         <li><a href='#'>2</a>

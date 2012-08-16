@@ -1,14 +1,5 @@
 ###*
   @fileoverview Este Mvc App.
-
-  todo doc
-    how to create app (subclass)
-    manages views states
-    compile time safe app states transitions
-    url routing is optional
-    last click win technique
-    layout
-
   WARNING: This is still experimental.
 ###
 goog.provide 'este.mvc.App'
@@ -42,6 +33,11 @@ class este.mvc.App extends este.Base
   data: null
 
   ###*
+    @type {boolean}
+  ###
+  urlProjectionEnabled: true
+
+  ###*
     @type {este.mvc.Layout}
     @protected
   ###
@@ -72,40 +68,58 @@ class este.mvc.App extends este.Base
   lastRequest: null
 
   ###*
-    @param {boolean=} silent
+    Start application. If urlProjectionEnabled == true, then matched route view
+    is shown, otherwise first view in .views array is shown.
   ###
-  start: (silent) ->
-    @instantiateViews()
-    return if silent
-    @router.start()
-    # request = new este.mvc.app.Request @viewsInstances[0]
-    # @showInternal request
+  start: ->
+    @prepareViews()
+    if @urlProjectionEnabled
+      @router.start()
+    else
+      request = new este.mvc.app.Request @viewsInstances[0]
+      @showInternal request
 
   ###*
     @param {function(new:este.mvc.View)} viewClass
     @param {Object=} params
   ###
   show: (viewClass, params) ->
-    for instance in @viewsInstances
-      if instance instanceof viewClass
-        request = new este.mvc.app.Request instance, params
-        @showInternal request
-        break
-    return
+    instance = @findViewInstance viewClass
+    # throw exception?
+    return if !instance
+    request = new este.mvc.app.Request instance, params
+    @showInternal request
 
   ###*
-    todo: split it into two methods
+    @protected
+  ###
+  prepareViews: ->
+    @instantiateViews()
+    @setViewsShowMethod()
+    @addViewsToRouter() if @urlProjectionEnabled
+
+  ###*
     @protected
   ###
   instantiateViews: ->
+    @viewsInstances = (new view for view in @views)
+
+  ###*
+    @protected
+  ###
+  setViewsShowMethod: ->
     show = goog.bind @show, @
-    @viewsInstances = []
-    for View in @views
-      view = new View
-      view.show = show
-      if view.url?
-        @router.add view.url, goog.bind @onRouterShow, @, view
-      @viewsInstances.push view
+    instance.show = show for instance in @viewsInstances
+    return
+
+  ###*
+    @protected
+  ###
+  addViewsToRouter: ->
+    for view in @viewsInstances
+      continue if !view.url?
+      matchedBound = goog.bind @onRouterRouteMatched, @, view
+      @router.add view.url, matchedBound
     return
 
   ###*
@@ -113,17 +127,25 @@ class este.mvc.App extends este.Base
     @param {Object|Array} params
     @protected
   ###
-  onRouterShow: (view, params) ->
-    request = new este.mvc.app.Request view, params
-    # console.log 'onRouterShow', view, params
+  onRouterRouteMatched: (view, params) ->
+    request = new este.mvc.app.Request view, params, true
     @showInternal request
+
+  ###*
+    @param {function(new:este.mvc.View)} viewClass
+    @return {este.mvc.View}
+    @protected
+  ###
+  findViewInstance: (viewClass) ->
+    for instance in @viewsInstances
+      return instance if instance instanceof viewClass
+    null
 
   ###*
     @param {este.mvc.app.Request} request
     @protected
   ###
   showInternal: (request) ->
-    # consider: map params to named args
     @lastRequest = request
     @dispatchEvent App.EventType.BEFORE_VIEW_SHOW
     request.fetch goog.bind @onViewFetched, @
@@ -137,16 +159,17 @@ class este.mvc.App extends este.Base
     lastRequest = @lastRequest
     @lastRequest = null if request.equal lastRequest
     return if !request.equal lastRequest
-    request.setViewData response
-    @switchView request
+    @switchView request, response
 
   ###*
     @param {este.mvc.app.Request} request
+    @param {Object} response
     @protected
   ###
-  switchView: (request) ->
-    if request.view.url?
-      @router.pathNavigate request.view.url, request.params
+  switchView: (request, response) ->
+    request.setViewData response
+    if request.view.url? && !request.silent
+      @router.pathNavigate request.view.url, request.params, true
     @layout.setActive request.view, request.params
     @dispatchEvent App.EventType.AFTER_VIEW_SHOW
 
@@ -154,6 +177,6 @@ class este.mvc.App extends este.Base
     @inheritDoc
   ###
   disposeInternal: ->
-    super
     @lastRequest = null
+    super
     return

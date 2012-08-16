@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Experimental MVC stuff.
+  @fileoverview este.demos.labs.mvc2.start.
 ###
 
 goog.provide 'este.demos.labs.mvc2.start'
@@ -27,7 +27,7 @@ este.demos.labs.mvc2.start = (data) ->
 
   timer = null
   goog.events.listen myApp, 'beforeviewshow', ->
-    progressEl.innerHTML = 'loading'
+    progressEl.innerHTML = '<b>loading</b>'
     clearInterval timer
     timer = setInterval ->
       progressEl.innerHTML += '.'

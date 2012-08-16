@@ -28,10 +28,10 @@ class este.demos.labs.mvc1.detail.View extends este.mvc.View
   ###
   render: ->
     @element.innerHTML = """
-      view: <b>detail, id = #{@viewData['id']}<br>
-      <a href='#'>listing</a>
+      view: detail, id = #{@viewData['id']}<br>
+      <a href='#'>back to listing</a>
     """
-    window['console']['log'] 'detail rendered'
+    window['console']['log'] "detail #{@viewData['id']} rendered"
     return
 
   ###*

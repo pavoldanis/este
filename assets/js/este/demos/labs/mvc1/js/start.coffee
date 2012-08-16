@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Experimental MVC stuff.
+  @fileoverview este.demos.labs.mvc1.start.
 ###
 
 goog.provide 'este.demos.labs.mvc1.start'
@@ -24,12 +24,19 @@ este.demos.labs.mvc1.start = (data) ->
     este.demos.labs.mvc1.detail.View
   ]
 
+  timer = null
   goog.events.listen myApp, 'beforeviewshow', ->
-    progressEl.innerHTML = 'loading'
+    progressEl.innerHTML = '<b>loading</b>'
+    clearInterval timer
+    timer = setInterval ->
+      progressEl.innerHTML += '.'
+    , 250
   goog.events.listen myApp, 'afterviewshow', ->
+    clearInterval timer
     progressEl.innerHTML = 'loaded'
 
   myApp.data = data
+  myApp.urlProjectionEnabled = false
   myApp.start()
 
 # ensures the symbol will be visible after compiler renaming

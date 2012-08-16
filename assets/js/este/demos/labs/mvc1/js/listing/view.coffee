@@ -28,7 +28,7 @@ class este.demos.labs.mvc1.listing.View extends este.mvc.View
   ###
   render: ->
     @element.innerHTML = """
-      view: <b>listing <br>
+      view: listing <br>
       <ul>
         <li><a href='#'>1</a>
         <li><a href='#'>2</a>
