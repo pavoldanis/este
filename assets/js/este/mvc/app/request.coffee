@@ -11,9 +11,10 @@ class este.mvc.app.Request
   ###*
     @param {este.mvc.View} view
     @param {Object=} params
+    @param {boolean=} silent
     @constructor
   ###
-  constructor: (@view, @params = null) ->
+  constructor: (@view, @params = null, @silent = false) ->
 
   ###*
     @type {este.mvc.View}
@@ -24,6 +25,11 @@ class este.mvc.app.Request
     @type {Object}
   ###
   params: null
+
+  ###*
+    @type {boolean}
+  ###
+  silent: false
 
   ###*
     @param {Object=} viewData
