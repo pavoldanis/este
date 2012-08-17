@@ -90,9 +90,15 @@ suite 'este.mvc.App', ->
     test 'should dispatch beforeviewshow and afterviewshow events', ->
       calls = []
       app.start()
-      goog.events.listenOnce app, 'beforeviewshow', -> calls.push 1
-      goog.events.listenOnce app, 'afterviewshow', -> calls.push 2
-      app.show view1
+      goog.events.listenOnce app, 'beforeviewshow', (e) ->
+        assert.instanceOf e.request.view, view1
+        assert.deepEqual e.request.params, id: 123
+        calls.push 1
+      goog.events.listenOnce app, 'afterviewshow', (e) ->
+        assert.instanceOf e.request.view, view1
+        assert.deepEqual e.request.params, id: 123
+        calls.push 2
+      app.show view1, id: 123
       assert.deepEqual calls, [1, 2]
 
     test 'should call layout.setActive view2', (done) ->

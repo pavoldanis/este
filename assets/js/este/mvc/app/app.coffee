@@ -1,6 +1,6 @@
 ###*
   @fileoverview Este Mvc App.
-  WARNING: This is experimental.
+  Beta.
 ###
 goog.provide 'este.mvc.App'
 
@@ -147,7 +147,9 @@ class este.mvc.App extends este.Base
   ###
   showInternal: (request) ->
     @lastRequest = request
-    @dispatchEvent App.EventType.BEFORE_VIEW_SHOW
+    @dispatchEvent
+      type: App.EventType.BEFORE_VIEW_SHOW
+      request: request
     request.fetch goog.bind @onViewFetched, @
 
   ###*
@@ -171,7 +173,9 @@ class este.mvc.App extends este.Base
     if request.view.url? && !request.silent
       @router.pathNavigate request.view.url, request.params, true
     @layout.setActive request.view, request.params
-    @dispatchEvent App.EventType.AFTER_VIEW_SHOW
+    @dispatchEvent
+      type: App.EventType.AFTER_VIEW_SHOW
+      request: request
 
   ###*
     @inheritDoc
