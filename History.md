@@ -1,3 +1,6 @@
+##08/16/12
+  - demos/labs/mvc2 demo released
+
 ##08/14/12
   - Closure class syntax updated to CoffeeScript
   - bug in coffee4class fixed, empty constructors works now
