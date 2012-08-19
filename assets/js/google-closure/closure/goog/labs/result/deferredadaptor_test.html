@@ -11,6 +11,7 @@ See the COPYING file for details.
 <script src="../../base.js"></script>
 <script>
 
+goog.require('goog.labs.result');
 goog.require('goog.labs.result.DeferredAdaptor');
 goog.require('goog.labs.result.SimpleResult');
 goog.require('goog.testing.jsunit');
@@ -47,6 +48,18 @@ function testResultErrorResolution() {
   assertEquals(1, record.getCallCount());
   var call = record.popLastCall();
   assertEquals(2, call.getArgument(0));
+}
+
+function testResultCancelResolution() {
+  deferred.addCallback(record);
+  var cancelCallback = new goog.testing.recordFunction();
+  deferred.addErrback(cancelCallback);
+  result.cancel();
+  assertEquals(0, record.getCallCount());
+  assertEquals(1, cancelCallback.getCallCount());
+  var call = cancelCallback.popLastCall();
+  assertTrue(call.getArgument(0) instanceof
+             goog.async.Deferred.CancelledError);
 }
 
 function testAddCallbackOnResolvedResult() {

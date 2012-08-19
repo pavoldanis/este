@@ -25,8 +25,8 @@
 goog.provide('goog.labs.result.DeferredAdaptor');
 
 goog.require('goog.async.Deferred');
+goog.require('goog.labs.result');
 goog.require('goog.labs.result.Result');
-goog.require('goog.labs.result.wait');
 
 
 
@@ -46,7 +46,11 @@ goog.labs.result.DeferredAdaptor = function(result) {
     if (result.getState() == goog.labs.result.Result.State.SUCCESS) {
       this.callback(result.getValue());
     } else if (result.getState() == goog.labs.result.Result.State.ERROR) {
-      this.errback(result.getError());
+      if (result.getError() instanceof goog.labs.result.Result.CancelError) {
+        this.cancel();
+      } else {
+        this.errback(result.getError());
+      }
     }
   }, this);
 };
