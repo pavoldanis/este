@@ -1,6 +1,5 @@
 ###*
   @fileoverview URI utils.
-  jirka todo: short namespace to 'este.uri', .utils suffix does not make sense
 ###
 
 goog.provide 'este.uri.utils'

@@ -1,11 +1,6 @@
 ###*
   @fileoverview este.router.Router.
   @see ../demos/router.html
-
-  todo
-    use model for routes list, since route path is string and there
-    is no reason to have same named paths. Also, it will be save for
-    toString etc. routes
 ###
 goog.provide 'este.router.Router'
 

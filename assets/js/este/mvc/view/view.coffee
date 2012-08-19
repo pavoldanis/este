@@ -1,11 +1,5 @@
 ###*
   @fileoverview este.mvc.View.
-  todo
-    add url projection
-    use data store for CRUD
-      ds.fetch app.user.Model, 3
-    async
-    add interface
   WARNING: This is still experimental.
 ###
 goog.provide 'este.mvc.View'

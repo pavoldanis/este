@@ -34,7 +34,7 @@
     'node run app --nocoffeefix'
       u know
 
-  todo
+  todo:
     run deps only if needed
     reload browser before tests
     remove python dependency
@@ -394,9 +394,6 @@ getSoyCommand = (paths) ->
 watchPaths = (callback) ->
   paths = getPaths 'assets', ['.coffee', '.styl', '.soy', '.html'], true
   paths.push "#{options.project}-template.html"
-  # todo
-  # devCoffees = fs.readdirSync "assets/js/dev/*.coffee"
-  # console.log devCoffees
   paths.push 'assets/js/dev/run.coffee'
   paths.push 'assets/js/dev/mocks.coffee'
   paths.push 'assets/js/dev/deploy.coffee'

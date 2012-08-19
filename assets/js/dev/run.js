@@ -35,7 +35,7 @@
     'node run app --nocoffeefix'
       u know
 
-  todo
+  todo:
     run deps only if needed
     reload browser before tests
     remove python dependency

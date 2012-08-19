@@ -9,9 +9,6 @@
   tips
     modify complex object: joe.get('items').add 'foo'
     use goog.object.extend to 'inherit' schema
-
-  todo
-    - example
 ###
 
 goog.provide 'este.Model'

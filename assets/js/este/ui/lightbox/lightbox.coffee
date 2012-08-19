@@ -1,7 +1,7 @@
 ###*
 	@fileoverview Canonical lightbox.
 	todo
-		check on iPad, try mousedown
+		add mobile support
 	@see ../demos/lightbox.html
 ###
 goog.provide 'este.ui.Lightbox'

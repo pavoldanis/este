@@ -1,8 +1,5 @@
 ###*
   @fileoverview Really fast unit testing.
-
-  todo
-    make it even faster
 ###
 
 fs = require 'fs'
@@ -56,7 +53,7 @@ getDirectoryFiles = (directory, callback) ->
 ###
 getNamespacesToTest = (files, deps) ->
   namespaces = [
-    # we need that for DOM event simulation 
+    # we need that for DOM event simulation
     'goog.testing.events'
   ]
   for file, testFile of files
@@ -78,13 +75,13 @@ resolveDeps = (namespaces, deps) ->
       src = deps[namespace].src
       continue if files.indexOf(src) > -1
       resolve deps[namespace].dependencies
-      files.push src    
+      files.push src
     return
   resolve namespaces
   files
 
 ###*
-  @param {Array.<string>} depsFiles 
+  @param {Array.<string>} depsFiles
   @param {Object.<string>} testFiles
   @return {Array.<string>}
 ###
