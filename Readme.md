@@ -48,12 +48,13 @@ Must-have packages
 
 Recommended packages
 
+  - SideBarEnhancements
   - Clipboard History
   - JsFormat
   - Git - git commands for command palette
   - LESS
   - SideBarGit, like Tortoise inside Sublimetext
-  - sublime-github, to create and browse GitHub Gists.
+  - sublime-github, to create, edit and browse GitHub Gists
   - Jade
 
 My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings).
