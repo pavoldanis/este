@@ -1,14 +1,14 @@
 ###*
   @fileoverview Model with attributes and schema.
 
-  Why not plain JS objects?
+  Why not plain objects?
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
     - reusable setters, getters, and validators
-    - strings are good for uncompiled properties from DOM and server
+    - strings are fine for uncompiled attributes from DOM or storage
 
-  tips
-    modify complex object: joe.get('items').add 'foo'
-    use goog.object.extend to 'inherit' schema
+  Notes
+    - to modify complex attribute: joe.get('items').add 'foo'
+    - to 'inherit' schema: use goog.object.extend
 ###
 
 goog.provide 'este.Model'

@@ -1,26 +1,22 @@
-suite 'este.Model', ->
+class Person extends este.Model
 
-  Person = (attrs) ->
-    goog.base @, attrs
-    return
+  constructor: (attrs) ->
+    super attrs
 
-  goog.inherits Person, este.Model
-
-  trimSetter = (value) -> goog.string.trim value || ''
-  requiredValidator = (value) -> value && goog.string.trim(value).length
-
-  Person::schema =
+  schema:
     'firstName':
-      'set': trimSetter
+      'set': (value) -> goog.string.trim value || ''
       'validators':
-        'required': requiredValidator
+        'required': (value) -> value && goog.string.trim(value).length
     'lastName':
       'validators':
-        'required': requiredValidator
+        'required': (value) -> value && goog.string.trim(value).length
     'name':
       'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
     'age':
       'get': (age) -> Number age
+
+suite 'este.Model', ->
 
   attrs = null
   person = null
@@ -212,7 +208,3 @@ suite 'este.Model', ->
         errors = person.validate()
         assert.deepEqual errors,
           lastName: required: true
-
-
-
-
