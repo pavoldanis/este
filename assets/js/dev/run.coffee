@@ -7,40 +7,41 @@
     run and watch *_test.coffee unit tests
     run simple NodeJS development server
 
-  Workflow
-    'node run app'
-      to start app development
-
-    'node run app --deploy'
+  Options
+    -b, --build
       build and statically check source code
       [project].html will use one compiled script
-      goog.DEBUG == false (code using that will be stripped)
+      goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
-    'node run app --deploy --debug'
+    -d, --debug
+      just for build
       compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
-    'node run app --verbose'
-      if you are curious how much time each compilation took
+    -v, --verbose
+      if you are curious how much time each compilation task take
 
-    'node run app --buildonly'
-      only builds the files aka CI mode
-      does not start http server nor watches for changes
+    -c, --ci
+      continuous integration mode
+      without http server and files watchers
 
-    'node run este --deploy'
-      compilation of este automatically includes all este namespaces
-      it's fine for development, when we need to compile everything
+    -o, --only
+      compile just one namespace
 
-    'node run app --nocoffeefix'
-      u know
+  Usage
+    'node run app'
+      to start app development
 
-  todo:
-    run deps only if needed
-    reload browser before tests
-    remove python dependency
-    closure rewrites in separate dir? hmm.
-    recheck windows platform
-    consider delete .css on start
+    'node run app --build' or 'node run app -b'
+      to test compiled version
+
+    'node run app --build --debug'
+      to test compiled version with debug mode enabled
+
+    'node run este -b'
+      special build mode only for este
+      all provided namespaces are included into compilation
+
 ###
 
 fs = require 'fs'
@@ -67,10 +68,10 @@ lazyRequireCoffeeForClosure = ->
 
 options =
   project: null
-  verbose: false
+  build: false
   debug: false
-  deploy: false
-  buildonly: false
+  verbose: false
+  ci: false
   only: ''
 
 socket = null
@@ -103,7 +104,7 @@ Commands =
   projectTemplate: (callback) ->
     timestamp = Date.now().toString 36
 
-    if options.deploy
+    if options.build
       scripts = """
         <script src='/#{options.outputFilename}?build=#{timestamp}'></script>
       """
@@ -146,8 +147,7 @@ Commands =
       paths = (path for path in getPaths 'assets', ['.js'])
 
     for path in paths
-      if  !options.nocoffeefix &&
-          path.indexOf('coffeeforclosure_test.js') == -1 &&
+      if  path.indexOf('coffeeforclosure_test.js') == -1 &&
           path.indexOf('coffeeforclosure.js') == -1 &&
           fs.existsSync path
             file = fs.readFileSync path, 'utf8'
@@ -255,10 +255,10 @@ Commands =
 
 start = (args) ->
   return if !setOptions args
-  delete Commands.closureCompilation if !options.deploy
+  delete Commands.closureCompilation if !options.build
 
   runCommands Commands, (errors) ->
-    if !options.buildonly
+    if !options.ci
       startServer()
     if errors.length
       commands = (error.name for error in errors).join ', '
@@ -267,34 +267,32 @@ start = (args) ->
         Fixit, then press cmd-s."""
       console.log error.stderr for error in errors
       # Signal error and exit (only if deploy, otherwise keep server running)
-      if options.buildonly
+      if options.ci
         process.exit 1
     else
       console.log "Everything's fine, happy coding!",
         "#{(Date.now() - startTime) / 1000}s"
       # Signal ok and exit (only if deploy, otherwise keep server running)
-      if options.buildonly
+      if options.ci
         process.exit 0
     booting = false
 
-    if !options.buildonly
+    if !options.ci
       watchPaths onPathChange
 
 setOptions = (args) ->
   while args.length
     arg = args.shift()
     switch arg
-      when '--debug'
+      when '--debug', '-d'
         options.debug = true
-      when '--verbose'
+      when '--verbose', '-v'
         options.verbose = true
-      when '--deploy'
-        options.deploy = true
-      when '--buildonly'
-        options.buildonly = true
-      when '--nocoffeefix'
-        options.nocoffeefix = true
-      when '--only'
+      when '--build', '-b'
+        options.build = true
+      when '--ci', '-c'
+        options.ci = true
+      when '--only', '-o'
         options.only = args.shift()
       else
         options.project = arg
@@ -310,7 +308,7 @@ setOptions = (args) ->
   else
     options.outputFilename = "assets/js/#{options.project}.js"
 
-  if options.deploy
+  if options.build
     console.log 'Output filename: ' + options.outputFilename
 
   true
@@ -441,7 +439,7 @@ onPathChange = (path, dir) ->
 
       commands["closureDeps"] = Commands.closureDeps
       commands["mochaTests"] = Commands.mochaTests
-      if options.deploy
+      if options.build
         commands["closureCompilation"] = Commands.closureCompilation
       else
         addBrowserLiveReloadCommand 'page'
@@ -455,7 +453,7 @@ onPathChange = (path, dir) ->
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
       commands["closureDeps"] = Commands.closureDeps
-      if options.deploy
+      if options.build
         commands["closureCompilation"] = Commands.closureCompilation
       addBrowserLiveReloadCommand 'page'
 

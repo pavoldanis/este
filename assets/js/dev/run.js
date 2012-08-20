@@ -8,40 +8,40 @@
     run and watch *_test.coffee unit tests
     run simple NodeJS development server
 
-  Workflow
-    'node run app'
-      to start app development
-
-    'node run app --deploy'
+  Options
+    -b, --build
       build and statically check source code
       [project].html will use one compiled script
-      goog.DEBUG == false (code using that will be stripped)
+      goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
-    'node run app --deploy --debug'
+    -d, --debug
+      just for build
       compiler flags: '--formatting=PRETTY_PRINT --debug=true'
       goog.DEBUG == true
 
-    'node run app --verbose'
-      if you are curious how much time each compilation took
+    -v, --verbose
+      if you are curious how much time each compilation task take
 
-    'node run app --buildonly'
-      only builds the files aka CI mode
-      does not start http server nor watches for changes
+    -c, --ci
+      continuous integration mode
+      without http server and files watchers
 
-    'node run este --deploy'
-      compilation of este automatically includes all este namespaces
-      it's fine for development, when we need to compile everything
+    -o, --only
+      compile just one namespace
 
-    'node run app --nocoffeefix'
-      u know
+  Usage
+    'node run app'
+      to start app development
 
-  todo:
-    run deps only if needed
-    reload browser before tests
-    remove python dependency
-    closure rewrites in separate dir? hmm.
-    recheck windows platform
-    consider delete .css on start
+    'node run app --build' or 'node run app -b'
+      to test compiled version
+
+    'node run app --build --debug'
+      to test compiled version with debug mode enabled
+
+    'node run este -b'
+      special build mode only for este
+      all provided namespaces are included into compilation
 */
 
 var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, exec, fs, getPaths, getSoyCommand, http, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
@@ -82,10 +82,10 @@ lazyRequireCoffeeForClosure = function() {
 
 options = {
   project: null,
-  verbose: false,
+  build: false,
   debug: false,
-  deploy: false,
-  buildonly: false,
+  verbose: false,
+  ci: false,
   only: ''
 };
 
@@ -147,7 +147,7 @@ Commands = {
   projectTemplate: function(callback) {
     var file, filePath, scripts, timestamp;
     timestamp = Date.now().toString(36);
-    if (options.deploy) {
+    if (options.build) {
       scripts = "<script src='/" + options.outputFilename + "?build=" + timestamp + "'></script>";
     } else {
       scripts = "<script src='/assets/js/dev/livereload.js'></script>\n<script src='/assets/js/google-closure/closure/goog/base.js'></script>\n<script src='/assets/js/deps.js'></script>\n<script src='/assets/js/" + options.project + "/start.js'></script>";
@@ -192,7 +192,7 @@ Commands = {
     }
     for (_i = 0, _len = paths.length; _i < _len; _i++) {
       path = paths[_i];
-      if (!options.nocoffeefix && path.indexOf('coffeeforclosure_test.js') === -1 && path.indexOf('coffeeforclosure.js') === -1 && fs.existsSync(path)) {
+      if (path.indexOf('coffeeforclosure_test.js') === -1 && path.indexOf('coffeeforclosure.js') === -1 && fs.existsSync(path)) {
         file = fs.readFileSync(path, 'utf8');
         file = coffeeForClosure(file);
         fs.writeFileSync(path, file, 'utf8');
@@ -293,12 +293,12 @@ start = function(args) {
   if (!setOptions(args)) {
     return;
   }
-  if (!options.deploy) {
+  if (!options.build) {
     delete Commands.closureCompilation;
   }
   return runCommands(Commands, function(errors) {
     var commands, error, _i, _len;
-    if (!options.buildonly) {
+    if (!options.ci) {
       startServer();
     }
     if (errors.length) {
@@ -316,17 +316,17 @@ start = function(args) {
         error = errors[_i];
         console.log(error.stderr);
       }
-      if (options.buildonly) {
+      if (options.ci) {
         process.exit(1);
       }
     } else {
       console.log("Everything's fine, happy coding!", "" + ((Date.now() - startTime) / 1000) + "s");
-      if (options.buildonly) {
+      if (options.ci) {
         process.exit(0);
       }
     }
     booting = false;
-    if (!options.buildonly) {
+    if (!options.ci) {
       return watchPaths(onPathChange);
     }
   });
@@ -338,21 +338,23 @@ setOptions = function(args) {
     arg = args.shift();
     switch (arg) {
       case '--debug':
+      case '-d':
         options.debug = true;
         break;
       case '--verbose':
+      case '-v':
         options.verbose = true;
         break;
-      case '--deploy':
-        options.deploy = true;
+      case '--build':
+      case '-b':
+        options.build = true;
         break;
-      case '--buildonly':
-        options.buildonly = true;
-        break;
-      case '--nocoffeefix':
-        options.nocoffeefix = true;
+      case '--ci':
+      case '-c':
+        options.ci = true;
         break;
       case '--only':
+      case '-o':
         options.only = args.shift();
         break;
       default:
@@ -369,7 +371,7 @@ setOptions = function(args) {
   } else {
     options.outputFilename = "assets/js/" + options.project + ".js";
   }
-  if (options.deploy) {
+  if (options.build) {
     console.log('Output filename: ' + options.outputFilename);
   }
   return true;
@@ -530,7 +532,7 @@ onPathChange = function(path, dir) {
       };
       commands["closureDeps"] = Commands.closureDeps;
       commands["mochaTests"] = Commands.mochaTests;
-      if (options.deploy) {
+      if (options.build) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {
         addBrowserLiveReloadCommand('page');
@@ -543,7 +545,7 @@ onPathChange = function(path, dir) {
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);
       commands["closureDeps"] = Commands.closureDeps;
-      if (options.deploy) {
+      if (options.build) {
         commands["closureCompilation"] = Commands.closureCompilation;
       }
       addBrowserLiveReloadCommand('page');
