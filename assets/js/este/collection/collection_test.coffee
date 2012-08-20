@@ -56,7 +56,9 @@ suite 'este.Collection', ->
         b: 'bb'
       ]
       collection = new Collection json, Child
-      assert.deepEqual collection.toJson(), [
+      collectionJson = collection.toJson()
+      delete cJson.clientId for cJson in collectionJson
+      assert.deepEqual collectionJson, [
         id: 0
         a: 'aa'
         c: 'fok'
@@ -146,7 +148,7 @@ suite 'este.Collection', ->
       collection.removeMany [1]
       assert.isFalse removeCalled
       assert.isFalse changeCalled
-      
+
   suite 'contains', ->
     test 'should return true if obj is present', ->
       assert.isFalse collection.contains 1
@@ -210,7 +212,7 @@ suite 'este.Collection', ->
       assert.deepEqual found, b: 2
       found = collection.find (item) -> item.b == 3
       assert.isUndefined found
-      
+
   suite 'findById', ->
     test 'should find item by id', ->
       collection.addMany [
@@ -233,11 +235,18 @@ suite 'este.Collection', ->
       ,
         id: 2
       ]
+
       collection = new Collection json, Child
       found = collection.findById 1
-      assert.deepEqual found.toJson(), id: 1
+      json = found.toJson()
+      delete json.clientId
+      assert.deepEqual json, id: 1
+
       found = collection.findById 2
-      assert.deepEqual found.toJson(), id: 2
+      json = found.toJson()
+      delete json.clientId
+      assert.deepEqual json, id: 2
+
       found = collection.findById 3
       assert.isUndefined found
 
@@ -264,10 +273,10 @@ suite 'este.Collection', ->
       assert.isUndefined collection.at 0
       assert.isUndefined collection.at 1
 
-  # todo: consider fix this backbonesness ->
-  # Collections with comparator functions will not automatically re-sort if you
-  # later change model attributes, so you may wish to call sort after changing
-  # model attributes that would affect the order.
+  # todo:
+  #   Collections with comparator functions will not automatically re-sort if you
+  #   later change model attributes, so you may wish to call sort after changing
+  #   model attributes that would affect the order.
   suite 'sorting', ->
     suite 'default compare', ->
       test 'should work with numbers', ->
@@ -283,7 +292,7 @@ suite 'este.Collection', ->
     suite 'sort', ->
       test 'should fire change event', (done) ->
         goog.events.listenOnce collection, 'change', (e) ->
-          done() 
+          done()
         collection.sort()
 
       suite 'by', ->
@@ -333,35 +342,4 @@ suite 'este.Collection', ->
 
   # suite 'filter', ->
   #   test 'should work', ->
-  #     collection.filter (item) -> 
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
+  #     collection.filter (item) ->

@@ -1,7 +1,7 @@
 class Person extends este.Model
 
-  constructor: (attrs) ->
-    super attrs
+  constructor: (attrs, randomStringGenerator) ->
+    super attrs, randomStringGenerator
 
   schema:
     'firstName':
@@ -29,11 +29,10 @@ suite 'este.Model', ->
     person = new Person attrs
 
   suite 'constructor', ->
-    test 'should assign id', ->
-      person = new Person
-      assert.isString person.get 'id'
+    test 'should assign clientId', ->
+      assert.isString person.get 'clientId'
 
-    test 'should not override id', ->
+    test 'should assign override id', ->
       person = new Person id: 'foo'
       assert.equal person.get('id'), 'foo'
 
@@ -72,29 +71,30 @@ suite 'este.Model', ->
       assert.equal person.get('lastName'), 'Satriani'
 
   suite 'toJson', ->
-    test 'with true and without attrs should return just id', ->
-      person = new Person
-      json = person.toJson true
-      attrs = 'id': json.id
-      assert.deepEqual json, attrs
+    suite 'without attrs', ->
+      test 'true should not return meta name nor clientId', ->
+        person = new Person
+        json = person.toJson true
+        assert.isUndefined json.clientId
+        assert.isUndefined json.name
 
-    test 'with true and without attrs should return just id', ->
-      person = new Person
-      json = person.toJson()
-      attrs =
-        'id': json.id
-        'name': 'undefined undefined'
-      assert.deepEqual json, attrs
+      test 'false should return clientId and meta name', ->
+        person = new Person
+        json = person.toJson()
+        assert.isString json.clientId
+        assert.equal json.name, 'undefined undefined'
 
-    test 'should return setted attributes json and metas', ->
-      json = person.toJson()
-      attrs =
-        'firstName': 'Joe'
-        'lastName': 'Satriani'
-        'name': 'Joe Satriani'
-        'age': 55
-        'id': json.id
-      assert.deepEqual json, attrs
+    suite 'with attrs', ->
+      test 'false should return clientId and meta name', ->
+        json = person.toJson()
+        assert.isString json.clientId
+        delete json.clientId
+        attrs =
+          'firstName': 'Joe'
+          'lastName': 'Satriani'
+          'name': 'Joe Satriani'
+          'age': 55
+        assert.deepEqual json, attrs
 
   suite 'has', ->
     test 'should work', ->
@@ -201,10 +201,13 @@ suite 'este.Model', ->
         person = new Person
         errors = person.validate()
         assert.deepEqual errors,
-          firstName: required: true
-          lastName: required: true
+          firstName:
+            required: true
+          lastName:
+            required: true
 
         person.set 'firstName', 'Pepa'
+
         errors = person.validate()
         assert.deepEqual errors,
           lastName: required: true

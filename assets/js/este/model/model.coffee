@@ -4,9 +4,10 @@
   Why not plain objects?
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
     - reusable setters, getters, and validators
-    - strings are fine for uncompiled attributes from DOM or storage
+    - strings are fine for uncompiled attributes from DOM or storage etc.
 
   Notes
+    - use model.get('clientId') for rendering
     - to modify complex attribute: joe.get('items').add 'foo'
     - to 'inherit' schema: use goog.object.extend
 ###
@@ -30,38 +31,18 @@ class este.Model extends goog.events.EventTarget
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor: (json = {}) ->
+  constructor: (json) ->
     super()
     @attributes = {}
+    @attributes[@getKey 'clientId'] = goog.string.getRandomString()
     @schema ?= {}
-    json['id'] ?= goog.string.getRandomString()
-    @setInternal json
+    @setInternal json if json
 
   ###*
     @enum {string}
   ###
   @EventType:
     CHANGE: 'change'
-
-  ###*
-    Prefix because http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
-    @param {string} key
-    @return {string}
-  ###
-  @getKey: (key) ->
-    '$' + key
-
-  ###*
-    @param {Object|string} object Object of key value pairs or string key.
-    @param {*=} opt_value value or nothing.
-    @return {Object}
-  ###
-  @getObject: (object, opt_value) ->
-    return object if !goog.isString object
-    key = object
-    object = {}
-    object[key] = opt_value
-    object
 
   ###*
     @type {Object}
@@ -76,42 +57,112 @@ class este.Model extends goog.events.EventTarget
   schema: null
 
   ###*
-    Returns models attribute.
+    Set model attribute(s).
+    model.set 'foo', 1
+    model set 'foo': 1, 'bla': 2
+    Invalid values are ignored.
+    Dispatch change event with changed property, if any.
+    Returns errors.
+    @param {Object|string} object Object of key value pairs or string key.
+    @param {*=} opt_value value or nothing.
+    @return {Object} errors object, ex. name: required: true if error
+  ###
+  set: (object, opt_value) ->
+    if typeof object == 'string'
+      _object = {}
+      _object[object] = opt_value
+      object = _object
+
+    changes = @getChanges object
+    return null if !changes
+
+    errors = @getErrors changes
+    if errors
+      changes = goog.object.filter changes, (value, key) -> !errors[key]
+
+    if !goog.object.isEmpty changes
+      @setInternal changes
+      @dispatchChangeEvent changes
+
+    errors
+
+  ###*
+    Returns model attribute(s).
     @param {string|Array.<string>} key
-    @return {*}
+    @return {*|Object.<string, *>}
   ###
   get: (key) ->
     if typeof key != 'string'
       object = {}
       object[k] = @get k for k in key
       return object
-    value = @attributes[Model.getKey(key)]
+
     meta = @schema[key]?['meta']
     return meta @ if meta
+
+    value = @attributes[@getKey key]
     get = @schema[key]?.get
     return get value if get
+
     value
 
   ###*
-    set 'prop', value or set 'prop': 'value'.
-    Invalid values are ignored.
-    Dispatch change event with changed property, if any.
-    Returns errors object.
-    @param {Object|string} object Object of key value pairs or string key.
-    @param {*=} opt_value value or nothing.
+    @param {string} key
+    @return {boolean}
+  ###
+  has: (key) ->
+    @getKey(key) of @attributes
+
+  ###*
+    @param {string} key
+    @return {boolean} true if removed
+  ###
+  remove: (key) ->
+    _key = @getKey key
+    return false if !(_key of @attributes)
+    value = @attributes[_key]
+    value.setParentEventTarget null if value instanceof goog.events.EventTarget
+    delete @attributes[_key]
+    changed = {}
+    changed[key] = value
+    @dispatchChangeEvent changed
+    true
+
+  ###*
+    Returns shallow copy.
+    @param {boolean=} noMetas If true, no metas nor clientId.
+    @return {Object}
+  ###
+  toJson: (noMetas) ->
+    object = {}
+    for key, value of @attributes
+      origKey = key.substring 1
+      continue if noMetas && origKey == 'clientId'
+      newValue = @get origKey
+      object[origKey] = newValue
+    return object if noMetas
+    for key, value of @schema
+      meta = value?['meta']
+      continue if !meta
+      object[key] = meta @
+    object
+
+  ###*
     @return {Object} errors object, ex. name: required: true if error
   ###
-  set: (object, opt_value) ->
-    object = Model.getObject object, opt_value
-    changes = @getChanges object
-    return null if !changes
-    errors = @getErrors changes
-    if errors
-      changes = goog.object.filter changes, (value, key) -> !errors[key]
-    if !goog.object.isEmpty changes
-      @setInternal changes
-      @dispatchChangeEvent changes
-    errors
+  validate: ->
+    keys = (key for key, value of @schema when value?['validators'])
+    values = @get keys
+    `values = /** @type {Object} */ (values)`
+    @getErrors values
+
+  ###*
+    Prefix because http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
+    @param {string} key
+    @return {string}
+  ###
+  getKey: (key) ->
+    '$' + key
 
   ###*
     @param {Object} object
@@ -119,13 +170,13 @@ class este.Model extends goog.events.EventTarget
   ###
   setInternal: (object) ->
     for key, value of object
-      @attributes[Model.getKey(key)] = value
+      @attributes[@getKey key] = value
       continue if !(value instanceof goog.events.EventTarget)
       value.setParentEventTarget @
     return
 
   ###*
-    todo: optimize value changed comparison
+    todo: optimize comparison
     @param {Object} object
     @return {Object}
     @protected
@@ -165,52 +216,3 @@ class este.Model extends goog.events.EventTarget
     @dispatchEvent
       type: Model.EventType.CHANGE
       changed: changed
-
-  ###*
-    @param {string} key
-    @return {boolean}
-  ###
-  has: (key) ->
-    Model.getKey(key) of @attributes
-
-  ###*
-    @param {string} key
-    @return {boolean} true if removed
-  ###
-  remove: (key) ->
-    _key = Model.getKey key
-    return false if !(_key of @attributes)
-    value = @attributes[_key]
-    value.setParentEventTarget null if value instanceof goog.events.EventTarget
-    delete @attributes[_key]
-    changed = {}
-    changed[key] = value
-    @dispatchChangeEvent changed
-    true
-
-  ###*
-    Returns shallow copy.
-    @param {boolean=} withoutMetas
-    @return {Object}
-  ###
-  toJson: (withoutMetas = false) ->
-    object = {}
-    for key, value of @attributes
-      origKey = key.substring 1
-      newValue = @get origKey
-      object[origKey] = newValue
-    return object if withoutMetas
-    for key, value of @schema
-      meta = value?['meta']
-      continue if !meta
-      object[key] = meta @
-    object
-
-  ###*
-    @return {Object} errors object, ex. name: required: true if error
-  ###
-  validate: ->
-    keys = (key for key, value of @schema when value?['validators'])
-    values = @get keys
-    `values = /** @type {Object} */ (values)`
-    @getErrors values
