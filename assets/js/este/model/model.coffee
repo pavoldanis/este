@@ -1,6 +1,10 @@
 ###*
   @fileoverview Model with attributes and schema.
 
+  Features
+    setters, getters, validators
+    model's events bubble up
+
   Why not plain objects?
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
     - reusable setters, getters, and validators
