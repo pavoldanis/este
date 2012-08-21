@@ -7,13 +7,14 @@
 
 goog.provide 'este.History'
 
-goog.require 'goog.History'
-goog.require 'goog.history.Html5History'
-goog.require 'goog.history.Event'
-goog.require 'goog.dom'
-goog.require 'este.mobile'
-goog.require 'este.history.TokenTransformer'
 goog.require 'este.Base'
+goog.require 'este.history.TokenTransformer'
+goog.require 'este.mobile'
+goog.require 'goog.History'
+goog.require 'goog.dom'
+goog.require 'goog.history.Event'
+goog.require 'goog.history.Html5History'
+goog.require 'goog.userAgent.product.isVersion'
 
 class este.History extends este.Base
 
@@ -28,9 +29,17 @@ class este.History extends este.Base
   constructor: (@pathPrefix, forceHash) ->
     super
     html5historySupported = goog.history.Html5History.isSupported()
+
     # iOS < 5 does not support pushState correctly
     if este.mobile.iosVersion && este.mobile.iosVersion < 5
       html5historySupported = false
+
+    # Android 2.x is forced to use hash-based history due to a bug in Android's
+    # HTML5 history implementation. This bug does not affect Android 3.0 and
+    # higher.
+    if goog.userAgent.product.ANDROID && !goog.userAgent.product.isVersion 3
+      html5historySupported = false
+
     @html5historyEnabled = html5historySupported && !forceHash
     @setHistoryInternal pathPrefix ? '/'
 
