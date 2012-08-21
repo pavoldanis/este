@@ -12,13 +12,13 @@ goog.require 'goog.string'
 ###*
   @param {Element} element
   @param {Array.<function(new:este.mvc.View)>} views
-  @param {string=} pathPrefix
+  @param {string=} root
   @param {boolean=} forceHash
 ###
-este.mvc.app.create = (element, views, pathPrefix, forceHash) ->
-  pathPrefix ?= new goog.Uri(document.location.href).getPath()
-  pathPrefix += '/' if !goog.string.endsWith pathPrefix, '/'
+este.mvc.app.create = (element, views, root, forceHash) ->
+  root ?= new goog.Uri(document.location.href).getPath()
+  root += '/' if !goog.string.endsWith root, '/'
 
   layout = new este.mvc.Layout element
-  router = este.router.create element, pathPrefix, forceHash
+  router = este.router.create element, root, forceHash
   new este.mvc.App layout, views, router
