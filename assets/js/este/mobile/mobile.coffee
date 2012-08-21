@@ -17,7 +17,7 @@ goog.scope ->
     _.tapEvent = 'mousedown'
 
   ###*
-  https://gist.github.com/2829457
+    https://gist.github.com/2829457
     Outputs a float representing the iOS version if user is using an iOS browser i.e. iPhone, iPad
     Possible values include:
       3 - v3.0
@@ -30,7 +30,7 @@ goog.scope ->
       exec(navigator.userAgent) || [0,''])[1]).
         replace('undefined', '3_2').
         replace('_', '.').
-        replace('_', '')) || false;
+        replace('_', '')) || false
 
   # emulate first feature http://taptaptap.com/blog/10-useful-iphone-tips-and-tricks/
   # function tapToTop(scrollableElement) {
@@ -56,7 +56,6 @@ goog.scope ->
 
   ###*
     Adds basic iPhone home icon link to the head
-
     @param {string} url
   ###
   _.addiPhoneAppIcon = (url) ->
