@@ -19,6 +19,7 @@ goog.require 'este.json'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
 goog.require 'goog.string'
+goog.require 'goog.ui.IdGenerator'
 
 goog.require 'este.model.getters'
 goog.require 'este.model.setters'
@@ -28,13 +29,17 @@ class este.Model extends goog.events.EventTarget
 
   ###*
     @param {Object=} json
+    @param {Function=} idGenerator
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor: (json) ->
+  constructor: (json, idGenerator) ->
     super()
     @attributes = {}
-    @attributes[@getKey 'clientId'] = goog.string.getRandomString()
+    @attributes[@getKey 'clientId'] = if idGenerator
+      idGenerator()
+    else
+      goog.ui.IdGenerator.getInstance().getNextUniqueId()
     @schema ?= {}
     @setInternal json if json
 

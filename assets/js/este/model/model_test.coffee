@@ -1,3 +1,6 @@
+trimSetter = (value) -> goog.string.trim value || ''
+requiredValidator = (value) -> value && goog.string.trim(value).length
+
 class Person extends este.Model
 
   constructor: (attrs, randomStringGenerator) ->
@@ -5,12 +8,12 @@ class Person extends este.Model
 
   schema:
     'firstName':
-      'set': (value) -> goog.string.trim value || ''
+      'set': trimSetter
       'validators':
-        'required': (value) -> value && goog.string.trim(value).length
+        'required': requiredValidator
     'lastName':
       'validators':
-        'required': (value) -> value && goog.string.trim(value).length
+        'required': requiredValidator
     'name':
       'meta': (self) -> self.get('firstName') + ' ' + self.get('lastName')
     'age':
@@ -26,13 +29,14 @@ suite 'este.Model', ->
       'firstName': 'Joe'
       'lastName': 'Satriani'
       'age': 55
-    person = new Person attrs
+    idGenerator = -> 1
+    person = new Person attrs, idGenerator
 
   suite 'constructor', ->
     test 'should assign clientId', ->
-      assert.isString person.get 'clientId'
+      assert.equal person.get('clientId'), 1
 
-    test 'should assign override id', ->
+    test 'should assign id', ->
       person = new Person id: 'foo'
       assert.equal person.get('id'), 'foo'
 
@@ -79,22 +83,21 @@ suite 'este.Model', ->
         assert.isUndefined json.name
 
       test 'false should return clientId and meta name', ->
-        person = new Person
+        person = new Person null, -> 1
         json = person.toJson()
-        assert.isString json.clientId
-        assert.equal json.name, 'undefined undefined'
+        assert.deepEqual json,
+          'clientId': 1
+          'name': 'undefined undefined'
 
     suite 'with attrs', ->
       test 'false should return clientId and meta name', ->
         json = person.toJson()
-        assert.isString json.clientId
-        delete json.clientId
-        attrs =
+        assert.deepEqual json,
+          'clientId': 1
           'firstName': 'Joe'
           'lastName': 'Satriani'
           'name': 'Joe Satriani'
           'age': 55
-        assert.deepEqual json, attrs
 
   suite 'has', ->
     test 'should work', ->
