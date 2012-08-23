@@ -15,6 +15,7 @@
   todo
     filter
     docs&examples (see tests now)
+    add|addMany -> add
 ###
 
 goog.provide 'este.Collection'

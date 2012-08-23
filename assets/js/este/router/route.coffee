@@ -17,6 +17,9 @@ class este.router.Route
     @pathToRegexp options.sensitive, options.strict
 
   ###*
+    - sensitive: if routing is case sensitive
+    - strict: todo
+    - hide: callback
     @typedef {{
       sensitive: (boolean|undefined),
       strict: (boolean|undefined),
