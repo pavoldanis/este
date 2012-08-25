@@ -12,6 +12,7 @@
 			border: solid 1px blue;
 		}
 	</style>
+	<link href='/assets/js/este/demos/css/default.css' rel='stylesheet'>
 	<script src='/assets/js/google-closure/closure/goog/base.js'></script>
 	<script src='/assets/js/deps.js'></script>
 	<script>
@@ -32,10 +33,6 @@
 		goog.events.listen(delegation, ['mouseover', 'mouseout'], function(e) {
 			console.log(e.type);
 		});
-
-		setInterval(function() {
-			document.title = goog.events.getTotalListenerCount();
-		}, 100);
 
 	</script>
 </body>

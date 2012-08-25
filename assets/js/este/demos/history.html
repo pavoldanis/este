@@ -12,6 +12,7 @@
       display: block;
     }
   </style>
+  <link href='/assets/js/este/demos/css/default.css' rel='stylesheet'>
   <script src='/assets/js/dev/livereload.js'></script>
   <script src='/assets/js/google-closure/closure/goog/base.js'></script>
   <script src='/assets/js/deps.js'></script>
@@ -45,12 +46,14 @@
     este.dev.Monitor.create()
 
     var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var esteHistory = new este.History(false, pathPrefix)
-    
+    // use this for hashchange
+    var forceHash = false
+    var esteHistory = new este.History(pathPrefix, forceHash)
+
     console.log('HTML5 enabled: ' + esteHistory.html5historyEnabled);
-    
+
     var cur = 'kittens'
-    
+
     goog.events.listen(esteHistory, 'navigate', function(e) {
       var token = e.token || 'kittens'
       var next = document.getElementById(token)
@@ -68,9 +71,9 @@
       esteHistory.setToken(e.target.getAttribute('token'))
       e.preventDefault()
     })
-  
+
   </script>
-</body> 
+</body>
 
 
 

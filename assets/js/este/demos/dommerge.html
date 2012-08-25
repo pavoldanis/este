@@ -3,8 +3,7 @@
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
   <title>este.dom.merge</title>
-  <style>
-  </style>
+  <link href='/assets/js/este/demos/css/default.css' rel='stylesheet'>
   <script src='/assets/js/dev/livereload.js'></script>
   <script src='/assets/js/google-closure/closure/goog/base.js'></script>
   <script src='/assets/js/deps.js'></script>
@@ -23,7 +22,7 @@
   </p>
   <script>
     var container = document.getElementById('container')
-    
+
     var updateForm = function(json) {
       var html = dommerge.templates.form({
         input: json.input[0],
@@ -31,17 +30,17 @@
       })
       este.dom.merge(container, html)
     }
-    
+
     var serializeAndUpdateForm = function() {
       var json = este.dom.serializeForm(container.querySelector('form'))
       updateForm(json)
     }
-    
+
     container.onkeyup = serializeAndUpdateForm
-    
+
     container.onchange = function(e) {
       t = e.target
-      if (!{radio: 1, checkbox: 1}[t.type] || t.tagName != 'SELECT')   
+      if (!{radio: 1, checkbox: 1}[t.type] || t.tagName != 'SELECT')
         return
       serializeAndUpdateForm()
     }
