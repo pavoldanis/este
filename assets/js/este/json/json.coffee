@@ -32,4 +32,3 @@ goog.scope ->
       goog.json.parse str
 
   return
-
