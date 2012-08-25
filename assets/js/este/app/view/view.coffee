@@ -5,6 +5,7 @@ goog.provide 'este.app.View'
 goog.provide 'este.app.View.Event'
 
 goog.require 'este.Base'
+goog.require 'goog.dom'
 goog.require 'goog.events.Event'
 
 class este.app.View extends este.Base
@@ -66,6 +67,13 @@ class este.app.View extends este.Base
     event = new este.app.View.Event viewClass, params
     @dispatchEvent event
 
+  ###*
+    @inheritDoc
+  ###
+  disposeInternal: ->
+    goog.dom.removeNode @element if @element
+    super
+    return
 
 class este.app.View.Event extends goog.events.Event
 

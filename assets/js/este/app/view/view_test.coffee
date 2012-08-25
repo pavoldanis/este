@@ -32,3 +32,11 @@ suite 'este.app.View', ->
 
       sameElement = view.getElement()
       assert.equal element, sameElement
+
+  suite 'dispose', ->
+    test 'should remove element from DOM', ->
+      element = view.getElement()
+      parentNode = document.createElement 'div'
+      parentNode.appendChild element
+      view.dispose()
+      assert.isNull element.parentNode

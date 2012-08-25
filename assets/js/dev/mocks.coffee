@@ -18,6 +18,7 @@ class Element
 	offsetHeight: 0
 	nodeType: 1
 	className: ''
+	parentNode: null
 	appendChild: (node) ->
 		@childNodes.push node
 		node.parentNode = @
