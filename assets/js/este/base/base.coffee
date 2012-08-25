@@ -62,6 +62,3 @@ class este.Base extends goog.events.EventTarget
     @handler_?.dispose()
     super
     return
-
-
-
