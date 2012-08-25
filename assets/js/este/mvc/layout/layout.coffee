@@ -1,5 +1,6 @@
 ###*
   @fileoverview Simple layout, only one element is in DOM in time.
+  @deprecated
 ###
 goog.provide 'este.mvc.Layout'
 

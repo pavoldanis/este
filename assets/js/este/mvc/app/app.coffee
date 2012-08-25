@@ -1,6 +1,6 @@
 ###*
   @fileoverview Este Mvc App.
-  Beta.
+  @deprecated
 ###
 goog.provide 'este.mvc.App'
 

@@ -1,6 +1,6 @@
 ###*
   @fileoverview este.mvc.View.
-  WARNING: This is still experimental.
+  @deprecated
 ###
 goog.provide 'este.mvc.View'
 
