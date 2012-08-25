@@ -466,22 +466,6 @@ goog.scope ->
   _.fieldsState = (element) ->
 
   ###*
-    Just a quick hack, use este.ui.FormsPersister.
-
-    @param {Element} form
-    @param {Function} callback
-    @deprecated
-  ###
-  _.preserveFormState = (form, callback) ->
-    values = _.serializeForm form
-    callback()
-    for name, value of values
-      field = form.elements[name]
-      continue if !field
-      goog.dom.forms.setValue field, value
-    return
-
-  ###*
     @param {Element} element
     @return {Array.<number>}
   ###
