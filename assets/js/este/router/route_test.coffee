@@ -77,7 +77,7 @@ suite 'este.router.Route', ->
       assert.instanceOf route, Route
 
   suite 'process', ->
-    test 'parsing should work', ->
+    test 'should parse', ->
       length = 0
       for url, data of testData
         route = new Route data.path, (params) ->
@@ -85,6 +85,17 @@ suite 'este.router.Route', ->
           length++
         , {}
         route.process url
+      assert.equal length, goog.object.getKeys(testData).length
+
+    test 'should pass isNavigation', ->
+      length = 0
+      for url, data of testData
+        route = new Route data.path, (params, p_isNav) ->
+          assert.deepEqual params, data.params
+          assert.isTrue p_isNav
+          length++
+        , {}
+        route.process url, true
       assert.equal length, goog.object.getKeys(testData).length
 
   suite 'getUrl', ->
