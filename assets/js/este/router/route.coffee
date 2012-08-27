@@ -8,13 +8,31 @@ class este.router.Route
   ###*
     @param {string} path
     @param {Function} show
-    @param {este.router.Route.Options} options
+    @param {este.router.Route.Options=} options
     @constructor
   ###
   constructor: (@path, @show, options) ->
-    @hide ?= options.hide
+    @hide = options?.hide
     @keys = []
-    @pathToRegexp options.sensitive, options.strict
+    @pathToRegexp options?.sensitive, options?.strict
+
+  ###*
+    @param {string} path
+    @param {Object=} params
+    @return {string}
+  ###
+  @getUrl: (path, params = {}) ->
+    if params.length
+      index = 0
+      path = path.replace /\*/g, -> params[index++]
+    else
+      for key, value of params
+        value = '' if value == undefined
+        regex = new RegExp "\\:#{key}"
+        path = path.replace regex, value
+    path = path.slice 0, -1 if path.charAt(path.length - 1) == '?'
+    path = path.slice 0, -1 if path.charAt(path.length - 1) in ['/', '.']
+    path
 
   ###*
     - sensitive: if routing is case sensitive
@@ -74,18 +92,7 @@ class este.router.Route
     @return {string}
   ###
   getUrl: (params = {}) ->
-    path = @path
-    if params.length
-      index = 0
-      path = path.replace /\*/g, -> params[index++]
-    else
-      for key, value of params
-        value = '' if value == undefined
-        regex = new RegExp "\\:#{key}"
-        path = path.replace regex, value
-    path = path.slice 0, -1 if path.charAt(path.length - 1) == '?'
-    path = path.slice 0, -1 if path.charAt(path.length - 1) in ['/', '.']
-    path
+    Route.getUrl @path, params
 
   ###*
     @param {boolean=} sensitive
