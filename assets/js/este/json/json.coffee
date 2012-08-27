@@ -31,4 +31,12 @@ goog.scope ->
     else
       goog.json.parse str
 
+  ###*
+    todo: consider optimalization and low dash
+    @param {*} a
+    @param {*} b
+  ###
+  _.equal = (a, b) ->
+    _.stringify(a) == _.stringify(b)
+
   return
