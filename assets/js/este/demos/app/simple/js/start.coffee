@@ -19,12 +19,12 @@ este.demos.app.simple.start = (data) ->
   appEl = document.getElementById 'app'
   progressEl = document.getElementById 'progress'
   timer = null
-  app = este.app.create appEl, [
+  myApp = este.app.create appEl, [
     este.demos.app.simple.listing.View
     este.demos.app.simple.detail.View
   ]
 
-  goog.events.listen app, 'beforeload', (e) ->
+  goog.events.listen myApp, 'beforeload', (e) ->
     goog.dom.classes.add progressEl, 'loading'
     progressEl.innerHTML = 'loading'
     progressEl.innerHTML += ' ' + e.request.params.id if e.request.params?.id
@@ -33,19 +33,18 @@ este.demos.app.simple.start = (data) ->
       progressEl.innerHTML += '.'
     , 250
 
-  goog.events.listen app, 'beforeshow', (e) ->
+  goog.events.listen myApp, 'beforeshow', (e) ->
     clearInterval timer
     goog.dom.classes.remove progressEl, 'loading'
     progressEl.innerHTML = 'loaded'
 
   goog.events.listenOnce document.body, 'click', (e) ->
     return if e.target.id != 'dispose'
-    app.dispose()
+    myApp.dispose()
 
-  app.data = data
+  myApp.data = data
   # false to disable url projection
-  app.urlEnabled = true
-  app.start()
-
+  myApp.urlEnabled = true
+  myApp.start()
 # ensures the symbol will be visible after compiler renaming
 goog.exportSymbol 'este.demos.app.simple.start', este.demos.app.simple.start

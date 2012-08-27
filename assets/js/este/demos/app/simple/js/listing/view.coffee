@@ -26,22 +26,25 @@ class este.demos.app.simple.listing.View extends este.app.View
   load: (done, params) ->
     # ajax call for data
     setTimeout =>
-      done params
+      done [1, 2, 3]
     , 2000
 
   ###*
     @inheritDoc
   ###
-  render: ->
+  render: (ids) ->
     window['console']['log'] "listing rendered"
-    # todo: generate links, no links hardcoding
-    # getLink este.demos.app.simple.detail.View, id: 1
+
+    links = []
+    for id in ids
+      # no url hardcoding, urls are always generated
+      url = @getUrl este.demos.app.simple.detail.View, id: id
+      links.push "<li><a este-href='#{url}'>#{url}</a>"
+
     @getElement().innerHTML = """
       <p>listing</p>
       <ul>
-        <li><a este-href='detail/1'>1</a>
-        <li><a este-href='detail/2'>2</a>
-        <li><a este-href='detail/3'>3</a>
+        #{links.join ''}
       </ul>
     """
     return

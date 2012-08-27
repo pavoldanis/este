@@ -6,6 +6,7 @@ goog.provide 'este.app.View.Event'
 goog.provide 'este.app.View.EventType'
 
 goog.require 'este.Base'
+goog.require 'este.router.Route'
 goog.require 'goog.dom'
 goog.require 'goog.events.Event'
 
@@ -29,6 +30,16 @@ class este.app.View extends este.Base
     @type {?string}
   ###
   url: null
+
+  ###*
+    @param {function(new:este.app.View)} viewClass
+    @param {Object=} params
+    @return {?string}
+  ###
+  getUrl: (viewClass, params) ->
+    url = viewClass::url
+    return null if !url?
+    este.router.Route.getUrl url, params
 
   ###*
     @type {Element}

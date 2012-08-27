@@ -45,3 +45,12 @@ suite 'este.app.View', ->
       view.exitDocument = ->
         done()
       view.dispose()
+
+  suite 'getUrl', ->
+    test 'should return null for view with null url', ->
+      assert.isNull view.getUrl prototype: {}
+
+    test 'should return url for view with url and params', ->
+      viewClass = prototype: url: 'detail/:id'
+      url = view.getUrl viewClass, id: 123
+      assert.equal url, 'detail/123'
