@@ -8,7 +8,7 @@ suite 'este.router.Router', ->
   setup ->
     history =
       setToken: (token) ->
-        dispatchHistoryNavigateEvent token
+        dispatchHistoryNavigateEvent token, false
       dispose: ->
       setEnabled: ->
       addEventListener: ->
@@ -17,10 +17,11 @@ suite 'este.router.Router', ->
       addEventListener: ->
     router = new Router history, tapHandler
 
-  dispatchHistoryNavigateEvent = (token) ->
+  dispatchHistoryNavigateEvent = (token, isNavigation = true) ->
     goog.events.fireListeners history, 'navigate', false,
       type: 'navigate'
       token: token
+      isNavigation: isNavigation
 
   dispatchTapHandlerTapEvent = (target) ->
     goog.events.fireListeners tapHandler, 'tap', false,
@@ -53,7 +54,8 @@ suite 'este.router.Router', ->
     suite 'show should work', ->
       testRoute = (path, token) ->
         test "path: '#{path}', token: '#{token}'", (done) ->
-          router.add path, ->
+          router.add path, (params, isNavigation) ->
+            assert.isTrue isNavigation
             done()
           router.start()
           dispatchHistoryNavigateEvent token
@@ -99,11 +101,18 @@ suite 'este.router.Router', ->
         dispatchHistoryNavigateEvent 'foo'
         assert.equal count, 2
 
-  suite 'routing via history navigate event', ->
+  suite 'routing via tapHandler tap event', ->
     suite 'show should work', ->
       testRoute = (path, token) ->
         test "path: '#{path}', token: '#{token}'", (done) ->
-          router.add path, ->
+          setTokenCalled = false
+          fn = history.setToken
+          history.setToken = ->
+            setTokenCalled = true
+            fn.apply @, arguments
+          router.add path, (params, isNavigation) ->
+            assert.isFalse isNavigation
+            assert.isTrue setTokenCalled
             done()
           router.start()
           dispatchTapHandlerTapEvent
@@ -115,7 +124,31 @@ suite 'este.router.Router', ->
       testRoute 'user/:user', 'user/joe'
       testRoute 'user/:user', 'user/satriani'
 
-    suite 'show should work', ->
+    suite 'show should work, but should not call history.setToken', ->
+      testRoute = (path, token) ->
+        test "path: '#{path}', token: '#{token}'", (done) ->
+          router.silentTapHandler = true
+
+          setTokenCalled = false
+          fn = history.setToken
+          history.setToken = ->
+            setTokenCalled = true
+            fn.apply @, arguments
+          router.add path, (params, isNavigation) ->
+            assert.isFalse isNavigation
+            assert.isFalse setTokenCalled
+            done()
+          router.start()
+          dispatchTapHandlerTapEvent
+            nodeType: 1
+            getAttribute: (name) ->
+              return token if name == 'este-href'
+      testRoute 'foo', 'foo'
+      testRoute 'bla', 'bla'
+      testRoute 'user/:user', 'user/joe'
+      testRoute 'user/:user', 'user/satriani'
+
+    suite 'show should work in parent', ->
       testRoute = (path, token) ->
         test "path: '#{path}', token: '#{token}'", (done) ->
           router.add path, ->

@@ -22,6 +22,12 @@ class este.router.Router extends este.Base
     @routes = []
 
   ###*
+    If true, tapHandler will not change url.
+    @type {boolean}
+  ###
+  silentTapHandler: false
+
+  ###*
     @type {este.History}
     @protected
   ###
@@ -43,7 +49,7 @@ class este.router.Router extends este.Base
     @type {boolean}
     @protected
   ###
-  ignoreNextOnHistoryNavigage: false
+  ignoreNextOnHistoryNavigate: false
 
   ###*
     @param {string} path
@@ -72,7 +78,7 @@ class este.router.Router extends este.Base
   pathNavigate: (path, params, silent = false) ->
     route = @findRoute path
     return if !route
-    @ignoreNextOnHistoryNavigage = silent
+    @ignoreNextOnHistoryNavigate = silent
     @navigate route.getUrl params
 
   ###*
@@ -82,7 +88,7 @@ class este.router.Router extends este.Base
     @history.setToken token
 
   ###*
-    Start routing.
+    Start router.
   ###
   start: ->
     @history.setEnabled true
@@ -104,10 +110,10 @@ class este.router.Router extends este.Base
     @protected
   ###
   onHistoryNavigate: (e) ->
-    if @ignoreNextOnHistoryNavigage
-      @ignoreNextOnHistoryNavigage = false
+    if @ignoreNextOnHistoryNavigate
+      @ignoreNextOnHistoryNavigate = false
       return
-    @processRoutes e.token
+    @processRoutes e.token, e.isNavigation
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -116,6 +122,9 @@ class este.router.Router extends este.Base
   onTapHandlerTap: (e) ->
     token = @tryGetToken e.target
     return if !token
+    if @silentTapHandler
+      @processRoutes token, false
+      return
     @history.setToken token
 
   ###*
@@ -134,20 +143,19 @@ class este.router.Router extends este.Base
     href = ''
     goog.dom.getAncestor target, (node) ->
       return false if node.nodeType != 1
-      href = node.getAttribute('este-href') ||
-        # for validation zealots
-        node.getAttribute('data-este-href')
+      href = node.getAttribute 'este-href'
       !!href
     , true
     href
 
   ###*
     @param {string} token
+    @param {boolean} isNavigation
     @protected
   ###
-  processRoutes: (token) ->
+  processRoutes: (token, isNavigation) ->
     for route in @routes
-      try route.process token
+      try route.process token, isNavigation
       finally continue
     return
 
