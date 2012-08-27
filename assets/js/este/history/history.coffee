@@ -115,3 +115,11 @@ class este.History extends este.Base
       @silent = false
       return
     @dispatchEvent e
+
+  ###*
+    @inheritDoc
+  ###
+  disposeInternal: ->
+    @history.dispose()
+    super
+    return
