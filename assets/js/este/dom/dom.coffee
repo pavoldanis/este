@@ -507,10 +507,3 @@ goog.scope ->
     , 0
 
   return
-
-
-
-
-
-
-
