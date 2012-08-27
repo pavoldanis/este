@@ -3,6 +3,7 @@
 ###
 goog.provide 'este.app.View'
 goog.provide 'este.app.View.Event'
+goog.provide 'este.app.View.EventType'
 
 goog.require 'este.Base'
 goog.require 'goog.dom'
@@ -36,6 +37,7 @@ class este.app.View extends este.Base
   element: null
 
   ###*
+    Called from app load.
     @param {Function} done
     @param {Object=} params
   ###
@@ -47,23 +49,44 @@ class este.app.View extends este.Base
     done()
 
   ###*
+    Called from app onRequestLoad just before layout show.
+    todo: consider renaming to parse
     @param {Object} json
   ###
   onLoad: (json) ->
+    @render json
+
+  ###*
+    Override to render view content.
+    @param {Object} json
+    @protected
+  ###
+  render: (json) ->
     # innerHTML = template + viewModel
+
+  ###*
+    Override to register events or instantiate short livings object.
+  ###
+  enterDocument: ->
+
+  ###*
+    Override to dispose what were registered or instantied in enterDocument
+  ###
+  exitDocument: ->
+    @getHandler().removeAll()
 
   ###*
     @return {Element}
   ###
   getElement: ->
-    @element ||= document.createElement 'div'
+    @element ?= document.createElement 'div'
 
   ###*
     @param {function(new:este.app.View)} viewClass
     @param {Object=} params
     @protected
   ###
-  dispatchLoad: (viewClass, params) ->
+  dispatchLoadEvent: (viewClass, params) ->
     event = new este.app.View.Event viewClass, params
     @dispatchEvent event
 
@@ -71,6 +94,7 @@ class este.app.View extends este.Base
     @inheritDoc
   ###
   disposeInternal: ->
+    @exitDocument()
     goog.dom.removeNode @element if @element
     super
     return

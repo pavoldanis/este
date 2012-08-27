@@ -17,13 +17,13 @@ suite 'este.app.View', ->
       view.load -> called = true
       assert.isTrue called
 
-  suite 'dispatchLoad', ->
+  suite 'dispatchLoadEvent', ->
     test 'should dispatch load event with viewClass and params', (done) ->
       goog.events.listenOnce view, 'load', (e) ->
         assert.equal e.viewClass, 1
         assert.equal e.params, 2
         done()
-      view.dispatchLoad 1, 2
+      view.dispatchLoadEvent 1, 2
 
   suite 'getElement', ->
     test 'should return element', ->
@@ -40,3 +40,8 @@ suite 'este.app.View', ->
       parentNode.appendChild element
       view.dispose()
       assert.isNull element.parentNode
+
+    test 'should call exitDocument', (done) ->
+      view.exitDocument = ->
+        done()
+      view.dispose()

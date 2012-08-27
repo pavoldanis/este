@@ -10,9 +10,10 @@ class este.app.Request
   ###*
     @param {este.app.View} view
     @param {Object=} params
+    @param {boolean=} silent
     @constructor
   ###
-  constructor: (@view, @params = null) ->
+  constructor: (@view, @params = null, @silent = false) ->
 
   ###*
     @type {este.app.View}
@@ -25,8 +26,12 @@ class este.app.Request
   params: null
 
   ###*
+    @type {boolean}
+  ###
+  silent: false
+
+  ###*
     @param {este.app.Request} request
   ###
   equal: (request) ->
-    @view == request.view &&
-    este.json.stringify(@params) == este.json.stringify(request.params)
+    @view == request.view && este.json.equal @params, request.params
