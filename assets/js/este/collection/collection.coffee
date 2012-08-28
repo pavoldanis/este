@@ -15,7 +15,6 @@
   todo
     filter
     docs&examples (see tests now)
-    add|addMany -> add
 ###
 
 goog.provide 'este.Collection'
@@ -31,10 +30,10 @@ class este.Collection extends goog.events.EventTarget
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor:  (array, @model = null) ->
+  constructor: (array, @model = null) ->
     super()
     @array = []
-    @addMany array if array
+    @add array if array
     return
 
   ###*
@@ -78,46 +77,33 @@ class este.Collection extends goog.events.EventTarget
   sortReversed: false
 
   ###*
-    @param {...*} var_args
+    @param {Array|Object} array
   ###
-  add: (var_args) ->
-    @addMany arguments
-    return
-
-  ###*
-    @param {goog.array.ArrayLike} array Objects to add.
-  ###
-  addMany: (array) ->
+  add: (array) ->
+    array = [array] if !goog.isArray array
     added = []
     for item in array
       item = new @model item if @model && !(item instanceof @model)
+      item.setParentEventTarget @ if item instanceof goog.events.EventTarget
       added.push item
-      if item instanceof goog.events.EventTarget
-        item.setParentEventTarget @
     @array.push.apply @array, added
     @sortInternal()
     @dispatchEvent
       type: Collection.EventType.ADD
       added: added
     @dispatchChangeEvent added
+    return
 
   ###*
-    @param {*} object Object to remove.
+    @param {Array|Object} array
     @return {boolean} True if an element was removed.
   ###
-  remove: (object) ->
-    @removeMany [object]
-
-  ###*
-    @param {goog.array.ArrayLike} array Objects to remove.
-    @return {boolean} True if any element was removed.
-  ###
-  removeMany: (array) ->
+  remove: (array) ->
+    array = [array] if !goog.isArray array
     removed = []
     for item in array
+      item.setParentEventTarget null if item instanceof goog.events.EventTarget
       removed.push item if goog.array.remove @array, item
-      if item instanceof goog.events.EventTarget
-        item.setParentEventTarget null
     return false if !removed.length
     @dispatchEvent
       type: Collection.EventType.REMOVE
@@ -130,7 +116,7 @@ class este.Collection extends goog.events.EventTarget
   ###
   removeIf: (callback) ->
     toRemove = goog.array.filter @array, callback
-    @removeMany toRemove
+    @remove toRemove
 
   ###*
     todo: consider rename items to changed
@@ -174,7 +160,7 @@ class este.Collection extends goog.events.EventTarget
     Clear collection.
   ###
   clear: ->
-    @removeMany @array.slice 0
+    @remove @array.slice 0
 
   ###*
     Find item

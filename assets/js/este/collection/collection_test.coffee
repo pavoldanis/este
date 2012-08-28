@@ -77,7 +77,7 @@ suite 'este.Collection', ->
       assert.isTrue collection.remove 1
       assert.equal collection.getLength(), 0
 
-  suite 'add', ->
+  suite 'add item', ->
     test 'should fire add, change events', ->
       addCalled = changeCalled = false
       added = null
@@ -91,7 +91,7 @@ suite 'este.Collection', ->
       assert.isTrue changeCalled
       assert.deepEqual added, [1]
 
-  suite 'addMany', ->
+  suite 'add items', ->
     test 'should fire add, change events', ->
       addCalled = changeCalled = false
       added = null
@@ -100,12 +100,12 @@ suite 'este.Collection', ->
         addCalled = true
       goog.events.listenOnce collection, 'change', ->
         changeCalled = true
-      collection.addMany [1, 2]
+      collection.add [1, 2]
       assert.isTrue addCalled
       assert.isTrue changeCalled
       assert.deepEqual added, [1, 2]
 
-  suite 'remove', ->
+  suite 'remove item', ->
     test 'should fire remove, change events', ->
       removeCalled = changeCalled = false
       removed = null
@@ -127,7 +127,7 @@ suite 'este.Collection', ->
       assert.isFalse removeCalled
       assert.isFalse changeCalled
 
-  suite 'removeMany', ->
+  suite 'remove item', ->
     test 'should fire remove, change events', ->
       removeCalled = changeCalled = false
       removed = null
@@ -136,7 +136,7 @@ suite 'este.Collection', ->
         removed = e.removed
         removeCalled = true
       goog.events.listen collection, 'change', -> changeCalled = true
-      collection.removeMany [1]
+      collection.remove [1]
       assert.isTrue removeCalled, 'removeCalled'
       assert.isTrue changeCalled, 'changeCalled'
       assert.deepEqual removed, [1]
@@ -145,7 +145,7 @@ suite 'este.Collection', ->
       removeCalled = changeCalled = false
       goog.events.listen collection, 'remove', -> removeCalled = true
       goog.events.listen collection, 'change', -> changeCalled = true
-      collection.removeMany [1]
+      collection.remove 1
       assert.isFalse removeCalled
       assert.isFalse changeCalled
 
@@ -201,7 +201,7 @@ suite 'este.Collection', ->
 
   suite 'find', ->
     test 'should find item', ->
-      collection.addMany [
+      collection.add [
         a: 1
       ,
         b: 2
@@ -215,7 +215,7 @@ suite 'este.Collection', ->
 
   suite 'findById', ->
     test 'should find item by id', ->
-      collection.addMany [
+      collection.add [
         id: 1
       ,
         id: 2
@@ -253,7 +253,7 @@ suite 'este.Collection', ->
   suite 'add typed object into typed collection', ->
     test 'should work', ->
       arrangeChildType()
-      collection = new Collection {}, Child
+      collection = new Collection [], Child
       child = new Child
       child.set 'a', 1
       collection.add child
@@ -280,11 +280,11 @@ suite 'este.Collection', ->
   suite 'sorting', ->
     suite 'default compare', ->
       test 'should work with numbers', ->
-        collection.add 3, 2, 1
+        collection.add [3, 2, 1]
         assert.deepEqual collection.toJson(), [1, 2, 3]
 
       test 'should work with strings', ->
-        collection.add 'c', 'b', 'a'
+        collection.add ['c', 'b', 'a']
         assert.deepEqual collection.toJson(), ['a', 'b', 'c']
         collection.remove 'a'
         assert.deepEqual collection.toJson(), ['b', 'c']
