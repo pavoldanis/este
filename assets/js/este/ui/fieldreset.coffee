@@ -18,13 +18,13 @@ class este.ui.FieldReset extends goog.ui.Component
   ###
   constructor: (element) ->
     @inputHandler = new goog.events.InputHandler element
-    @resetBtn = goog.dom.createDom 'div', 'este-reset'
+    @resetBtn = goog.dom.createDom 'div', 'e-reset'
     @decorate element
 
   ###*
     @type {string}
   ###
-  @className: 'este-empty'
+  @className: 'e-empty'
 
   ###*
     @enum {string}

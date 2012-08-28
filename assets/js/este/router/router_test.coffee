@@ -118,7 +118,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'este-href'
+              return token if name == 'e-href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -142,7 +142,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'este-href'
+              return token if name == 'e-href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -160,7 +160,7 @@ suite 'este.router.Router', ->
             parentNode:
               nodeType: 1
               getAttribute: (name) ->
-                return token if name == 'este-href'
+                return token if name == 'e-href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -175,7 +175,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'este-href'
+              return token if name == 'e-href'
       testRoute 'foo', 'bla'
       testRoute 'bla', 'foo'
       testRoute 'user/:user', 'product/joe'

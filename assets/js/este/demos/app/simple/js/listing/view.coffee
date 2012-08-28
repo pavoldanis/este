@@ -39,7 +39,7 @@ class este.demos.app.simple.listing.View extends este.app.View
     for id in ids
       # no url hardcoding, urls are always generated
       url = @getUrl este.demos.app.simple.detail.View, id: id
-      links.push "<li><a este-href='#{url}'>#{url}</a>"
+      links.push "<li><a e-href='#{url}'>#{url}</a>"
 
     @getElement().innerHTML = """
       <p>listing</p>

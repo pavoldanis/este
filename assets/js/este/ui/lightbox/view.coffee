@@ -42,7 +42,7 @@ class este.ui.lightbox.View extends goog.ui.Component
 	###
 	createDom: ->
 		super()
-		@getElement().className = 'este-ui-lightbox'
+		@getElement().className = 'e-ui-lightbox'
 		@updateInternal()
 		return
 
@@ -56,25 +56,25 @@ class este.ui.lightbox.View extends goog.ui.Component
 		currentAnchorIdx = goog.array.indexOf @anchors, @currentAnchor
 		totalAnchorsCount = @anchors.length
 		if @currentAnchor == @anchors[0]
-			firstDisabled = ' este-ui-lightbox-disabled'
+			firstDisabled = ' e-ui-lightbox-disabled'
 		if @currentAnchor == @anchors[totalAnchorsCount - 1]
-			secondDisabled = ' este-ui-lightbox-disabled'
+			secondDisabled = ' e-ui-lightbox-disabled'
 		@getElement().innerHTML = "
-			<div class='este-ui-lightbox-background'></div>
-			<div class='este-ui-lightbox-content'>
-				<div class='este-ui-lightbox-image-wrapper'>
-					<img class='este-ui-lightbox-image' src='#{imageSrc}'>
-					<div class='este-ui-lightbox-title'>#{title}</div>
+			<div class='e-ui-lightbox-background'></div>
+			<div class='e-ui-lightbox-content'>
+				<div class='e-ui-lightbox-image-wrapper'>
+					<img class='e-ui-lightbox-image' src='#{imageSrc}'>
+					<div class='e-ui-lightbox-title'>#{title}</div>
 				</div>
 			</div>
-			<div class='este-ui-lightbox-sidebar'>
-				<button class='este-ui-lightbox-previous#{firstDisabled}'>previous</button>
-				<button class='este-ui-lightbox-next#{secondDisabled}'>next</button>
-				<div class='este-ui-lightbox-numbers'>
-					<span class='este-ui-lightbox-current'>#{currentAnchorIdx + 1}</span>/
-					<span class='este-ui-lightbox-total'>#{totalAnchorsCount}</span>
+			<div class='e-ui-lightbox-sidebar'>
+				<button class='e-ui-lightbox-previous#{firstDisabled}'>previous</button>
+				<button class='e-ui-lightbox-next#{secondDisabled}'>next</button>
+				<div class='e-ui-lightbox-numbers'>
+					<span class='e-ui-lightbox-current'>#{currentAnchorIdx + 1}</span>/
+					<span class='e-ui-lightbox-total'>#{totalAnchorsCount}</span>
 				</div>
-				<button class='este-ui-lightbox-close'>close</button>
+				<button class='e-ui-lightbox-close'>close</button>
 			</div>"
 
 	###*
@@ -93,11 +93,11 @@ class este.ui.lightbox.View extends goog.ui.Component
 	###
 	onClick: (e) ->
 		switch e.target.className
-			when 'este-ui-lightbox-previous'
+			when 'e-ui-lightbox-previous'
 				@moveToNextImage false
-			when 'este-ui-lightbox-next'
+			when 'e-ui-lightbox-next'
 				@moveToNextImage true
-			when 'este-ui-lightbox-close'
+			when 'e-ui-lightbox-close'
 				@dispatchCloseEvent()
 
 	###*

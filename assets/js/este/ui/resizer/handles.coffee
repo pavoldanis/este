@@ -91,8 +91,8 @@ class este.ui.resizer.Handles extends goog.ui.Component
 		@protected
 	###
 	createHandles: ->
-		@vertical = @dom_.createDom 'div', 'este-resizer-handle-vertical'
-		@horizontal = @dom_.createDom 'div', 'este-resizer-handle-horizontal'
+		@vertical = @dom_.createDom 'div', 'e-resizer-handle-vertical'
+		@horizontal = @dom_.createDom 'div', 'e-resizer-handle-horizontal'
 		parent = @getElement().offsetParent || @getElement()
 		parent.appendChild @vertical
 		parent.appendChild @horizontal

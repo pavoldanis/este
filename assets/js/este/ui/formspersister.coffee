@@ -31,7 +31,7 @@ class este.ui.FormsPersister extends goog.ui.Component
   ###
   constructor: (session = false) ->
     super()
-    @storage = este.storage.createCollectable 'este-ui-formspersister', session
+    @storage = este.storage.createCollectable 'e-ui-formspersister', session
 
   ###*
     @param {Element} element

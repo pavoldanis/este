@@ -35,7 +35,7 @@ class este.demos.app.simple.detail.View extends este.app.View
     window['console']['log'] "detail #{json['id']} rendered"
     @getElement().innerHTML = """
       <p>detail, id = #{json['id']}</p>
-      <a este-href>back to listing</a>
+      <a e-href>back to listing</a>
     """
     return
 
@@ -50,6 +50,6 @@ class este.demos.app.simple.detail.View extends este.app.View
     @protected
   ###
   onClick: (e) ->
-    return if !e.target.hasAttribute 'este-href'
+    return if !e.target.hasAttribute 'e-href'
     # example of custom redirection
     @dispatchLoadEvent este.demos.app.simple.listing.View

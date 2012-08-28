@@ -8,39 +8,39 @@ suite 'este.ui.lightbox.View', ->
 
 	# classes namespaced to ensure save injection into any html
 	htmlFirstAnchor = normalizeHTML "
-		<div class='este-ui-lightbox-background'></div>
-		<div class='este-ui-lightbox-content'>
-			<div class='este-ui-lightbox-image-wrapper'>
-				<img class='este-ui-lightbox-image' src='0'>
-				<div class='este-ui-lightbox-title'>a</div>
+		<div class='e-ui-lightbox-background'></div>
+		<div class='e-ui-lightbox-content'>
+			<div class='e-ui-lightbox-image-wrapper'>
+				<img class='e-ui-lightbox-image' src='0'>
+				<div class='e-ui-lightbox-title'>a</div>
 			</div>
 		</div>
-		<div class='este-ui-lightbox-sidebar'>
-			<button class='este-ui-lightbox-previous este-ui-lightbox-disabled'>previous</button>
-			<button class='este-ui-lightbox-next'>next</button>
-			<div class='este-ui-lightbox-numbers'>
-				<span class='este-ui-lightbox-current'>1</span>/
-				<span class='este-ui-lightbox-total'>2</span>
+		<div class='e-ui-lightbox-sidebar'>
+			<button class='e-ui-lightbox-previous e-ui-lightbox-disabled'>previous</button>
+			<button class='e-ui-lightbox-next'>next</button>
+			<div class='e-ui-lightbox-numbers'>
+				<span class='e-ui-lightbox-current'>1</span>/
+				<span class='e-ui-lightbox-total'>2</span>
 			</div>
-			<button class='este-ui-lightbox-close'>close</button>
+			<button class='e-ui-lightbox-close'>close</button>
 		</div>"
 
 	htmlSecondAnchor = normalizeHTML "
-		<div class='este-ui-lightbox-background'></div>
-		<div class='este-ui-lightbox-content'>
-			<div class='este-ui-lightbox-image-wrapper'>
-				<img class='este-ui-lightbox-image' src='1'>
-				<div class='este-ui-lightbox-title'>b</div>
+		<div class='e-ui-lightbox-background'></div>
+		<div class='e-ui-lightbox-content'>
+			<div class='e-ui-lightbox-image-wrapper'>
+				<img class='e-ui-lightbox-image' src='1'>
+				<div class='e-ui-lightbox-title'>b</div>
 			</div>
 		</div>
-		<div class='este-ui-lightbox-sidebar'>
-			<button class='este-ui-lightbox-previous'>previous</button>
-			<button class='este-ui-lightbox-next este-ui-lightbox-disabled'>next</button>
-			<div class='este-ui-lightbox-numbers'>
-				<span class='este-ui-lightbox-current'>2</span>/
-				<span class='este-ui-lightbox-total'>2</span>
+		<div class='e-ui-lightbox-sidebar'>
+			<button class='e-ui-lightbox-previous'>previous</button>
+			<button class='e-ui-lightbox-next e-ui-lightbox-disabled'>next</button>
+			<div class='e-ui-lightbox-numbers'>
+				<span class='e-ui-lightbox-current'>2</span>/
+				<span class='e-ui-lightbox-total'>2</span>
 			</div>
-			<button class='este-ui-lightbox-close'>close</button>
+			<button class='e-ui-lightbox-close'>close</button>
 		</div>"
 
 	firstAnchor = null
@@ -58,7 +58,7 @@ suite 'este.ui.lightbox.View', ->
 	fireViewElementClickEvent = (className) ->
 		goog.events.fireListeners view.getElement(), 'click', false,
 			target:
-				className: 'este-ui-lightbox-' + className
+				className: 'e-ui-lightbox-' + className
 
 	fireDocumentKeydownEvent = (keyCode) ->
 		goog.events.fireListeners view.dom_.getDocument(), 'keydown', false,
@@ -73,7 +73,7 @@ suite 'este.ui.lightbox.View', ->
 
 	suite 'render()', ->
 		test 'should create element with class lightbox', ->
-			assert.equal view.getElement().className, 'este-ui-lightbox'
+			assert.equal view.getElement().className, 'e-ui-lightbox'
 
 		test 'should create element with defined innerHTML', ->
 			assert.equal normalizeHTML(view.getElement().innerHTML), htmlFirstAnchor

@@ -128,7 +128,7 @@ class este.router.Router extends este.Base
     @history.setToken token
 
   ###*
-    Anchor can be any element with 'este-href' attribute. Classic anchor is not
+    Anchor can be any element with 'e-href' attribute. Classic anchor is not
     sufficient for rich client navigation.
     - native anchors have some nasty behaviour on mobile devices
     - native anchors can't be nested (like anchor in anchor)
@@ -143,7 +143,7 @@ class este.router.Router extends este.Base
     href = ''
     goog.dom.getAncestor target, (node) ->
       return false if node.nodeType != 1
-      href = node.getAttribute 'este-href'
+      href = node.getAttribute 'e-href'
       !!href
     , true
     href

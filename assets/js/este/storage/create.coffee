@@ -12,7 +12,7 @@ goog.scope ->
   `var _ = este.storage`
 
   ###*
-    @param {string} key e.g. este-ui-formspersister
+    @param {string} key e.g. e-ui-formspersister
     @param {boolean=} session
     @return {goog.storage.Storage}
   ###
@@ -22,7 +22,7 @@ goog.scope ->
     new goog.storage.Storage mechanism
 
   ###*
-    @param {string} key e.g. este-ui-formspersister
+    @param {string} key e.g. e-ui-formspersister
     @param {boolean=} session
     @return {goog.storage.CollectableStorage}
   ###
@@ -34,7 +34,7 @@ goog.scope ->
     storage
 
   ###*
-    @param {string} key e.g. este-ui-formspersister
+    @param {string} key e.g. e-ui-formspersister
     @param {boolean=} session
     @return {goog.storage.mechanism.IterableMechanism}
   ###
@@ -44,5 +44,5 @@ goog.scope ->
       factory.createHTML5SessionStorage key
     else
       factory.create key
-    
+
   return
