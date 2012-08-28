@@ -4,6 +4,10 @@
   This approach is also known as FastButton, but TapHandler implementation
   is better, because works fine with native mobile scroll momentum.
 
+  todo
+    simulate native behavior on middle/right-click and when ctrl or command are
+    pressed (e.button != 1, e.ctrlKey, e.metaKey)
+
 ###
 goog.provide 'este.events.TapHandler'
 goog.provide 'este.events.TapHandler.EventType'
@@ -104,7 +108,7 @@ class este.events.TapHandler extends este.Base
         listen(scrollElement, 'scroll', @onScroll)
     else
       @getHandler().
-        listen(@element, 'mousedown', @onMouseDown)
+        listen(@element, 'click', @onClick)
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -167,19 +171,19 @@ class este.events.TapHandler extends este.Base
       return if @scrolled
       @dispatchTapEvent TapHandler.EventType.TAP, target
     , @touchEndTimeout
-    
+
   ###*
     @param {goog.events.BrowserEvent} e
     @protected
   ###
   onScroll: (e) ->
     @scrolled = true
-    
+
   ###*
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  onMouseDown: (e) ->
+  onClick: (e) ->
     @dispatchTapEvent TapHandler.EventType.START, e.target
     @dispatchTapEvent TapHandler.EventType.END, e.target
     @dispatchTapEvent TapHandler.EventType.TAP, e.target
