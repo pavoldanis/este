@@ -57,7 +57,7 @@ Recommended packages
   - sublime-github, to create, edit and browse GitHub Gists
   - Jade
 
-My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings). Snippets are described [here](https://github.com/Steida/Sublimetext-user-settings).
+My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings). Code snippets [cheat sheet](http://estejs.tumblr.com/post/29363589575/este-js-sublime-text-code-snippets-cheat-sheet).
 
 ## License
 
