@@ -20,14 +20,13 @@ goog.provide 'este.Model'
 goog.provide 'este.Model.EventType'
 
 goog.require 'este.json'
+goog.require 'este.model.getters'
+goog.require 'este.model.setters'
+goog.require 'este.model.validators'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
 goog.require 'goog.string'
 goog.require 'goog.ui.IdGenerator'
-
-goog.require 'este.model.getters'
-goog.require 'este.model.setters'
-goog.require 'este.model.validators'
 
 class este.Model extends goog.events.EventTarget
 
