@@ -3,12 +3,12 @@
 
   Features
     setters, getters, validators
-    model's events bubble up
+    model's change event with event bubbling
+    JSON serialization
 
   Why not plain objects?
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
-    - reusable setters, getters, and validators
-    - strings are fine for uncompiled attributes from DOM or storage etc.
+    - strings are better for uncompiled attributes from DOM or storage etc.
 
   Notes
     - use model.get('clientId') for rendering
@@ -194,7 +194,7 @@ class este.Model extends goog.events.EventTarget
     for key, value of object
       set = @schema[key]?.set
       value = set value if set
-      continue if este.json.stringify(value) == este.json.stringify @get key
+      continue if este.json.equal value, @get key
       changes ?= {}
       changes[key] = value
     changes
