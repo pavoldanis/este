@@ -1,5 +1,5 @@
 
-Este.js - more than JS framework
+Este.js - The State of Art JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
 It's my beloved development stack. Run one script, to compile Coffeescript,
@@ -13,7 +13,7 @@ statically typed CoffeeScript. It allows you to write powerful and efficient cod
 It's boilerplaite for mobile first MVC web application with unique features
 towards better user experience.
 
-###How to use it?
+###How to Use it?
 
   - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
   - `git clone http://github.com/Steida/este.git`
@@ -22,13 +22,13 @@ towards better user experience.
   - Open browser at `localhost:8000`
   - Build something beautiful
 
-###Ok. I got it, what's next?
+###Ok. I Got it, What's Next?
 
 Take a look at the app. It defines structure, namespacing (by features ftw), how component uses templates, custom events, compilation into one über small file. This is just the beginning. TodoMVC (mobile version) is in process. In the meantime, see what `assets/js/*` namespaces contains yet.
 
 Node run options described in `assets/js/dev/run.coffee`.
 
-###Near future
+###Near Future
 
   - TodoMVC (mobile version)
   - localization
@@ -37,16 +37,16 @@ Node run options described in `assets/js/dev/run.coffee`.
 
 [http://estejs.tumblr.com](http://estejs.tumblr.com)
 
-###Recommended editor: [Sublime Text](http://www.sublimetext.com)
+###Recommended Editor: [Sublime Text](http://www.sublimetext.com)
 
-Must-have packages
+Must-have Packages
 
   - Package Control
   - CoffeeScript
   - Stylus
   - SoyTemplate (install from here https://github.com/anvie/SoyTemplate)
 
-Recommended packages
+Recommended Packages
 
   - SideBarEnhancements
   - Clipboard History
