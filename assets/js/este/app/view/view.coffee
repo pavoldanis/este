@@ -48,16 +48,12 @@ class este.app.View extends este.Base
   element: null
 
   ###*
-    Called from app load.
+    Can be overriden for async.
     @param {Function} done
     @param {Object=} params
   ###
   load: (done, params) ->
-    # async load example
-    # @storage.loadUser params['id'], (user) ->
-    #   done user
-    # , @fireError()?
-    done()
+    done params
 
   ###*
     Called from app onRequestLoad just before layout show.
