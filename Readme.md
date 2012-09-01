@@ -24,13 +24,13 @@ towards better user experience.
 
 ###Ok. I Got it, What's Next?
 
-Take a look at the app. It defines structure, namespacing (by features ftw), how component uses templates, custom events, compilation into one über small file. This is just the beginning. TodoMVC (mobile version) is in process. In the meantime, see what `assets/js/*` namespaces contains yet.
+Take a look at the app. It defines structure, namespacing (by features ftw), how component uses templates, custom events, compilation into one über small file. This is just the beginning. ShopMVC (mobile version) is in process. In the meantime, see what `assets/js/*` namespaces contains yet.
 
 Node run options described in `assets/js/dev/run.coffee`.
 
 ###Near Future
 
-  - TodoMVC (mobile version)
+  - ShopMVC (mobile version)
   - localization
 
 ###Blog
