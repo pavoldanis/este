@@ -5,8 +5,8 @@
 goog.provide 'este.demos.app.simple.start'
 
 goog.require 'este.app.create'
-goog.require 'este.demos.app.simple.detail.View'
-goog.require 'este.demos.app.simple.listing.View'
+goog.require 'este.demos.app.simple.product.View'
+goog.require 'este.demos.app.simple.products.View'
 goog.require 'este.dev.Monitor.create'
 
 ###*
@@ -20,8 +20,8 @@ este.demos.app.simple.start = (data) ->
   progressEl = document.getElementById 'progress'
   timer = null
   myApp = este.app.create appEl, [
-    este.demos.app.simple.listing.View
-    este.demos.app.simple.detail.View
+    este.demos.app.simple.products.View
+    este.demos.app.simple.product.View
   ]
 
   goog.events.listen myApp, 'beforeload', (e) ->
@@ -46,5 +46,6 @@ este.demos.app.simple.start = (data) ->
   # false to disable url projection
   myApp.urlEnabled = true
   myApp.start()
+
 # ensures the symbol will be visible after compiler renaming
 goog.exportSymbol 'este.demos.app.simple.start', este.demos.app.simple.start

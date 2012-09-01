@@ -1,11 +1,11 @@
 ###*
-  @fileoverview este.demos.app.simple.detail.View.
+  @fileoverview este.demos.app.simple.product.View.
 ###
-goog.provide 'este.demos.app.simple.detail.View'
+goog.provide 'este.demos.app.simple.product.View'
 
 goog.require 'este.app.View'
 
-class este.demos.app.simple.detail.View extends este.app.View
+class este.demos.app.simple.product.View extends este.app.View
 
   ###*
     @constructor
@@ -17,7 +17,7 @@ class este.demos.app.simple.detail.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  url: 'detail/:id'
+  url: 'product/:id'
 
   ###*
     @inheritDoc
@@ -32,10 +32,10 @@ class este.demos.app.simple.detail.View extends este.app.View
     @inheritDoc
   ###
   render: (json) ->
-    window['console']['log'] "detail #{json['id']} rendered"
+    window['console']['log'] "product #{json['id']} rendered"
     @getElement().innerHTML = """
-      <p>detail, id = #{json['id']}</p>
-      <a e-href>back to listing</a>
+      <p>product, id = #{json['id']}</p>
+      <a e-href>show products</a>
     """
     return
 
@@ -52,4 +52,4 @@ class este.demos.app.simple.detail.View extends este.app.View
   onClick: (e) ->
     return if !e.target.hasAttribute 'e-href'
     # example of custom redirection
-    @dispatchLoadEvent este.demos.app.simple.listing.View
+    @dispatchLoadEvent este.demos.app.simple.products.View

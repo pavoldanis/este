@@ -49,10 +49,12 @@ class este.app.View extends este.Base
 
   ###*
     Can be overriden for async.
+    todo: consider deferred object
     @param {Function} done
     @param {Object=} params
   ###
   load: (done, params) ->
+    # promise.success => @render..
     done params
 
   ###*
