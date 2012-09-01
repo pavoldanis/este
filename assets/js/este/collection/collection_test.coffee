@@ -344,6 +344,15 @@ suite 'este.Collection', ->
             reversed: true
           assert.deepEqual collection.toJson(), [{id: 'c'}, {id: 'b'}, {id: 'a'}]
 
+  suite 'subclassed collection', ->
+    test 'should allow to define model as property', ->
+      ChildCollection = (array, model) ->
+        goog.base @, array, model
+        return
+      goog.inherits ChildCollection, Collection
+      ChildCollection::model = Child
+      collection = new ChildCollection
+      assert.equal collection.model, Child
 
   # suite 'filter', ->
   #   test 'should work', ->
