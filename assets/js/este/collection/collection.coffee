@@ -88,9 +88,7 @@ class este.Collection extends goog.events.EventTarget
       added.push item
     @array.push.apply @array, added
     @sortInternal()
-    @dispatchEvent
-      type: Collection.EventType.ADD
-      added: added
+    @dispatchAddEvent added
     @dispatchChangeEvent added
     return
 
@@ -105,9 +103,7 @@ class este.Collection extends goog.events.EventTarget
       item.setParentEventTarget null if item instanceof goog.events.EventTarget
       removed.push item if goog.array.remove @array, item
     return false if !removed.length
-    @dispatchEvent
-      type: Collection.EventType.REMOVE
-      removed: removed
+    @dispatchRemoveEvent removed
     @dispatchChangeEvent removed
     true
 
@@ -119,14 +115,31 @@ class este.Collection extends goog.events.EventTarget
     @remove toRemove
 
   ###*
-    todo: consider rename items to changed
-    @param {Array} items
+    @param {Array} added
     @protected
   ###
-  dispatchChangeEvent: (items) ->
+  dispatchAddEvent: (added) ->
+    @dispatchEvent
+      type: Collection.EventType.ADD
+      added: added
+
+  ###*
+    @param {Array} removed
+    @protected
+  ###
+  dispatchRemoveEvent: (removed) ->
+    @dispatchEvent
+      type: Collection.EventType.REMOVE
+      removed: removed
+
+  ###*
+    @param {Array} changed
+    @protected
+  ###
+  dispatchChangeEvent: (changed) ->
     @dispatchEvent
       type: Collection.EventType.CHANGE
-      items: items
+      changed: changed
 
   ###*
     @param {*} object The object for which to test.

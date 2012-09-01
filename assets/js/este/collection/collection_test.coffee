@@ -178,6 +178,11 @@ suite 'este.Collection', ->
       innerCollection = new Collection
       collection.add innerCollection
       goog.events.listen collection, 'change', (e) ->
+        switch called
+          when 0
+            assert.equal e.changed[0], 1
+          when 1
+            assert.equal e.changed[0], innerCollection
         called++
       innerCollection.add 1
       assert.equal called, 1
