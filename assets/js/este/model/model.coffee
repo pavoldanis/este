@@ -10,8 +10,13 @@
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
     - strings are better for uncompiled attributes from DOM or storage etc.
 
+  clientId
+    clientId is used for client rendering HTML or URL.
+    It starts with ':' for not yet persisted model.
+    Real id is used for yet persisted model.
+    clientId is assigned in constructor, e.g. model loading (e.g. app reload).
+
   Notes
-    - use model.get('clientId') for rendering
     - to modify complex attribute: joe.get('items').add 'foo'
     - to 'inherit' schema: use goog.object.extend
 ###
@@ -39,7 +44,10 @@ class este.Model extends goog.events.EventTarget
   constructor: (json, idGenerator) ->
     super()
     @attributes = {}
-    @attributes[@getKey 'clientId'] = if idGenerator
+    clientIdKey = @getKey 'clientId'
+    @attributes[clientIdKey] = if json?.id
+      json.id
+    else if idGenerator
       idGenerator()
     else
       goog.ui.IdGenerator.getInstance().getNextUniqueId()
@@ -76,10 +84,15 @@ class este.Model extends goog.events.EventTarget
     @return {Object} errors object, ex. name: required: true if error
   ###
   set: (object, opt_value) ->
+    return null if !object
+
     if typeof object == 'string'
       _object = {}
       _object[object] = opt_value
       object = _object
+
+    if object.id
+      throw Error 'Model id is immutable.'
 
     changes = @getChanges object
     return null if !changes

@@ -214,3 +214,16 @@ suite 'este.Model', ->
         errors = person.validate()
         assert.deepEqual errors,
           lastName: required: true
+
+    suite 'constructor json attr id', ->
+      test 'should set clientId', ->
+        person = new Person id: 123
+        assert.equal person.get('clientId'), 123
+
+    suite 'set id', ->
+      test 'should be immutable, e.g. throw exception', (done) ->
+        person = new Person
+        try
+          person.set 'id', 123
+        catch e
+          done()
