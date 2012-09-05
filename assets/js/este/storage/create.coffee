@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Browser storage factory.
+  @fileoverview goog.storage.Storage factory.
 ###
 goog.provide 'este.storage.create'
 goog.provide 'este.storage.createCollectable'
@@ -17,7 +17,7 @@ goog.scope ->
     @return {goog.storage.Storage}
   ###
   _.create = (key, session = false) ->
-    mechanism = _.getMechanism key,   session
+    mechanism = _.getMechanism key, session
     return null if !mechanism
     new goog.storage.Storage mechanism
 
