@@ -14,7 +14,7 @@
     clientId is used for client rendering HTML or URL.
     It starts with ':' for not yet persisted model.
     Real id is used for yet persisted model.
-    clientId is assigned in constructor, e.g. model loading (e.g. app reload).
+    clientId is assigned in constructor.
 
   Notes
     - to modify complex attribute: joe.get('items').add 'foo'
@@ -59,6 +59,12 @@ class este.Model extends goog.events.EventTarget
   ###
   @EventType:
     CHANGE: 'change'
+
+  ###*
+    Used for persistence. Storage needs string identifier for local storage key
+    or REST storage url.
+  ###
+  @uri: 'model'
 
   ###*
     @type {Object}
