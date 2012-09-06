@@ -1,6 +1,14 @@
 ###*
   @fileoverview este.router.Router.
   @see ../demos/router.html
+
+  Anchor can be any element with 'e-href' attribute. Classic anchor is not
+    sufficient for rich client navigation.
+    - native anchors have some nasty behaviour on mobile devices
+    - native anchors can't be nested (like anchor in anchor)
+    - clickable table rows sucks, tr can't have href
+    Why traditional href behaviour isn't overridden? Because sometimes we still
+    need classic non-ajax anchors.
 ###
 goog.provide 'este.router.Router'
 
@@ -128,13 +136,6 @@ class este.router.Router extends este.Base
     @history.setToken token
 
   ###*
-    Anchor can be any element with 'e-href' attribute. Classic anchor is not
-    sufficient for rich client navigation.
-    - native anchors have some nasty behaviour on mobile devices
-    - native anchors can't be nested (like anchor in anchor)
-    - clickable table rows sucks, tr can't have href
-    Why traditional href behaviour isn't overridden? Because sometimes we still
-    need classic non-ajax anchors.
     @param {Node} target
     @return {string}
     @protected
@@ -154,9 +155,13 @@ class este.router.Router extends este.Base
     @protected
   ###
   processRoutes: (token, isNavigation) ->
+    firstRouteMatched = false
     for route in @routes
-      try route.process token, isNavigation
-      finally continue
+      try
+        matched = route.process token, isNavigation, firstRouteMatched
+        firstRouteMatched = true if matched
+      finally
+        continue
     return
 
   ###*

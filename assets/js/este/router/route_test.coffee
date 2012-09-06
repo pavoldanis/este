@@ -98,6 +98,14 @@ suite 'este.router.Route', ->
         route.process url, true
       assert.equal length, goog.object.getKeys(testData).length
 
+    test 'should return true for matched route', ->
+      route = new Route 'foo', ->
+      assert.isTrue route.process 'foo', false
+
+    test 'should return false for unmatched route', ->
+      route = new Route 'foo', ->
+      assert.isFalse route.process 'bar', false
+
   suite 'getUrl', ->
     test 'serialization should work', ->
       for url, data of testData

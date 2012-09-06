@@ -231,3 +231,17 @@ suite 'este.router.Router', ->
       router.add 'user/:name', -> called = true
       router.pathNavigate 'user/:name', name: 'joe', true
       assert.isFalse called
+
+  suite 'only first route from two or more matched', ->
+    test 'should be processed', ->
+      # arrange
+      calls = ''
+      router.add 'foo/bar', (-> calls += 1)
+      router.add 'foo/*', (-> calls += 2), hide: -> calls += 3
+      router.start()
+
+      # act
+      dispatchHistoryNavigateEvent 'foo/bar'
+
+      # assert
+      assert.equal calls, 13

@@ -77,15 +77,19 @@ class este.router.Route
 
   ###*
     @param {string} path
-    @param {boolean=} isNavigation
+    @param {boolean} isNavigation
+    @param {boolean=} forceHide
+    @return {boolean} true if route was matched
   ###
-  process: (path, isNavigation = false) ->
-    matches = @getMatches path
-    if matches
-      params = @getParams matches
-      @show params, isNavigation
-      return
+  process: (path, isNavigation, forceHide = false) ->
+    if !forceHide
+      matches = @getMatches path
+      if matches
+        params = @getParams matches
+        @show params, isNavigation
+        return true
     @hide() if @hide
+    false
 
   ###*
     @param {Object=} params
