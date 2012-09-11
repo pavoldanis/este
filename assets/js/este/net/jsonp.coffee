@@ -18,6 +18,9 @@
     Signalling errors through payload is quite cumbersome, so we rather signal
     error through a second callback argument.
   @author jiri.kopsa(at)proactify.com (Jiří Kopsa)
+
+  todo (by steida)
+    refactor to use goog result object
 ###
 
 goog.provide 'este.net.Jsonp'
