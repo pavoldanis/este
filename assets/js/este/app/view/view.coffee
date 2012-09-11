@@ -23,10 +23,11 @@ class este.app.View extends este.Base
     @enum {string}
   ###
   @EventType:
-    LOAD: 'load'
+    REDIRECT: 'redirect'
 
   ###*
     for example 'detail/:id'
+    handle actions via switch
     @type {?string}
   ###
   url: null
@@ -50,12 +51,11 @@ class este.app.View extends este.Base
   ###*
     Can be overriden for async.
     todo: consider deferred object
-    @param {Function} done
+    @param {goog.labs.result.SimpleResult} result
     @param {Object=} params
   ###
-  load: (done, params) ->
-    # promise.success => @render..
-    done params
+  load: (result, params) ->
+    result.setValue params
 
   ###*
     Called from app onRequestLoad just before layout show.
@@ -95,9 +95,9 @@ class este.app.View extends este.Base
     @param {Object=} params
     @protected
   ###
-  dispatchLoadEvent: (viewClass, params) ->
-    event = new este.app.View.Event viewClass, params
-    @dispatchEvent event
+  redirect: (viewClass, params) ->
+    e = new este.app.View.Event viewClass, params
+    @dispatchEvent e
 
   ###*
     @inheritDoc
@@ -117,12 +117,12 @@ class este.app.View.Event extends goog.events.Event
     @extends {goog.events.Event}
   ###
   constructor: (@viewClass, @params = null) ->
-    super este.app.View.EventType.LOAD
+    super este.app.View.EventType.REDIRECT
 
   ###*
-    @type {?function(new:este.app.View)}
+    @type {function(new:este.app.View)}
   ###
-  viewClass: null
+  viewClass: ->
 
   ###*
     @type {Object}

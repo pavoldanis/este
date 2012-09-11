@@ -7,9 +7,12 @@ suite 'este.app.Request', ->
   request = null
 
   setup ->
-    view = {}
+    view = arrangeView()
     params = 1: 'foo'
     request = new Request view, params
+
+  arrangeView = ->
+    setParentEventTarget: ->
 
   suite 'constructor', ->
     test 'should work', ->
@@ -30,5 +33,5 @@ suite 'este.app.Request', ->
       assert.isFalse request.equal differentRequest
 
     test 'should not equal different view and same params', ->
-      differentRequest = new Request {}, params
+      differentRequest = new Request arrangeView(), params
       assert.isFalse request.equal differentRequest

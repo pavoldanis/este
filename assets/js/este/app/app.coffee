@@ -11,6 +11,8 @@ goog.require 'este.Base'
 goog.require 'goog.array'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.EventHandler'
+goog.require 'goog.labs.result.SimpleResult'
+goog.require 'goog.labs.result'
 
 class este.App extends este.Base
 
@@ -23,6 +25,7 @@ class este.App extends este.Base
   ###
   constructor: (@views, @layout, @router) ->
     @pendingRequests = []
+    @prepareViews()
     super
 
   ###*
@@ -71,21 +74,30 @@ class este.App extends este.Base
     Start app.
   ###
   start: ->
-    @on @, este.app.View.EventType.LOAD, @onViewLoad
+    @on @, este.app.View.EventType.REDIRECT, @onRedirect
     @startRouter()
+
+  ###*
+    @protected
+  ###
+  prepareViews: ->
+    for view in @views
+      view.setParentEventTarget @
+    return
 
   ###*
     @param {este.app.View} view
     @param {Object=} params
     @param {boolean=} isNavigation
+    @protected
   ###
-  load: (view, params, isNavigation = false) ->
+  load: (view, params, isNavigation) ->
     request = new este.app.Request view, params, isNavigation
-    @pendingRequests.push request
-    request.view.setParentEventTarget @
     @dispatchAppEvent App.EventType.BEFORELOAD, request
-    bound = goog.bind @onViewLoadCallback, @, request
-    request.view.load bound, params
+    @pendingRequests.push request
+    result = request.load()
+    goog.labs.result.waitOnSuccess result, (value) =>
+      @onViewLoadCallback request, value
 
   ###*
     @protected
@@ -110,13 +122,13 @@ class este.App extends este.Base
     @param {este.app.View.Event} e
     @protected
   ###
-  onViewLoad: (e) ->
-    instance = @lookupView e.viewClass
-    return if !instance
-    @load instance, e.params
+  onRedirect: (e) ->
+    view = @lookupView e.viewClass
+    return if !view
+    @load view, e.params
 
   ###*
-    @param {?function(new:este.app.View)} viewClass
+    @param {function(new:este.app.View)} viewClass
     @return {este.app.View}
     @protected
   ###

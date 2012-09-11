@@ -12,18 +12,20 @@ suite 'este.app.View', ->
       assert.instanceOf view, View
 
   suite 'load', ->
-    test 'should call callback immediately', ->
-      called = false
-      view.load -> called = true
-      assert.isTrue called
+    test 'should call passed promise with params', (done) ->
+      promise =
+        setValue: (value) ->
+          assert.deepEqual value, id: 1
+          done()
+      view.load promise, id: 1
 
-  suite 'dispatchLoadEvent', ->
-    test 'should dispatch load event with viewClass and params', (done) ->
-      goog.events.listenOnce view, 'load', (e) ->
+  suite 'redirect', ->
+    test 'should dispatch redirect event with viewClass and params', (done) ->
+      goog.events.listenOnce view, 'redirect', (e) ->
         assert.equal e.viewClass, 1
         assert.equal e.params, 2
         done()
-      view.dispatchLoadEvent 1, 2
+      view.redirect 1, 2
 
   suite 'getElement', ->
     test 'should return element', ->

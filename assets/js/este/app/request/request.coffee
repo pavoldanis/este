@@ -4,6 +4,7 @@
 goog.provide 'este.app.Request'
 
 goog.require 'este.json'
+goog.require 'goog.labs.result.SimpleResult'
 
 class este.app.Request
 
@@ -35,3 +36,11 @@ class este.app.Request
   ###
   equal: (request) ->
     @view == request.view && este.json.equal @params, request.params
+
+  ###*
+    @return {!goog.labs.result.SimpleResult}
+  ###
+  load: ->
+    result = new goog.labs.result.SimpleResult()
+    @view.load result, @params
+    result

@@ -35,12 +35,12 @@ suite 'este.App', ->
 
   createMockView = (noAsync) ->
     view = new goog.events.EventTarget
-    view.load = (done, json) ->
+    view.load = (result, json) ->
       if noAsync
-        done json
+        result.setValue json
         return
       setTimeout ->
-        done json
+        result.setValue json
       , 4
     view.onLoad = ->
     view.dispose = ->
@@ -63,9 +63,9 @@ suite 'este.App', ->
     test 'should call view1 load then onLoad method', (done) ->
       arrangeAppWithViews()
       loadCalled = false
-      view1.load = (done) ->
+      view1.load = (result) ->
         loadCalled = true
-        done foo: 'foo'
+        result.setValue foo: 'foo'
       view1.onLoad = (json) ->
         assert.isTrue loadCalled
         assert.deepEqual json, foo: 'foo', 'should pass json'
@@ -216,14 +216,14 @@ suite 'este.App', ->
       assert.equal app.pendingRequests.length, 0
       assert.equal calls, '01234'
 
-  suite 'view1 load event', ->
-    test 'should be translated to app.load call', (done) ->
-      app.load = (view, params) ->
-        assert.instanceOf view, goog.events.EventTarget
-        assert.deepEqual params, 1: 'foo'
-        done()
-      goog.events.fireListeners app, 'load', false,
-        type: 'load'
-        target: {}
-        viewClass: goog.events.EventTarget
-        params: 1: 'foo'
+  # suite 'load', ->
+  #   test 'should be called on view redirect event', (done) ->
+  #     app.load = (view, params) ->
+  #       assert.instanceOf view, goog.events.EventTarget
+  #       assert.deepEqual params, 1: 'foo'
+  #       done()
+  #     goog.events.fireListeners view1, 'redirect', false,
+  #       type: 'redirect'
+  #       target: view1
+  #       viewClass: goog.events.EventTarget
+  #       params: 1: 'foo'

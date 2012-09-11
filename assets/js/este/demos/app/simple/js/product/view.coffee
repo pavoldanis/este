@@ -22,10 +22,10 @@ class este.demos.app.simple.product.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  load: (done, params) ->
+  load: (result, params) ->
     # ajax call for data
     setTimeout =>
-      done params
+      result.setValue params
     , 2000
 
   ###*
@@ -52,4 +52,4 @@ class este.demos.app.simple.product.View extends este.app.View
   onClick: (e) ->
     return if !e.target.hasAttribute 'e-href'
     # example of custom redirection
-    @dispatchLoadEvent este.demos.app.simple.products.View
+    @redirect este.demos.app.simple.products.View
