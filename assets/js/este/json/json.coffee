@@ -2,6 +2,8 @@
   @fileoverview Wrapper for goog.json leveraging native implementation.
   goog.json will never switch to native, because it has different implementation
   in detail.
+  todo
+    add reviver and replacer args
 ###
 
 goog.provide 'este.json'
