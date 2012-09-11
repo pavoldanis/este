@@ -10,8 +10,8 @@ Browser is automatically reloaded when needed. Tested on mac, linux, win.
 It contains well documented and tested javascript framework written in
 statically typed CoffeeScript. It allows you to write powerful and efficient code for mobile devices and browsers.
 
-It's boilerplaite for mobile first MVC web application with unique features
-towards better user experience.
+It's boilerplaite for mobile and offline first MVC web application with unique
+features towards better user experience.
 
 ###How to Use it?
 
