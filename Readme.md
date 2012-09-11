@@ -1,43 +1,48 @@
-
 Este.js - The State of Art JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
-It's my beloved development stack. Run one script, to compile Coffeescript,
-Stylus, Soy templates, update deps.js, run insanely fast unit tests,
-automatically just on file change. One console output, to rule them all.
-Browser is automatically reloaded when needed. Tested on mac, linux, win.
+With Este.js, just run one script to automatically update deps.js, run all your unit tests,
+and complile CoffeeScript, Stylus, and Soy templates.  Even the browser is automatically
+reloaded when needed.
 
-It contains well documented and tested javascript framework written in
-statically typed CoffeeScript. It allows you to write powerful and efficient code for mobile devices and browsers.
+Tested on and compatible for OSX, Linux, and Windows.
 
-It's boilerplaite for mobile and offline first MVC web application with unique
-features towards better user experience.
+The bulk of the application is a well-documented, thoroughly tested JavaScript framework,
+written in statically-typed CoffeeScript.  This allows you to write powerful and efficient code
+for mobile devices and browsers.
 
-###How to Use it?
+Consider it boilerplate for mobile development, an offline MVC web application streamlined for
+the developer user experience.
+
+### Quick Start Guide
 
   - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
   - `git clone http://github.com/Steida/este.git`
   - `cd este`
   - `node run app`
-  - Open browser at `localhost:8000`
+  - Point your browser to `localhost:8000`
   - Build something beautiful
 
-###Ok. I Got it, What's Next?
+### More Information
 
-Take a look at the app. It defines structure, namespacing (by features ftw), how component uses templates, custom events, compilation into one über small file. This is just the beginning. ShopMVC (mobile version) is in process. In the meantime, see what `assets/js/*` namespaces contains yet.
+The application defines structure, feature-based namespacing, template behaviour, custom events,
+and compilation, all in one compact location.
+
+We're actively working on a mobile version for ShopMVC on this stack, which should give greater 
+clarity by means of example. In the meantime, take a look at the  `assets/js/*` namespace.
 
 Node run options described in `assets/js/dev/run.coffee`.
 
-###Near Future
+### Coming Soon
 
   - ShopMVC (mobile version)
   - localization
 
-###Blog
+### Blog
 
 [http://estejs.tumblr.com](http://estejs.tumblr.com)
 
-###Recommended Editor: [Sublime Text](http://www.sublimetext.com)
+### Recommended Editor: [Sublime Text](http://www.sublimetext.com)
 
 Must-have Packages
 
@@ -57,7 +62,8 @@ Recommended Packages
   - sublime-github, to create, edit and browse GitHub Gists
   - Jade
 
-My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings). Code snippets [cheat sheet](http://estejs.tumblr.com/post/29363589575/este-js-sublime-text-code-snippets-cheat-sheet).
+My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings).
+Code snippets [cheat sheet](http://estejs.tumblr.com/post/29363589575/este-js-sublime-text-code-snippets-cheat-sheet).
 
 ## License
 
