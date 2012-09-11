@@ -11,14 +11,16 @@
     - strings are better for uncompiled attributes from DOM or storage etc.
 
   clientId
-    clientId is used for client rendering HTML or URL.
-    It starts with ':' for not yet persisted model.
-    Real id is used for yet persisted model.
-    clientId is assigned in constructor.
+    clientId is temporary session id. It's erased when you close your browser.
+    It's used for HTML rendering, it starts with ':'.
+    For local storage persistence is used este.storage.Local unique-enough ID.
 
   Notes
     - to modify complex attribute: joe.get('items').add 'foo'
     - to 'inherit' schema: use goog.object.extend
+
+  Todo
+    consider renaming 'set' and 'get' to 'setter' and 'getter'
 ###
 
 goog.provide 'este.Model'
@@ -37,22 +39,17 @@ class este.Model extends goog.events.EventTarget
 
   ###*
     @param {Object=} json
-    @param {Function=} idGenerator
+    @param {function(): string=} idGenerator
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor: (json, idGenerator) ->
+  constructor: (json = {}, @idGenerator = null) ->
     super()
     @attributes = {}
-    clientIdKey = @getKey 'clientId'
-    @attributes[clientIdKey] = if json?.id
-      json.id
-    else if idGenerator
-      idGenerator()
-    else
-      goog.ui.IdGenerator.getInstance().getNextUniqueId()
     @schema ?= {}
-    @setInternal json if json
+    @setId json
+    @setClientId json, idGenerator
+    @fromJson json, true
 
   ###*
     @enum {string}
@@ -61,10 +58,12 @@ class este.Model extends goog.events.EventTarget
     CHANGE: 'change'
 
   ###*
-    Used for persistence. Storage needs string identifier for local storage key
-    or REST storage url.
+    http://en.wikipedia.org/wiki/Uniform_resource_name
+    It's used for persistence, so do not change it. If so, remember it is used
+    by este.storage.Local.
+    @type {string}
   ###
-  @uri: 'model'
+  urn: 'model'
 
   ###*
     @type {Object}
@@ -85,30 +84,27 @@ class este.Model extends goog.events.EventTarget
     Invalid values are ignored.
     Dispatch change event with changed property, if any.
     Returns errors.
-    @param {Object|string} object Object of key value pairs or string key.
-    @param {*=} opt_value value or nothing.
+    @param {Object|string} json Object of key value pairs or string key.
+    @param {*=} value value or nothing.
     @return {Object} errors object, ex. name: required: true if error
   ###
-  set: (object, opt_value) ->
-    return null if !object
+  set: (json, value) ->
+    return null if !json
 
-    if typeof object == 'string'
-      _object = {}
-      _object[object] = opt_value
-      object = _object
+    if typeof json == 'string'
+      _json = {}
+      _json[json] = value
+      json = _json
 
-    if object.id
-      throw Error 'Model id is immutable.'
-
-    changes = @getChanges object
+    changes = @getChanges json
     return null if !changes
 
     errors = @getErrors changes
     if errors
       changes = goog.object.filter changes, (value, key) -> !errors[key]
 
-    if !goog.object.isEmpty changes
-      @setInternal changes
+     if !goog.object.isEmpty changes
+      @fromJson changes
       @dispatchChangeEvent changes
 
     errors
@@ -120,9 +116,9 @@ class este.Model extends goog.events.EventTarget
   ###
   get: (key) ->
     if typeof key != 'string'
-      object = {}
-      object[k] = @get k for k in key
-      return object
+      json = {}
+      json[k] = @get k for k in key
+      return json
 
     meta = @schema[key]?['meta']
     return meta @ if meta
@@ -138,7 +134,9 @@ class este.Model extends goog.events.EventTarget
     @return {boolean}
   ###
   has: (key) ->
-    @getKey(key) of @attributes
+    return true if @getKey(key) of @attributes
+    return true if @schema[key]?['meta']
+    false
 
   ###*
     @param {string} key
@@ -156,23 +154,43 @@ class este.Model extends goog.events.EventTarget
     true
 
   ###*
-    Returns shallow copy.
+    Returns shallow copy. It's used for serialization.
     @param {boolean=} noMetas If true, no metas nor clientId.
+    @param {boolean=} noId
     @return {Object}
   ###
-  toJson: (noMetas) ->
-    object = {}
+  toJson: (noMetas, noId) ->
+    json = {}
     for key, value of @attributes
       origKey = key.substring 1
       continue if noMetas && origKey == 'clientId'
+      continue if noId && origKey == 'id'
       newValue = @get origKey
-      object[origKey] = newValue
-    return object if noMetas
-    for key, value of @schema
-      meta = value?['meta']
-      continue if !meta
-      object[key] = meta @
-    object
+      json[origKey] = newValue
+
+    if !noMetas
+      for key, value of @schema
+        meta = value?['meta']
+        continue if !meta
+        json[key] = meta @
+
+    json
+
+  ###*
+    Accept shallow copy. It's used for deserialization.
+    @param {Object} json
+    @param {boolean=} forceIds for
+  ###
+  fromJson: (json, forceIds) ->
+    if !forceIds
+      throw Error "Model id is immutable" if json['id']
+      throw Error "Model clientId is immutable" if json['clientId']
+
+    for key, value of json
+      @attributes[@getKey key] = value
+      continue if !(value instanceof goog.events.EventTarget)
+      value.setParentEventTarget @
+    return
 
   ###*
     @return {Object} errors object, ex. name: required: true if error
@@ -192,25 +210,35 @@ class este.Model extends goog.events.EventTarget
     '$' + key
 
   ###*
-    @param {Object} object
-    @protected
+    @param {Object} json
+    @private
   ###
-  setInternal: (object) ->
-    for key, value of object
-      @attributes[@getKey key] = value
-      continue if !(value instanceof goog.events.EventTarget)
-      value.setParentEventTarget @
-    return
+  setId: (json) ->
+    @attributes[@getKey 'id'] = json['id'] if json['id']?
+
+  ###*
+    @param {Object} json
+    @param {function(): string=} idGenerator
+    @private
+  ###
+  setClientId: (json, idGenerator) ->
+    clientIdKey = @getKey 'clientId'
+    @attributes[clientIdKey] = if json['id']?
+      json['id']
+    else if @idGenerator
+      @idGenerator()
+    else
+      goog.ui.IdGenerator.getInstance().getNextUniqueId()
 
   ###*
     todo: optimize comparison
-    @param {Object} object
+    @param {Object} json
     @return {Object}
     @protected
   ###
-  getChanges: (object) ->
+  getChanges: (json) ->
     changes = null
-    for key, value of object
+    for key, value of json
       set = @schema[key]?.set
       value = set value if set
       continue if este.json.equal value, @get key
@@ -219,13 +247,13 @@ class este.Model extends goog.events.EventTarget
     changes
 
   ###*
-    @param {Object} object key is attr, value is its value
+    @param {Object} json key is attr, value is its value
     @return {Object}
     @protected
   ###
-  getErrors: (object) ->
+  getErrors: (json) ->
     errors = null
-    for key, value of object
+    for key, value of json
       validators = @schema[key]?['validators']
       continue if !validators
       for name, validator of validators

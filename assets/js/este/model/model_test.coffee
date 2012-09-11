@@ -33,6 +33,9 @@ suite 'este.Model', ->
     person = new Person attrs, idGenerator
 
   suite 'constructor', ->
+    test 'should work', ->
+      assert.instanceOf person, Person
+
     test 'should assign clientId', ->
       assert.equal person.get('clientId'), 1
 
@@ -48,6 +51,10 @@ suite 'este.Model', ->
       assert.strictEqual person.get('firstName'), 'Joe'
       assert.strictEqual person.get('lastName'), 'Satriani'
       assert.strictEqual person.get('age'), 55
+
+  suite 'instance', ->
+    test 'should have string urn property', ->
+      assert.isString person.urn
 
   suite 'set and get', ->
     test 'should work for one attribute', ->
@@ -109,6 +116,9 @@ suite 'este.Model', ->
       assert.isFalse person.has 'constructor'
       assert.isFalse person.has '__proto__'
       # etc. from Object.prototype
+
+    test 'should work for meta properties too', ->
+      assert.isTrue person.has 'name'
 
   suite 'remove', ->
     test 'should work', ->
@@ -215,15 +225,61 @@ suite 'este.Model', ->
         assert.deepEqual errors,
           lastName: required: true
 
-    suite 'constructor json attr id', ->
-      test 'should set clientId', ->
-        person = new Person id: 123
-        assert.equal person.get('clientId'), 123
+  suite 'constructor json attr id', ->
+    test 'should set clientId', ->
+      person = new Person id: 123
+      assert.equal person.get('clientId'), 123
+
+  suite 'id and clientId should be readonly: ', ->
 
     suite 'set id', ->
-      test 'should be immutable, e.g. throw exception', (done) ->
+      test 'should throw exception', (done) ->
         person = new Person
-        try
-          person.set 'id', 123
+        try person.set 'id': 1
         catch e
+          assert.instanceOf e, Error
           done()
+
+    suite 'set clientId', ->
+      test 'should throw exception', (done) ->
+        person = new Person
+        try person.set 'clientId': 1
+        catch e
+          assert.instanceOf e, Error
+          done()
+
+    suite 'fromJson id', ->
+      test 'should throw exception', (done) ->
+        person = new Person
+        try person.fromJson 'id': 1
+        catch e
+          assert.instanceOf e, Error
+          done()
+
+    suite 'fromJson clientId', ->
+      test 'should throw exception', (done) ->
+        person = new Person
+        try person.fromJson 'clientId': 1
+        catch e
+          assert.instanceOf e, Error
+          done()
+
+    suite 'fromJson id with forceIds', ->
+      test 'should not throw exception', ->
+        called = false
+        person = new Person
+        try person.fromJson ('id': 1), true
+        catch e
+          assert.instanceOf e, Error
+          called = true
+        assert.isFalse called
+
+    suite 'fromJson clientId with forceIds', ->
+      test 'should not throw exception', ->
+        called = false
+        person = new Person
+        try person.fromJson ('clientId': 1), true
+        catch e
+          assert.instanceOf e, Error
+          called = true
+        assert.isFalse called
