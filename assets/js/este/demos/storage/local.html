@@ -32,7 +32,7 @@
     var input = document.getElementById('text')
 
     var result = storage.load(model)
-    goog.labs.result.waitOnSuccess(result, function(id) {
+    goog.result.waitOnSuccess(result, function(id) {
       input.value = model.get('text')
     })
 
