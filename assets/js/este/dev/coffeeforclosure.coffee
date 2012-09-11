@@ -7,6 +7,9 @@
     Foo.EventType.CLICK
   instead of long
     very.long.namespace.Foo.EventType.CLICK
+
+  Notes
+    do not declare class inside function, it does not work
 ###
 
 goog.provide 'este.dev.CoffeeForClosure'
