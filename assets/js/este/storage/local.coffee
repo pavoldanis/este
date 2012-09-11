@@ -1,12 +1,10 @@
 ###*
   @fileoverview Local storage for este.Model's via HTML5 or IE user data.
   todo
-    fix IE max 64kb limit and goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED
+    use goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED and check IE 64kb limit
     check if value was really stored
     version, scheme and updaters
     micro-optimize it via session cache
-
-    odmazávání prázdných listů jakožto tvoření lazy
 ###
 goog.provide 'este.storage.Local'
 
@@ -53,7 +51,7 @@ class este.storage.Local extends este.storage.Base
     id = @ensureModelId model
     serializedModels = @mechanism.get model.urn
     models = if serializedModels then este.json.parse serializedModels else {}
-    models['$' + id] = model.toJson true, true
+    models[id] = model.toJson true, true
     @saveModels models, model.urn
     @returnSuccessResult id
 
@@ -65,7 +63,7 @@ class este.storage.Local extends este.storage.Base
     id = @checkModelId model
     models = @loadModels model.urn
     return @returnErrorResult() if !models
-    json = models['$' + id]
+    json = models[id]
     return @returnErrorResult() if !json
     model.fromJson json
     @returnSuccessResult id
@@ -78,8 +76,8 @@ class este.storage.Local extends este.storage.Base
     id = model.get 'id'
     if id
       models = @loadModels model.urn
-      if models && models['$' + id]
-        delete models['$' + id]
+      if models && models[id]
+        delete models[id]
         @saveModels models, model.urn
         return @returnSuccessResult id.toString()
     @returnErrorResult()

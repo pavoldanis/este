@@ -23,10 +23,11 @@
     <button id='reload'>reload</button>
     <button id='delete'>delete & reload</button>
   </fieldset>
+  <textarea style='width: 20em; height: 10em' id='code'></textarea>
   <script>
     este.dev.Monitor.create()
 
-    var storage = new este.storage.Local('este-demos-storage-local')
+    var storage = new este.storage.Local('storage-demo')
     var model = new este.Model({id: '1'})
     var input = document.getElementById('text')
 
@@ -35,9 +36,11 @@
       input.value = model.get('text')
     })
 
-    input.onkeyup = function (e) {
+    input.oninput = function (e) {
       model.set('text', input.value)
       storage.save(model)
+      serializedStorage = window.localStorage
+      document.getElementById('code').value = JSON.stringify(serializedStorage)
     }
 
     document.getElementById('reload').onclick = function() {
