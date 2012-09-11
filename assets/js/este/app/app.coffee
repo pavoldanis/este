@@ -11,8 +11,8 @@ goog.require 'este.Base'
 goog.require 'goog.array'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.EventHandler'
-goog.require 'goog.labs.result.SimpleResult'
-goog.require 'goog.labs.result'
+goog.require 'goog.result.SimpleResult'
+goog.require 'goog.result'
 
 class este.App extends este.Base
 
@@ -96,7 +96,7 @@ class este.App extends este.Base
     @dispatchAppEvent App.EventType.BEFORELOAD, request
     @pendingRequests.push request
     result = request.load()
-    goog.labs.result.waitOnSuccess result, (value) =>
+    goog.result.waitOnSuccess result, (value) =>
       @onViewLoadCallback request, value
 
   ###*

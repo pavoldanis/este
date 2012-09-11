@@ -11,7 +11,7 @@ goog.provide 'este.storage.Local'
 goog.require 'este.json'
 goog.require 'este.storage.Base'
 goog.require 'goog.asserts'
-goog.require 'goog.labs.result.SimpleResult'
+goog.require 'goog.result.SimpleResult'
 goog.require 'goog.object'
 goog.require 'goog.storage.mechanism.mechanismfactory'
 goog.require 'goog.string'
@@ -45,7 +45,7 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   save: (model) ->
     id = @ensureModelId model
@@ -57,7 +57,7 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   load: (model) ->
     id = @checkModelId model
@@ -70,7 +70,7 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   delete: (model) ->
     id = model.get 'id'
@@ -136,19 +136,19 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {string} id
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
     @protected
   ###
   returnSuccessResult: (id) ->
-    result = new goog.labs.result.SimpleResult
+    result = new goog.result.SimpleResult
     result.setValue id
     result
 
   ###*
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
     @protected
   ###
   returnErrorResult: ->
-    result = new goog.labs.result.SimpleResult
+    result = new goog.result.SimpleResult
     result.setError()
     result

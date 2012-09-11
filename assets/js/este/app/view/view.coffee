@@ -51,7 +51,7 @@ class este.app.View extends este.Base
   ###*
     Can be overriden for async.
     todo: consider deferred object
-    @param {goog.labs.result.SimpleResult} result
+    @param {goog.result.SimpleResult} result
     @param {Object=} params
   ###
   load: (result, params) ->

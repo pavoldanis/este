@@ -68,7 +68,7 @@ suite 'este.storage.Local', ->
 
     test 'should return success result with id', (done) ->
       result = local.save model
-      goog.labs.result.waitOnSuccess result, (value) ->
+      goog.result.waitOnSuccess result, (value) ->
         assert.equal value, 'someUniqueId'
         done()
 
@@ -112,7 +112,7 @@ suite 'este.storage.Local', ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '123'
       result = local.load model
-      goog.labs.result.waitOnSuccess result, (value) ->
+      goog.result.waitOnSuccess result, (value) ->
         assert.equal value, '123'
         done()
 
@@ -120,14 +120,14 @@ suite 'este.storage.Local', ->
       mechanism.get = (key) -> ''
       model.id = '123'
       result = local.load model
-      goog.labs.result.waitOnError result, ->
+      goog.result.waitOnError result, ->
         done()
 
     test 'should return error result if storage item does not exists', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '789'
       result = local.load model
-      goog.labs.result.waitOnError result, ->
+      goog.result.waitOnError result, ->
         done()
 
   # suite 'delete', ->
@@ -153,26 +153,26 @@ suite 'este.storage.Local', ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '123'
       result = local.delete model
-      goog.labs.result.waitOnSuccess result, (value) ->
+      goog.result.waitOnSuccess result, (value) ->
         assert.equal value, '123'
         done()
 
     test 'should return error result for model without id', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       result = local.delete model
-      goog.labs.result.waitOnError result, ->
+      goog.result.waitOnError result, ->
         done()
 
     test 'should return error result if storage does not exists', (done) ->
       mechanism.get = (key) -> ''
       model.id = '456'
       result = local.delete model
-      goog.labs.result.waitOnError result, ->
+      goog.result.waitOnError result, ->
         done()
 
     test 'should return error result if item does not exists', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '456'
       result = local.delete model
-      goog.labs.result.waitOnError result, ->
+      goog.result.waitOnError result, ->
         done()

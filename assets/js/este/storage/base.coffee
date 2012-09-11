@@ -5,7 +5,7 @@
 ###
 goog.provide 'este.storage.Base'
 
-goog.require 'goog.labs.result'
+goog.require 'goog.result'
 
 class este.storage.Base
 
@@ -23,20 +23,20 @@ class este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   save: goog.abstractMethod
 
   ###*
     @param {este.Model} model
     @param {string} id
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   load: goog.abstractMethod
 
   ###*
     @param {este.Model} model
-    @return {goog.labs.result.SimpleResult}
+    @return {goog.result.SimpleResult}
   ###
   delete: goog.abstractMethod
 
