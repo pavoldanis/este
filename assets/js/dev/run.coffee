@@ -213,14 +213,10 @@ Commands =
             jsPath: jsPath
             source: source
 
-        # todo:
-        #   goog.asserts.assert
-        #   throw
-
-        # replace all "this.logger" (but not "_this.logger")
+        # replace all 'this.logger', but not '_this.logger'
         # fix for coffee _this alias
         source = source.replace /[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.'
-        # Replace all "_this.logger"
+        # replace all '_this.logger'
         source = source.replace /_this\.logger_\./g, 'goog.DEBUG && _this.logger_.'
 
         fs.writeFileSync jsPath, source, 'utf8'
