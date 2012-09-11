@@ -46,10 +46,10 @@ class este.Collection extends goog.events.EventTarget
     CHANGE: 'change'
 
   ###*
-    Used for persistence. Storage needs string identifier for local storage key
-    or REST storage url.
+    http://en.wikipedia.org/wiki/Uniform_resource_name
+    @type {string}
   ###
-  @uri: 'collection'
+  urn: 'collection'
 
   ###*
     @type {Array}

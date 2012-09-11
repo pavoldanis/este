@@ -354,6 +354,10 @@ suite 'este.Collection', ->
       collection = new ChildCollection
       assert.equal collection.model, Child
 
+  suite 'instance', ->
+    test 'should have string urn property', ->
+      assert.isString collection.urn
+
   # suite 'filter', ->
   #   test 'should work', ->
   #     collection.filter (item) ->
