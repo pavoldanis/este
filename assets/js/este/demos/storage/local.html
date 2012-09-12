@@ -16,38 +16,57 @@
 <body>
   <h1>este.storage.Local</h1>
   <fieldset>
-    <label>Text <br>
+    <label>Text:<br>
     <input id='text' autofucus type='text'>
     </label>
     <br>
+    <button id='add'>add</button>
+    <ul id='items'></ul>
+    <hr>
     <button id='reload'>reload</button>
-    <button id='delete'>delete & reload</button>
+    <button id='delete-reload'>delete then reload</button>
   </fieldset>
   <textarea style='width: 20em; height: 10em' id='code'></textarea>
   <script>
     este.dev.Monitor.create()
 
     var storage = new este.storage.Local('storage-demo')
-    var model = new este.Model({id: '1'})
     var input = document.getElementById('text')
+    var addButton = document.getElementById('add')
 
-    var result = storage.load(model)
-    goog.result.waitOnSuccess(result, function(id) {
-      input.value = model.get('text')
-    })
+    var showSerializedLocalStorage = function() {
+      var serializedStorage = JSON.stringify(window.localStorage)
+      document.getElementById('code').value = serializedStorage
+    }
 
-    input.oninput = function (e) {
-      model.set('text', input.value)
-      storage.save(model)
-      serializedStorage = window.localStorage
-      document.getElementById('code').value = JSON.stringify(serializedStorage)
+    var showSerializedModels = function() {
+      var html = ''
+      document.getElementById('items').innerHTML = html
+    }
+
+    showSerializedLocalStorage()
+    showSerializedModels()
+
+    addButton.onclick = function() {
+      if (!input.value)
+        return
+
+      addButton.disabled = true
+      var model = new este.Model({'text': input.value})
+      var result = storage.save(model)
+
+      goog.result.waitOnSuccess(result, function(id) {
+        showSerializedLocalStorage()
+        input.value = ''
+        addButton.disabled = false
+      })
     }
 
     document.getElementById('reload').onclick = function() {
       location.reload()
     }
 
-    document.getElementById('delete').onclick = function() {
+    document.getElementById('delete-reload').onclick = function() {
       storage.delete(model)
       location.reload()
     }
