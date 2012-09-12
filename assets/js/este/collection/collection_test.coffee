@@ -25,6 +25,12 @@ suite 'este.Collection', ->
       collection = new Collection json
       assert.deepEqual collection.toJson(), json
 
+    test 'should allow to override model', ->
+      model = ->
+      collection = new Collection null, model
+      collection.add {}
+      assert.instanceOf collection.at(0), model
+
   suite 'model property', ->
     test 'should wrap json (meta test included)', ->
       arrangeChildType()
@@ -353,10 +359,6 @@ suite 'este.Collection', ->
       ChildCollection::model = Child
       collection = new ChildCollection
       assert.equal collection.model, Child
-
-  suite 'instance', ->
-    test 'should have string urn property', ->
-      assert.isString collection.urn
 
   # suite 'filter', ->
   #   test 'should work', ->

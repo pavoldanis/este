@@ -32,7 +32,7 @@ class este.Collection extends goog.events.EventTarget
   ###
   constructor: (array, model) ->
     super()
-    @model ?= model if model
+    @model = model if model
     @array = []
     @add array if array
     return
@@ -44,12 +44,6 @@ class este.Collection extends goog.events.EventTarget
     ADD: 'add'
     REMOVE: 'remove'
     CHANGE: 'change'
-
-  ###*
-    http://en.wikipedia.org/wiki/Uniform_resource_name
-    @type {string}
-  ###
-  urn: 'collection'
 
   ###*
     @type {Array}
