@@ -8,11 +8,9 @@ reloaded when needed.
 Tested on and compatible for OSX, Linux, and Windows.
 
 The bulk of the application is a well-documented, thoroughly tested JavaScript framework,
-written in statically-typed CoffeeScript.  This allows you to write powerful and efficient code
-for mobile devices and browsers.
+written in statically-typed CoffeeScript.  This allows you to write powerful and efficient code for mobile devices and browsers.
 
-Consider it boilerplate for mobile development, an offline MVC web application streamlined for
-the developer user experience.
+Consider it boilerplate for mobile first development, an offline capable MVC web application, streamlined for the developer user experience.
 
 ### Quick Start Guide
 
@@ -28,7 +26,7 @@ the developer user experience.
 The application defines structure, feature-based namespacing, template behaviour, custom events,
 and compilation, all in one compact location.
 
-We're actively working on a mobile version for ShopMVC on this stack, which should give greater 
+We're actively working on a mobile version for ShopMVC on this stack, which should give greater
 clarity by means of example. In the meantime, take a look at the  `assets/js/*` namespace.
 
 Node run options described in `assets/js/dev/run.coffee`.
