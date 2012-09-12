@@ -72,6 +72,14 @@ suite 'este.storage.Local', ->
         assert.equal value, 'someUniqueId'
         done()
 
+    test 'should throw exception for model without urn', (done) ->
+      model.urn = null
+      try
+        local.save model
+      catch e
+        assert.instanceOf e, Error
+        done()
+
   suite 'load', ->
     test 'should throw exception for model without id', (done) ->
       try
@@ -130,15 +138,15 @@ suite 'este.storage.Local', ->
       goog.result.waitOnError result, ->
         done()
 
-  # suite 'delete', ->
-  #   test 'should delete model from storage', (done) ->
-  #     mechanism.get = (key) -> '{"$123":{"foo":"bla"}}'
-  #     mechanism.set = (key, value) ->
-  #       assert.equal key, 'model'
-  #       assert.equal value, '{}'
-  #       done()
-  #     model.id = '123'
-  #     result = local.delete model
+    test 'should throw exception for model without urn', (done) ->
+      model.urn = null
+      mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
+      model.id = '123'
+      try
+        local.load model
+      catch e
+        assert.instanceOf e, Error
+        done()
 
   suite 'delete', ->
     test 'should delete model from storage', (done) ->
@@ -175,4 +183,14 @@ suite 'este.storage.Local', ->
       model.id = '456'
       result = local.delete model
       goog.result.waitOnError result, ->
+        done()
+
+    test 'should throw exception for model without urn', (done) ->
+      model.urn = null
+      mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
+      model.id = '123'
+      try
+        local.delete model
+      catch e
+        assert.instanceOf e, Error
         done()

@@ -48,6 +48,7 @@ class este.storage.Local extends este.storage.Base
     @return {goog.result.SimpleResult}
   ###
   save: (model) ->
+    @checkModelUrn model
     id = @ensureModelId model
     serializedModels = @mechanism.get model.urn
     models = if serializedModels then este.json.parse serializedModels else {}
@@ -60,6 +61,7 @@ class este.storage.Local extends este.storage.Base
     @return {goog.result.SimpleResult}
   ###
   load: (model) ->
+    @checkModelUrn model
     id = @checkModelId model
     models = @loadModels model.urn
     return @returnErrorResult() if !models
@@ -73,6 +75,7 @@ class este.storage.Local extends este.storage.Base
     @return {goog.result.SimpleResult}
   ###
   delete: (model) ->
+    @checkModelUrn model
     id = model.get 'id'
     if id
       models = @loadModels model.urn
@@ -85,8 +88,10 @@ class este.storage.Local extends este.storage.Base
   ###*
     @param {este.Collection} collection
     @param {Object=} params
+    @return {goog.result.SimpleResult}
   ###
   query: (collection, params) ->
+    # goog.asserts.assertString id, 'model id has to be string'
     null
 
   ###*
@@ -152,3 +157,10 @@ class este.storage.Local extends este.storage.Base
     result = new goog.result.SimpleResult
     result.setError()
     result
+
+  ###*
+    @param {este.Model} model
+    @protected
+  ###
+  checkModelUrn: (model) ->
+    goog.asserts.assertString model.urn, 'model urn has to be string'
