@@ -22,19 +22,24 @@ class este.demos.app.simple.products.View extends este.app.View
   url: ''
 
   ###*
+    @type {este.demos.app.simple.products.Collection} products
+    @protected
+  ###
+  products: null
+
+  ###*
     @inheritDoc
   ###
   load: (result, params) ->
     setTimeout =>
-      products = new este.demos.app.simple.products.Collection [
+      @products ?= new este.demos.app.simple.products.Collection [
         name: 'Magic box', description: 'Something wonderful...'
       ,
         name: 'Blue table', description: 'Just a table.'
       ,
         name: 'Red light', description: 'You know it from district.'
       ]
-      # console.log products.toJson()
-      result.setValue products.toJson()
+      result.setValue @products.toJson()
     , 2000
 
   ###*
