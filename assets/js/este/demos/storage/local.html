@@ -11,28 +11,28 @@
     goog.require('este.dev.Monitor.create')
     goog.require('este.storage.Local')
     goog.require('este.Model')
+    goog.require('este.Collection')
   </script>
 </head>
 <body>
   <h1>este.storage.Local</h1>
-  <fieldset>
-    <label>Text:<br>
-    <input id='text' autofucus type='text'>
-    </label>
-    <br>
-    <button id='add'>add</button>
-    <ul id='items'></ul>
-    <hr>
+  <input id='text' autofocus placeholder='write something' type='text'>
+  <br>
+  <button id='add'>add</button>
+  <ul id='items'></ul>
+  <div>
     <button id='reload'>reload</button>
-    <button id='delete-reload'>delete then reload</button>
-  </fieldset>
-  <textarea style='width: 20em; height: 10em' id='code'></textarea>
+    <button id='clear'>clear</button>
+  </div>
+  <hr>
+  <textarea readonly style='width: 40em; height: 10em' id='code'></textarea>
   <script>
     este.dev.Monitor.create()
 
     var storage = new este.storage.Local('storage-demo')
     var input = document.getElementById('text')
     var addButton = document.getElementById('add')
+    var collection = new este.Collection(null, este.Model)
 
     var showSerializedLocalStorage = function() {
       var serializedStorage = JSON.stringify(window.localStorage)
@@ -40,8 +40,18 @@
     }
 
     var showSerializedModels = function() {
-      var html = ''
-      document.getElementById('items').innerHTML = html
+      collection.clear()
+      var result = storage.query(collection)
+      goog.result.waitOnSuccess(result, function(params) {
+        var json = collection.toJson()
+        var html = []
+        for (var key in json) {
+          value = json[key]
+          html.push('<li>' + value.text + '</li>')
+        }
+        html.reverse()
+        document.getElementById('items').innerHTML = html.join('')
+      })
     }
 
     showSerializedLocalStorage()
@@ -50,15 +60,17 @@
     addButton.onclick = function() {
       if (!input.value)
         return
-
       addButton.disabled = true
+
       var model = new este.Model({'text': input.value})
       var result = storage.save(model)
 
       goog.result.waitOnSuccess(result, function(id) {
         showSerializedLocalStorage()
-        input.value = ''
+        showSerializedModels()
         addButton.disabled = false
+        input.value = ''
+        input.focus()
       })
     }
 
@@ -66,8 +78,12 @@
       location.reload()
     }
 
-    document.getElementById('delete-reload').onclick = function() {
-      storage.delete(model)
+    document.getElementById('clear').onclick = function() {
+      var models = collection.toArray()
+      for (var i = 0, l = models.length; i < l; i++) {
+        var model = models[i]
+        storage.delete(model)
+      }
       location.reload()
     }
 

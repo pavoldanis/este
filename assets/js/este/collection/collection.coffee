@@ -1,6 +1,6 @@
 ###*
-  @fileoverview Collection. Stores JSONs or models. Fires add, remove,
-  change events. Supports events bubbling via setParentEventTarget.
+  @fileoverview Collection for plain json or model. Fires add, remove, change
+  events. Event bubbling supported via setParentEventTarget.
 
   Example
     foos = new Collection [
@@ -15,6 +15,7 @@
   todo
     filter
     docs&examples (see tests now)
+    consider arraylike
 ###
 
 goog.provide 'este.Collection'
@@ -25,16 +26,15 @@ goog.require 'goog.events.EventTarget'
 class este.Collection extends goog.events.EventTarget
 
   ###*
-    @param {Array=} array
-    @param {Function=} model
+    @param {Array.<Object>=} array
+    @param {function(new:este.Model)=} model
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor: (array, model) ->
+  constructor: (array, @model = @model) ->
     super()
-    @model = model if model
     @array = []
-    @add array if array
+    @fromJson array if array
     return
 
   ###*
@@ -46,13 +46,13 @@ class este.Collection extends goog.events.EventTarget
     CHANGE: 'change'
 
   ###*
-    @type {Array}
+    @type {Array.<Object>}
     @protected
   ###
   array: null
 
   ###*
-    @type {Function}
+    @type {function(new:este.Model, Object=, Function=)|null}
     @protected
   ###
   model: null
@@ -78,14 +78,16 @@ class este.Collection extends goog.events.EventTarget
   sortReversed: false
 
   ###*
-    @param {Array|Object} array
+    @param {Array.<Object>|Object} array
   ###
   add: (array) ->
     array = [array] if !goog.isArray array
     added = []
     for item in array
-      item = new @model item if @model && !(item instanceof @model)
-      item.setParentEventTarget @ if item instanceof goog.events.EventTarget
+      if @model && !(item instanceof @model)
+        item = new @model item
+      if item instanceof goog.events.EventTarget
+        item.setParentEventTarget @
       added.push item
     @array.push.apply @array, added
     @sortInternal()
@@ -163,12 +165,25 @@ class este.Collection extends goog.events.EventTarget
     @array.length
 
   ###*
+    @return {Array.<Object>}
+  ###
+  toArray: ->
+    @array
+
+  ###*
     Serialize into JSON.
-    @return {Array}
+    @return {Array.<Object>}
   ###
   toJson: ->
     return @array.slice 0 if !@model
     item.toJson() for item in @array
+
+  ###*
+    Deserialize from JSON.
+    @param {Array.<Object>} array
+  ###
+  fromJson: (array) ->
+    @add array
 
   ###*
     Clear collection.
@@ -207,6 +222,19 @@ class este.Collection extends goog.events.EventTarget
     @sortInternal()
     @dispatchChangeEvent null
     return
+
+  ###*
+    @return {function(new:este.Model)|null}
+  ###
+  getModel: ->
+    @model
+
+  ###*
+    http://en.wikipedia.org/wiki/Uniform_resource_name
+    @return {?string}
+  ###
+  getUrn: ->
+    @model?.prototype?.urn ? null
 
   ###*
     @protected

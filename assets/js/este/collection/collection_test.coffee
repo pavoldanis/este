@@ -74,6 +74,13 @@ suite 'este.Collection', ->
         c: 'fok'
       ]
 
+    test 'fromJson should deserialize model', ->
+      collection = new Collection null, Model
+      collection.fromJson [{1: 'a'}, {2: 'b'}]
+      assert.instanceOf collection.at(0), Model
+      assert.instanceOf collection.at(1), Model
+      assert.isUndefined collection.at 2
+
   suite 'add, remove and getLength', ->
     test 'should work', ->
       assert.equal collection.getLength(), 0
@@ -172,6 +179,11 @@ suite 'este.Collection', ->
     test 'should return item by index', ->
       collection.add 1
       assert.equal collection.at(0), 1
+
+  suite 'toArray', ->
+    test 'should return inner array', ->
+      collection.add 1
+      assert.deepEqual collection.toArray(), [1]
 
   suite 'toJson', ->
     test 'should return inner array', ->

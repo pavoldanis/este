@@ -76,7 +76,7 @@ class este.storage.Local extends este.storage.Base
   ###
   delete: (model) ->
     @checkModelUrn model
-    id = model.get 'id'
+    id = @checkModelId model
     if id
       models = @loadModels model.urn
       if models && models[id]
@@ -91,8 +91,12 @@ class este.storage.Local extends este.storage.Base
     @return {goog.result.SimpleResult}
   ###
   query: (collection, params) ->
-    # goog.asserts.assertString id, 'model id has to be string'
-    null
+    urn = collection.getUrn()
+    goog.asserts.assertString urn, 'collection.getUrn() has to be string'
+    models = @loadModels urn
+    array = @modelsToArray models
+    collection.fromJson array
+    @returnSuccessResult params
 
   ###*
     @param {este.Model} model
@@ -118,7 +122,7 @@ class este.storage.Local extends este.storage.Base
     id
 
   ###*
-    @param {Object} models
+    @param {Object.<string, Object>} models
     @param {string} urn
     @protected
   ###
@@ -131,7 +135,7 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {string} urn
-    @return {Object}
+    @return {Object.<string, Object>}
     @protected
   ###
   loadModels: (urn) ->
@@ -140,13 +144,13 @@ class este.storage.Local extends este.storage.Base
     este.json.parse serializedJson
 
   ###*
-    @param {string} id
+    @param {*} value
     @return {goog.result.SimpleResult}
     @protected
   ###
-  returnSuccessResult: (id) ->
+  returnSuccessResult: (value) ->
     result = new goog.result.SimpleResult
-    result.setValue id
+    result.setValue value
     result
 
   ###*
@@ -164,3 +168,13 @@ class este.storage.Local extends este.storage.Base
   ###
   checkModelUrn: (model) ->
     goog.asserts.assertString model.urn, 'model urn has to be string'
+
+  ###*
+    @param {Object.<string, Object>} models
+    @return {Array.<Object>}
+    @protected
+  ###
+  modelsToArray: (models) ->
+    for id, object of models
+      object['id'] = id
+      object

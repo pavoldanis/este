@@ -20,6 +20,7 @@
     - to 'inherit' schema: use goog.object.extend
 
   Todo
+    consider to make urn class static
     consider renaming 'set' and 'get' to 'setter' and 'getter'
 ###
 
@@ -59,8 +60,7 @@ class este.Model extends goog.events.EventTarget
 
   ###*
     http://en.wikipedia.org/wiki/Uniform_resource_name
-    It's used for persistence, so do not change it. If so, remember it is used
-    by este.storage.Local.
+    It's used by este.storage.Local and este.storage.Local.
     @type {string}
   ###
   urn: 'model'

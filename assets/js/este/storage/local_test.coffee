@@ -5,11 +5,14 @@ suite 'este.storage.Local', ->
   root = null
   mechanism = null
   idFactory = null
+  Model = null
   model = null
+  collection = null
   local = null
 
   setup ->
     root = ''
+
     mechanism =
       set: (key, value) ->
         @[key] = value
@@ -17,20 +20,29 @@ suite 'este.storage.Local', ->
         @[key]
       remove: (key) ->
         delete @[key]
+
     idFactory = -> 'someUniqueId'
-    model =
-      urn: 'model'
-      set: (key, value) ->
-        @[key] = value
-      get: (key) ->
-        @[key]
-      toJson: ->
-        # to remove methods
-        este.json.parse este.json.stringify @
-      fromJson: (json) ->
-        for k, v of json
-          @[k] = json
-        return
+
+    Model = ->
+    Model::urn = 'model'
+    Model::set = (key, value) ->
+      @[key] = value
+    Model::get = (key) ->
+      @[key]
+    Model::toJson = ->
+      # to remove methods
+      este.json.parse este.json.stringify @
+    Model::fromJson = (json) ->
+      for k, v of json
+        @[k] = json
+      return
+
+    model = new Model
+
+    collection =
+      getModel: -> Model
+      getUrn: -> Model::urn
+      fromJson: ->
 
     local = new Local root, mechanism, idFactory
 
@@ -165,10 +177,11 @@ suite 'este.storage.Local', ->
         assert.equal value, '123'
         done()
 
-    test 'should return error result for model without id', (done) ->
-      mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
-      result = local.delete model
-      goog.result.waitOnError result, ->
+    test 'should throw exception for model without id', (done) ->
+      try
+        local.delete model
+      catch e
+        assert.instanceOf e, Error
         done()
 
     test 'should return error result if storage does not exists', (done) ->
@@ -193,4 +206,30 @@ suite 'este.storage.Local', ->
         local.delete model
       catch e
         assert.instanceOf e, Error
+        done()
+
+  suite 'query', ->
+    test 'should throw exception for getUrn() != string', (done) ->
+      collection.getUrn = ->
+      try local.query collection
+      catch e
+        done()
+
+    test 'should load collection', (done) ->
+      mechanism.get = (key) -> '{"123":{"foo":"bla"},"456":{"bla":"foo"}}'
+      collection.fromJson = (array) ->
+        assert.deepEqual array, [
+          foo: 'bla', id: '123'
+        ,
+          bla: 'foo', id: '456'
+        ]
+        done()
+      local.query collection
+
+    test 'should return success result with params', (done) ->
+      mechanism.get = (key) -> '{"123":{"foo":"bla"},"456":{"bla":"foo"}}'
+      params = {}
+      result = local.query collection, params
+      goog.result.waitOnSuccess result, (value) ->
+        assert.equal value, params
         done()
