@@ -91,8 +91,7 @@ class este.storage.Local extends este.storage.Base
     @return {goog.result.SimpleResult}
   ###
   query: (collection, params) ->
-    urn = collection.getUrn()
-    goog.asserts.assertString urn, 'collection.getUrn() has to be string'
+    urn = @checkCollectionUrn collection
     models = @loadModels urn
     array = @modelsToArray models
     collection.fromJson array
@@ -109,16 +108,6 @@ class este.storage.Local extends este.storage.Base
 
     id = @idFactory()
     model.fromJson ('id': id), true
-    id
-
-  ###*
-    @param {este.Model} model
-    @return {string} model id
-    @protected
-  ###
-  checkModelId: (model) ->
-    id = model.get 'id'
-    goog.asserts.assertString id, 'model id has to be string'
     id
 
   ###*
@@ -161,13 +150,6 @@ class este.storage.Local extends este.storage.Base
     result = new goog.result.SimpleResult
     result.setError()
     result
-
-  ###*
-    @param {este.Model} model
-    @protected
-  ###
-  checkModelUrn: (model) ->
-    goog.asserts.assertString model.urn, 'model urn has to be string'
 
   ###*
     @param {Object.<string, Object>} models
