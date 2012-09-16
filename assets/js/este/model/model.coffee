@@ -17,11 +17,11 @@
 
   Notes
     - to modify complex attribute: joe.get('items').add 'foo'
-    - to 'inherit' schema: use goog.object.extend
 
-  Todo
+  todo
     consider to make urn class static
-    consider renaming 'set' and 'get' to 'setter' and 'getter'
+    consider imperative schema definition (methods call instead of {} literal)
+      will be self inherited automatically
 ###
 
 goog.provide 'este.Model'
@@ -103,7 +103,7 @@ class este.Model extends goog.events.EventTarget
     if errors
       changes = goog.object.filter changes, (value, key) -> !errors[key]
 
-     if !goog.object.isEmpty changes
+    if !goog.object.isEmpty changes
       @fromJson changes
       @dispatchChangeEvent changes
 
