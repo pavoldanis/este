@@ -36,11 +36,3 @@ class este.app.Request
   ###
   equal: (request) ->
     @view == request.view && este.json.equal @params, request.params
-
-  ###*
-    @return {!goog.result.SimpleResult}
-  ###
-  load: ->
-    result = new goog.result.SimpleResult()
-    @view.load result, @params
-    result

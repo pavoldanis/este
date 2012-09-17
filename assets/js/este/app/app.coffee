@@ -8,11 +8,12 @@ goog.require 'este.app.Layout'
 goog.require 'este.app.Request'
 goog.require 'este.app.View'
 goog.require 'este.Base'
+goog.require 'este.storage.Local'
 goog.require 'goog.array'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.EventHandler'
-goog.require 'goog.result.SimpleResult'
 goog.require 'goog.result'
+goog.require 'goog.result.SimpleResult'
 
 class este.App extends este.Base
 
@@ -25,7 +26,6 @@ class este.App extends este.Base
   ###
   constructor: (@views, @layout, @router) ->
     @pendingRequests = []
-    @prepareViews()
     super
 
   ###*
@@ -37,9 +37,16 @@ class este.App extends este.Base
 
   ###*
     JSON from server.
+    todo: wait for release new struct and dict annotations to enforce only
+    bracket access.
     @type {Object}
   ###
   data: null
+
+  ###*
+    @type {string}
+  ###
+  localStorageNamespace: 'este-storage'
 
   ###*
     @type {boolean}
@@ -71,10 +78,18 @@ class este.App extends este.Base
   pendingRequests: null
 
   ###*
+    @type {este.storage.Local}
+    @protected
+  ###
+  localStorage: null
+
+  ###*
     Start app.
   ###
   start: ->
     @on @, este.app.View.EventType.REDIRECT, @onRedirect
+    @localStorage = new este.storage.Local @localStorageNamespace
+    @prepareViews()
     @startRouter()
 
   ###*
@@ -83,6 +98,7 @@ class este.App extends este.Base
   prepareViews: ->
     for view in @views
       view.setParentEventTarget @
+      view.localStorage = @localStorage
     return
 
   ###*
@@ -95,9 +111,9 @@ class este.App extends este.Base
     request = new este.app.Request view, params, isNavigation
     @dispatchAppEvent App.EventType.BEFORELOAD, request
     @pendingRequests.push request
-    result = request.load()
+    result = view.load params
     goog.result.waitOnSuccess result, (value) =>
-      @onViewLoadCallback request, value
+      @onViewSuccessLoad request, value
 
   ###*
     @protected
@@ -142,12 +158,12 @@ class este.App extends este.Base
     @param {Object} json
     @protected
   ###
-  onViewLoadCallback: (request, json) ->
+  onViewSuccessLoad: (request, json) ->
     return if !goog.array.contains @pendingRequests, request
     return if !goog.array.peek(@pendingRequests).equal request
     @clearPendingRequests()
     @dispatchAppEvent App.EventType.BEFORESHOW, request
-    request.view.onLoad json
+    request.view.render()
     if @urlEnabled && request.view.url? && !request.silent
       @router.pathNavigate request.view.url, request.params, true
     @layout.show request.view, request.params

@@ -6,6 +6,7 @@ goog.provide 'este.app.View.Event'
 goog.provide 'este.app.View.EventType'
 
 goog.require 'este.Base'
+goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'goog.dom'
 goog.require 'goog.events.Event'
@@ -33,6 +34,24 @@ class este.app.View extends este.Base
   url: null
 
   ###*
+    @type {este.storage.Local}
+  ###
+  localStorage: null
+
+  ###*
+    @type {Element}
+    @protected
+  ###
+  element: null
+
+  ###*
+    @param {Object=} params
+    @return {!goog.result.Result}
+  ###
+  load: (params) ->
+    este.result.ok params
+
+  ###*
     @param {function(new:este.app.View)} viewClass
     @param {Object=} params
     @return {?string}
@@ -43,34 +62,9 @@ class este.app.View extends este.Base
     este.router.Route.getUrl url, params
 
   ###*
-    @type {Element}
-    @protected
+    Render view.
   ###
-  element: null
-
-  ###*
-    Can be overriden for async.
-    todo: consider deferred object
-    @param {goog.result.SimpleResult} result
-    @param {Object=} params
-  ###
-  load: (result, params) ->
-    result.setValue params
-
-  ###*
-    Called from app onRequestLoad just before layout show.
-    todo: consider renaming to parse
-    @param {Object} json
-  ###
-  onLoad: (json) ->
-    @render json
-
-  ###*
-    Override to render view content.
-    @param {Object} json
-    @protected
-  ###
-  render: (json) ->
+  render: ->
     # innerHTML = template + viewModel
 
   ###*

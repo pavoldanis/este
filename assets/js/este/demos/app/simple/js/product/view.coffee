@@ -20,21 +20,28 @@ class este.demos.app.simple.product.View extends este.app.View
   url: 'product/:id'
 
   ###*
-    @inheritDoc
+    @type {Object}
+    @protected
   ###
-  load: (result, params) ->
-    # ajax call for data
-    setTimeout =>
-      result.setValue params
-    , 2000
+  params: null
 
   ###*
     @inheritDoc
   ###
-  render: (json) ->
-    window['console']['log'] "product #{json['id']} rendered"
+  load: (@params = null) ->
+    result = new goog.result.SimpleResult
+    setTimeout =>
+      result.setValue true
+    , 2000
+    result
+
+  ###*
+    @inheritDoc
+  ###
+  render: ->
+    window['console']['log'] "product #{@params['id']} rendered"
     @getElement().innerHTML = """
-      <p>product, id = #{json['id']}</p>
+      <p>product, id = #{@params['id']}</p>
       <a e-href>show products</a>
     """
     return

@@ -30,7 +30,8 @@ class este.demos.app.simple.products.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  load: (result, params) ->
+  load: (params) ->
+    result = new goog.result.SimpleResult
     setTimeout =>
       @products ?= new este.demos.app.simple.products.Collection [
         name: 'Magic box', description: 'Something wonderful...'
@@ -39,17 +40,17 @@ class este.demos.app.simple.products.View extends este.app.View
       ,
         name: 'Red light', description: 'You know it from district.'
       ]
-      result.setValue @products.toJson()
+      result.setValue true
     , 2000
+    result
 
   ###*
     @inheritDoc
   ###
-  render: (products) ->
+  render: ->
     window['console']['log'] "products rendered"
-    # console.log products
     links = []
-    for product in products
+    for product in @products.toJson()
       # no url hardcoding, urls are always generated
       url = @getUrl este.demos.app.simple.product.View, id: product['clientId']
       links.push "<li><a e-href='#{url}'>#{url}</a>"

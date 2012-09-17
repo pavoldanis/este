@@ -10,33 +10,32 @@ goog.require 'goog.result'
 class este.storage.Base
 
   ###*
-    @param {string} root
+    @param {string} namespace
     @constructor
   ###
-  constructor: (root) ->
+  constructor: (namespace) ->
 
   ###*
     @type {string}
-    @protected
   ###
-  root: ''
+  namespace: ''
 
   ###*
     @param {este.Model} model
-    @return {goog.result.SimpleResult}
+    @return {!goog.result.Result}
   ###
   save: goog.abstractMethod
 
   ###*
     @param {este.Model} model
     @param {string} id
-    @return {goog.result.SimpleResult}
+    @return {!goog.result.Result}
   ###
   load: goog.abstractMethod
 
   ###*
     @param {este.Model} model
-    @return {goog.result.SimpleResult}
+    @return {!goog.result.Result}
   ###
   delete: goog.abstractMethod
 

@@ -4,9 +4,11 @@
 ###
 goog.provide 'este.router.create'
 
-goog.require 'este.History'
 goog.require 'este.events.TapHandler'
+goog.require 'este.History'
 goog.require 'este.router.Router'
+goog.require 'goog.string'
+goog.require 'goog.Uri'
 
 ###*
   @param {Element=} element
@@ -15,6 +17,11 @@ goog.require 'este.router.Router'
   @return {este.router.Router}
 ###
 este.router.create = (element, pathPrefix, forceHash) ->
+  pathPrefix ?= new goog.Uri(document.location.href).getPath()
+  pathPrefix += '/' if !goog.string.endsWith pathPrefix, '/'
+
   history = new este.History pathPrefix, forceHash
   tapHandler = new este.events.TapHandler element ? document.body
   new este.router.Router history, tapHandler
+
+

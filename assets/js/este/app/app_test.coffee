@@ -35,14 +35,16 @@ suite 'este.App', ->
 
   createMockView = (noAsync) ->
     view = new goog.events.EventTarget
-    view.load = (result, json) ->
+    view.load = (params) ->
+      result = new goog.result.SimpleResult
       if noAsync
-        result.setValue json
-        return
-      setTimeout ->
-        result.setValue json
-      , 4
-    view.onLoad = ->
+        result.setValue params
+      else
+        setTimeout ->
+          result.setValue params
+        , 4
+      result
+    view.render = ->
     view.dispose = ->
     view.url = ''
     view
@@ -60,17 +62,22 @@ suite 'este.App', ->
       assert.equal count1, goog.events.getTotalListenerCount()
 
   suite 'start', ->
-    test 'should call view1 load then onLoad method', (done) ->
+    test 'should call view1 load then render method', (done) ->
       arrangeAppWithViews()
       loadCalled = false
-      view1.load = (result) ->
+      view1.load = ->
         loadCalled = true
-        result.setValue foo: 'foo'
-      view1.onLoad = (json) ->
+        este.result.ok()
+      view1.render = ->
         assert.isTrue loadCalled
-        assert.deepEqual json, foo: 'foo', 'should pass json'
         done()
       app.start()
+
+    test 'should set view localStorage', ->
+      app.start()
+      assert.instanceOf view1.localStorage, este.storage.Local
+      assert.instanceOf view2.localStorage, este.storage.Local
+      assert.instanceOf view3.localStorage, este.storage.Local
 
   suite 'router', ->
     test 'should be prepared in app.start', (done) ->
@@ -118,8 +125,8 @@ suite 'este.App', ->
 
   suite 'load', ->
     suite 'view2', ->
-      test 'should call view2.onLoad', (done) ->
-        view2.onLoad = ->
+      test 'should call view2.render', (done) ->
+        view2.render = ->
           done()
         app.load view2
 
@@ -175,8 +182,8 @@ suite 'este.App', ->
         assert.isFalse called
 
     suite 'view2 twice async', ->
-      test 'should call view2.onLoad once', (done) ->
-        view2.onLoad = ->
+      test 'should call view2.render once', (done) ->
+        view2.render = ->
           done()
         app.load view2
         setTimeout ->
@@ -184,8 +191,8 @@ suite 'este.App', ->
         , 2
 
     suite 'view 2, view 3 async', ->
-      test 'should call view3.onLoad', (done) ->
-        view3.onLoad = ->
+      test 'should call view3.render', (done) ->
+        view3.render = ->
           done()
         app.load view2
         setTimeout ->
@@ -193,8 +200,8 @@ suite 'este.App', ->
         , 2
 
     suite 'view 2, view 3, view2 async', ->
-      test 'should call view2.onLoad', (done) ->
-        view2.onLoad = ->
+      test 'should call view2.render', (done) ->
+        view2.render = ->
           done()
         app.load view2
         setTimeout ->
@@ -216,14 +223,7 @@ suite 'este.App', ->
       assert.equal app.pendingRequests.length, 0
       assert.equal calls, '01234'
 
-  # suite 'load', ->
-  #   test 'should be called on view redirect event', (done) ->
-  #     app.load = (view, params) ->
-  #       assert.instanceOf view, goog.events.EventTarget
-  #       assert.deepEqual params, 1: 'foo'
-  #       done()
-  #     goog.events.fireListeners view1, 'redirect', false,
-  #       type: 'redirect'
-  #       target: view1
-  #       viewClass: goog.events.EventTarget
-  #       params: 1: 'foo'
+  suite 'localStorageNamespace', ->
+    test 'should be non empty string', ->
+      assert.isString app.localStorageNamespace
+      assert.ok app.localStorageNamespace
