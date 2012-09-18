@@ -15,7 +15,7 @@ este.demos.app.todomvc.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
-  app = este.app.create 'app', [
+  app = este.app.create 'todoapp', [
     este.demos.app.todomvc.todos.View
   ]
   app.localStorageNamespace = 'todos-este'

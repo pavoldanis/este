@@ -5,6 +5,7 @@ goog.provide 'este.demos.app.todomvc.todos.View'
 
 goog.require 'este.app.View'
 goog.require 'este.demos.app.todomvc.todos.Collection'
+goog.require 'este.demos.app.todomvc.todos.templates'
 
 class este.demos.app.todomvc.todos.View extends este.app.View
 
@@ -38,7 +39,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   render: ->
-    @getElement().innerHTML = 'rendered'
+    # json = @todos.toJson()
+    # JSON.stringify json
+    # JSON.stringify json
+    @getElement().innerHTML = este.demos.app.todomvc.todos.templates.items()
     # window['console']['log'] "products rendered"
     # # console.log products
     # links = []
