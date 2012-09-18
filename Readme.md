@@ -1,9 +1,7 @@
 Este.js - The State of Art JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
-With Este.js, just run one script to automatically update deps.js, run all your unit tests,
-and complile CoffeeScript, Stylus, and Soy templates.  Even the browser is automatically
-reloaded when needed.
+With Este.js, just run one script to automatically update deps.js, run all your Mocha unit tests, and complile CoffeeScript, Stylus, and Soy templates. Browser is automatically reloaded when needed.
 
 Tested on and compatible for OSX, Linux, and Windows.
 
