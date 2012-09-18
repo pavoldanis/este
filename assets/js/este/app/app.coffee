@@ -112,8 +112,8 @@ class este.App extends este.Base
     @dispatchAppEvent App.EventType.BEFORELOAD, request
     @pendingRequests.push request
     result = view.load params
-    goog.result.waitOnSuccess result, (value) =>
-      @onViewSuccessLoad request, value
+    goog.result.waitOnSuccess result, =>
+      @onViewSuccessLoad request
 
   ###*
     @protected
@@ -155,10 +155,9 @@ class este.App extends este.Base
 
   ###*
     @param {este.app.Request} request
-    @param {Object} json
     @protected
   ###
-  onViewSuccessLoad: (request, json) ->
+  onViewSuccessLoad: (request) ->
     return if !goog.array.contains @pendingRequests, request
     return if !goog.array.peek(@pendingRequests).equal request
     @clearPendingRequests()
