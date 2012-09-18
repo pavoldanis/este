@@ -13,10 +13,10 @@ goog.provide 'este.events.TapHandler'
 goog.provide 'este.events.TapHandler.EventType'
 
 goog.require 'este.Base'
-goog.require 'goog.userAgent'
 goog.require 'este.mobile'
-goog.require 'goog.math.Coordinate'
 goog.require 'goog.dom'
+goog.require 'goog.math.Coordinate'
+goog.require 'goog.userAgent'
 
 class este.events.TapHandler extends este.Base
 
