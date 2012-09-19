@@ -43,7 +43,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     # JSON.stringify json
     # JSON.stringify json
     @getElement().innerHTML = este.demos.app.todomvc.todos.templates.items()
-    # window['console']['log'] "products rendered"
+    # console.log 'rendered'
     # # console.log products
     # links = []
     # for product in products
@@ -58,3 +58,17 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     #   </ul>
     # """
     return
+
+  ###*
+    @inheritDoc
+  ###
+  enterDocument: ->
+    super()
+    @on @todos, 'change', @onTodosChange
+
+  ###*
+    @param {goog.events.Event} e
+    @protected
+  ###
+  onTodosChange: (e) ->
+    # todo: persist and render
