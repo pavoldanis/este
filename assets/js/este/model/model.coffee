@@ -183,8 +183,8 @@ class este.Model extends goog.events.EventTarget
   ###
   fromJson: (json, forceIds) ->
     if !forceIds
-      throw Error "Model id is immutable" if json['id']
-      throw Error "Model clientId is immutable" if json['clientId']
+      throw Error 'Model id is immutable' if json['id']
+      throw Error 'Model clientId is immutable' if json['clientId']
 
     for key, value of json
       @attributes[@getKey key] = value
