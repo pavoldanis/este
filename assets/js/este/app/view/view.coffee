@@ -45,6 +45,12 @@ class este.app.View extends este.Base
   element: null
 
   ###*
+    @type {boolean}
+    @protected
+  ###
+  isShown_: false
+
+  ###*
     @param {Object=} params
     @return {!goog.result.Result}
   ###
@@ -68,14 +74,22 @@ class este.app.View extends este.Base
     # innerHTML = template + viewModel
 
   ###*
+    @return {boolean}
+  ###
+  isShown: ->
+    @isShown_
+
+  ###*
     Override to register events or instantiate short livings object.
   ###
   enterDocument: ->
+    @isShown_ = true
 
   ###*
     Override to dispose what were registered or instantied in enterDocument
   ###
   exitDocument: ->
+    @isShown_ = false
     @getHandler().removeAll()
 
   ###*
@@ -92,6 +106,14 @@ class este.app.View extends este.Base
   redirect: (viewClass, params) ->
     e = new este.app.View.Event viewClass, params
     @dispatchEvent e
+
+  ###*
+    @inheritDoc
+  ###
+  on: (src, type, fn, capture, handler) ->
+    if !@isShown()
+      throw Error 'move your @on into enterDocument method'
+    super src, type, fn, capture, handler
 
   ###*
     @inheritDoc
