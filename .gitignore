@@ -9,5 +9,6 @@ este.sublime-workspace
 !assets/js/dev/soyutils_usegoog.js
 !assets/js/dev/run.js
 !assets/js/dev/tests.js
+!assets/js/google-closure/closure/bin/build/__pycache__
 
 app.html
