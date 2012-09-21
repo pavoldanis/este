@@ -124,6 +124,7 @@ class este.app.View extends este.Base
     super
     return
 
+# todo: move to separate file
 class este.app.View.Event extends goog.events.Event
 
   ###*
