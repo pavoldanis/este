@@ -92,11 +92,3 @@ class este.dev.Monitor extends goog.ui.Component
     @getElement().removeChild @monitor
     super()
     return
-
-  ###*
-    Useful for mobile development, where console.log sucks.
-  ###
-  window.mlog = ->
-    message = goog.array.toArray(arguments).join()
-    el = document.getElementById 'devlog'
-    el.innerHTML = message
