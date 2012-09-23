@@ -4,7 +4,10 @@
 
 do ->
   return if !window.WebSocket
-  ws = new WebSocket 'ws://localhost:8000/'
+  # cannot use goog.Uri, because livereload is loaded before closure library
+  parser = document.createElement 'a'
+  parser.href = window.location
+  ws = new WebSocket "ws://#{parser.hostname}:#{parser.port}/"
   ws.onmessage = (e) ->
     switch e.data
       when 'page'
