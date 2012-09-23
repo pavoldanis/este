@@ -10,6 +10,11 @@
 
   Notes
     do not declare class inside function, it does not work
+
+  There are some edge issues, which will be fixed very soon.
+    do not use splats with annotations (foo, bla...)
+    do not use foo in array, foo in [a, ...] is fine
+
 ###
 
 goog.provide 'este.dev.CoffeeForClosure'
