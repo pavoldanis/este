@@ -90,7 +90,10 @@ class este.App extends este.Base
     @on @, este.app.View.EventType.REDIRECT, @onRedirect
     @localStorage = new este.storage.Local @localStorageNamespace
     @prepareViews()
-    @startRouter()
+    if @urlEnabled
+      @startRouter()
+    else
+      @load @views[0]
 
   ###*
     @protected

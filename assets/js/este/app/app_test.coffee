@@ -79,6 +79,18 @@ suite 'este.App', ->
       assert.instanceOf view2.localStorage, este.storage.Local
       assert.instanceOf view3.localStorage, este.storage.Local
 
+    test 'should call view1 load then render method if urlEnabled == false', (done) ->
+      arrangeAppWithViews()
+      app.urlEnabled = false
+      loadCalled = false
+      view1.load = ->
+        loadCalled = true
+        este.result.ok()
+      view1.render = ->
+        assert.isTrue loadCalled
+        done()
+      app.start()
+
   suite 'router', ->
     test 'should be prepared in app.start', (done) ->
       arrangeAppWithViews()
