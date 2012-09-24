@@ -65,6 +65,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @on @todos, 'change', @onTodosChange
+    # yeah, such a beautiful syntax is possible ,-)
+    # @on '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
+    # @on '#clear-completed', 'click', @onClearCompletedClick
+    # @on '#toggle-all', 'click', @toggleAllComplete
 
   ###*
     @param {goog.events.Event} e
