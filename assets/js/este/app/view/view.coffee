@@ -10,6 +10,7 @@ goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'goog.dom'
 goog.require 'goog.events.Event'
+goog.require 'goog.events.KeyHandler'
 
 class este.app.View extends este.Base
 
@@ -27,8 +28,10 @@ class este.app.View extends este.Base
     REDIRECT: 'redirect'
 
   ###*
-    for example 'detail/:id'
-    handle actions via switch
+    Null - no url projection
+    empty string - root
+    some url - 'detail/:id'
+    Handle actions with switch.
     @type {?string}
   ###
   url: null
@@ -40,9 +43,9 @@ class este.app.View extends este.Base
 
   ###*
     @type {Element}
-    @protected
+    @private
   ###
-  element: null
+  element_: null
 
   ###*
     @type {boolean}
@@ -96,7 +99,7 @@ class este.app.View extends este.Base
     @return {Element}
   ###
   getElement: ->
-    @element ?= document.createElement 'div'
+    @element_ ?= document.createElement 'div'
 
   ###*
     @param {function(new:este.app.View)} viewClass
@@ -120,7 +123,9 @@ class este.app.View extends este.Base
   ###
   disposeInternal: ->
     @exitDocument()
-    goog.dom.removeNode @element if @element
+    if @element_
+      goog.dom.removeNode @element_
+      @element_ = null
     super
     return
 
