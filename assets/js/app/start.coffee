@@ -16,15 +16,15 @@ app.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
+  # very naive demo
   box = goog.dom.createDom 'div',
-    style: 'width: 100px; height: 100px; background-color: #ff8c55'
+    style: 'width: 250px; height: 80px; background-color: #ff8c55; padding: 1em'
     innerHTML: 'Click on me'
 
   document.body.appendChild box
 
   goog.events.listen box, 'click', ->
-    alert 'It works.'
+    alert 'Thanx'
 
 # ensures the symbol will be visible after compiler renaming
 goog.exportSymbol 'app.start', app.start
-
