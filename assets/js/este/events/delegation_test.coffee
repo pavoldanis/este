@@ -20,7 +20,8 @@ suite 'este.events.Delegation', ->
 
 	suite 'should dispatch click', ->
 		test 'on element with className .target and with parent className .parent', (done) ->
-			goog.events.listenOnce delegation, 'click', -> done()
+			goog.events.listenOnce delegation, 'click', ->
+				done()
 			goog.events.fireListeners element, 'click', false,
 				type: 'click'
 				target:
@@ -89,16 +90,3 @@ suite 'este.events.Delegation', ->
 				target:
 					parentNode: target
 			assert.isFalse called
-
-
-
-
-
-
-
-
-
-
-
-
-
