@@ -50,6 +50,7 @@ class este.demos.app.simple.product.View extends este.app.View
     @inheritDoc
   ###
   enterDocument: ->
+    super()
     @on @getElement(), 'click', @onClick
 
   ###*
@@ -58,5 +59,5 @@ class este.demos.app.simple.product.View extends este.app.View
   ###
   onClick: (e) ->
     return if !e.target.hasAttribute 'e-href'
-    # example of custom redirection
+    # example of explicit redirection (without link with href)
     @redirect este.demos.app.simple.products.View
