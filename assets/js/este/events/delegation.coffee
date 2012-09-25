@@ -26,12 +26,14 @@ class este.events.Delegation extends goog.events.EventTarget
 	###*
 		@param {Element} element
 		@param {Array.<string>} eventTypes
+		@param {function(Node): boolean=} targetFilter
+		@param {function(Node): boolean=} targetParentFilter
 		@return {este.events.Delegation}
 	###
 	@create: (element, eventTypes, targetFilter, targetParentFilter) ->
 		delegation = new este.events.Delegation element, eventTypes
-		delegation.targetFilter = targetFilter
-		delegation.targetParentFilter = targetParentFilter
+		delegation.targetFilter = targetFilter if targetFilter
+		delegation.targetParentFilter = targetParentFilter if targetParentFilter
 		delegation
 
 	###*
@@ -47,15 +49,13 @@ class este.events.Delegation extends goog.events.EventTarget
 	eventTypes: null
 
 	###*
-		@param {Node} node
-		@return {boolean}
+		@type {function(Node): boolean}
 	###
 	targetFilter: (node) ->
 		true
 
 	###*
-		@param {Node} node
-		@return {boolean}
+		@type {function(Node): boolean}
 	###
 	targetParentFilter: (node) ->
 		true
@@ -107,7 +107,7 @@ class este.events.Delegation extends goog.events.EventTarget
 		@inheritDoc
 	###
 	disposeInternal: ->
-		super()
 		goog.events.unlistenByKey @listenKey_
 		delete @listenKey_
+		super()
 		return
