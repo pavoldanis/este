@@ -51,7 +51,7 @@ class este.events.MatchedHandler extends goog.events.EventTarget
   @getChildIndex: (container, child, childMatcher) ->
     index = 0
     for item in goog.array.toArray container.getElementsByTagName '*'
-      if este.dom.matchQueryParts item, childMatcher
+      if este.dom.match item, childMatcher
         return index if item == child
         index++
     -1
@@ -90,7 +90,7 @@ class este.events.MatchedHandler extends goog.events.EventTarget
       index = 0
       for ancestor in ancestors
         break if container
-        continue if !este.dom.matchQueryParts ancestor, matchers[index]
+        continue if !este.dom.match ancestor, matchers[index]
         switch index
           when 1 then child = ancestor
           when 2 then container = ancestor

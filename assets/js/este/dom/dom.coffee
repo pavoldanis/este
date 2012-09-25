@@ -349,13 +349,13 @@ goog.scope ->
   `var _ = este.dom`
 
   ###*
-    Element matcher for getQueryParts.
+    ex. <a class='foo'></a>, 'a.foo'
     @param {Element} el
-    @param {string} matcher
+    @param {string} selector
     @return {boolean}
   ###
-  _.matchQueryParts = (el, matcher) ->
-    queryParts = _.getQueryParts matcher
+  _.match = (el, selector) ->
+    queryParts = _.getQueryParts selector
     for part in queryParts
       return false if part.tag && part.tag != '*' && el.tagName != part.tag
       return false if part.id && el.id != part.id
