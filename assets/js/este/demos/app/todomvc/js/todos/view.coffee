@@ -39,24 +39,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   render: ->
-    # json = @todos.toJson()
-    # JSON.stringify json
-    # JSON.stringify json
     @getElement().innerHTML = este.demos.app.todomvc.todos.templates.items()
-    # console.log 'rendered'
-    # # console.log products
-    # links = []
-    # for product in products
-    #   # no url hardcoding, urls are always generated
-    #   url = @getUrl este.demos.app.simple.product.View, id: product['clientId']
-    #   links.push "<li><a e-href='#{url}'>#{url}</a>"
-
-    # @getElement().innerHTML = """
-    #   <p>products</p>
-    #   <ul>
-    #     #{links.join ''}
-    #   </ul>
-    # """
     return
 
   ###*
@@ -65,10 +48,29 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @on @todos, 'change', @onTodosChange
-    # yeah, such a beautiful syntax is possible ,-)
-    # @on '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
-    # @on '#clear-completed', 'click', @onClearCompletedClick
-    # @on '#toggle-all', 'click', @toggleAllComplete
+
+    # tap handler
+    # submit (cross?)
+
+    @delegate '#clear-completed', 'click', @onClearCompletedClick
+    @delegate '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
+
+    # @delegate '#clear-completed', 'tap': @onClearCompletedTap
+    # @delegate '#new-fok', 'submit', @onNewFokSubmit
+
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @protected
+  ###
+  onClearCompletedClick: (e) ->
+    window['console']['log'] e.type
+
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @protected
+  ###
+  onNewTodoEnter: (e) ->
+    window['console']['log'] 'enter'
 
   ###*
     @param {goog.events.Event} e

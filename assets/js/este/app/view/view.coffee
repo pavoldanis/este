@@ -1,15 +1,17 @@
 ###*
   @fileoverview este.app.View.
+  STILL EXPERIMENTAL
 ###
 goog.provide 'este.app.View'
 goog.provide 'este.app.View.Event'
 goog.provide 'este.app.View.EventType'
 
 goog.require 'este.Base'
+goog.require 'este.dom'
+goog.require 'este.events.Delegation'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'goog.asserts'
-goog.require 'goog.dom'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.KeyHandler'
 
@@ -21,6 +23,7 @@ class este.app.View extends este.Base
   ###
   constructor: ->
     super
+    @delegations = []
 
   ###*
     @enum {string}
@@ -53,6 +56,18 @@ class este.app.View extends este.Base
     @protected
   ###
   isShown_: false
+
+  ###*
+    @type {Array.<este.events.Delegation>}
+    @protected
+  ###
+  delegations: null
+
+  ###*
+    @type {goog.events.KeyHandler}
+    @protected
+  ###
+  keyHandler: null
 
   ###*
     @param {Object=} params
@@ -95,6 +110,11 @@ class este.app.View extends este.Base
   exitDocument: ->
     @isShown_ = false
     @getHandler().removeAll()
+    delegation.dispose() for delegation in @delegations
+    @delegations.length = 0
+    if @keyHandler
+      @keyHandler.dispose()
+      @keyHandler = null
 
   ###*
     @return {Element}
@@ -125,6 +145,25 @@ class este.app.View extends este.Base
     goog.asserts.assert @isShown(),
       'ensure you called @on from enterDocument and base method was called'
     super src, type, fn, capture, handler
+
+  ###*
+    @param {string} selector
+    @param {string|Array.<string>|number} arg
+    @param {Function} fn
+    @protected
+  ###
+  delegate: (selector, arg, fn) ->
+    if typeof arg == 'number'
+      @keyHandler ?= new goog.events.KeyHandler @getElement()
+      @on @keyHandler, 'key', (e) ->
+        return if e.keyCode != arg
+        fn.call @, e
+    else
+      arg = [arg] if typeof arg == 'string'
+      filter = (el) -> este.dom.match el, selector
+      delegation = este.events.Delegation.create @getElement(), arg, filter
+      @delegations.push delegation
+      @on delegation, arg, fn
 
   ###*
     @inheritDoc
