@@ -31,6 +31,7 @@ goog.require 'este.json'
 goog.require 'este.model.getters'
 goog.require 'este.model.setters'
 goog.require 'este.model.validators'
+goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
 goog.require 'goog.string'
@@ -183,8 +184,8 @@ class este.Model extends goog.events.EventTarget
   ###
   fromJson: (json, forceIds) ->
     if !forceIds
-      throw Error 'Model id is immutable' if json['id']
-      throw Error 'Model clientId is immutable' if json['clientId']
+      goog.asserts.assert !json['id'], 'Model id is immutable'
+      goog.asserts.assert !json['clientId'], 'Model clientId is immutable'
 
     for key, value of json
       @attributes[@getKey key] = value

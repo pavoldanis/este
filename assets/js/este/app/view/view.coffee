@@ -8,6 +8,7 @@ goog.provide 'este.app.View.EventType'
 goog.require 'este.Base'
 goog.require 'este.result'
 goog.require 'este.router.Route'
+goog.require 'goog.asserts'
 goog.require 'goog.dom'
 goog.require 'goog.events.Event'
 goog.require 'goog.events.KeyHandler'
@@ -111,11 +112,18 @@ class este.app.View extends este.Base
     @dispatchEvent e
 
   ###*
-    @inheritDoc
+    @param {goog.events.EventTarget|EventTarget} src Event source.
+    @param {string|Array.<string>} type Event type to listen for or array of
+      event types.
+    @param {Function|Object=} fn Optional callback function to be used as
+      the listener or an object with handleEvent function.
+    @param {boolean=} capture Optional whether to use capture phase.
+    @param {Object=} handler Object in whose scope to call the listener.
+    @protected
   ###
   on: (src, type, fn, capture, handler) ->
-    if !@isShown()
-      throw Error 'move your @on into enterDocument method'
+    goog.asserts.assert @isShown(),
+      'ensure you called @on from enterDocument and base method was called'
     super src, type, fn, capture, handler
 
   ###*
