@@ -1,7 +1,8 @@
 Este.js - The evolutionary JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
-With Este.js, just run one script to automatically update deps.js, run all your Mocha unit tests, and complile CoffeeScript, Stylus, and Soy templates. Browser is automatically reloaded when needed.
+With Este.js, just run one script to automatically update deps.js, run all your Mocha unit tests, and compile CoffeeScript, Stylus, and Soy templates. Browser is automatically reloaded
+or styles are updated if source file change.
 
 Tested on and compatible for OSX, Linux, and Windows.
 
@@ -21,13 +22,13 @@ Consider it boilerplate for mobile first development, an offline capable MVC web
 
 ### More Information
 
-The application defines structure, feature-based namespacing, template behaviour, custom events,
-and compilation, all in one compact location.
+`node run app` options are described in `assets/js/dev/run.coffee`.
+
+The app examples defines structure, feature-based namespacing, template behaviour, custom events, and compilation, all in one compact location.
 
 We're actively working on a mobile version for ShopMVC on this stack, which should give greater
-clarity by means of example. In the meantime, take a look at the  `assets/js/*` namespace.
-
-Node run options described in `assets/js/dev/run.coffee`.
+clarity by means of example. In the meantime, take a look at the `assets/js/*` namespaces and
+`assets/js/este/demos/` demos.
 
 ### Coming Soon
 
