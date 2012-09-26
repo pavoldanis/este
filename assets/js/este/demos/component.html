@@ -1,0 +1,60 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>este.ui.Component</title>
+  <style>
+    #component {
+      border: solid 1px #ccc;
+      padding: 1em;
+    }
+    #component .box {
+      background-color: #ff8c55;
+      margin: 1em;
+    }
+    p {
+      padding: 1em;
+    }
+  </style>
+  <link href="/assets/js/este/demos/css/default.css" rel="stylesheet">
+  <script src="/assets/js/dev/livereload.js"></script>
+  <script src="/assets/js/google-closure/closure/goog/base.js"></script>
+  <script src="/assets/js/deps.js"></script>
+  <script>
+    goog.require('este.dev.Monitor.create')
+    goog.require('este.ui.Component')
+  </script>
+</head>
+<body>
+  <h1>este.ui.Component</h1>
+  <div id="component">
+    <p>This is decorated component. Open console to see logs.</p>
+    <fieldset>
+      <input id="someInput" type="text" placeholder="press enter here">
+    </fieldset>
+    <div class='box'>
+      <p>
+        Box with <em>inline element, note how inner mouseovers/mouseouts are ignored</em>. It's real mouseenter/mouseleave event delegation.
+      </p>
+    </div>
+  </div>
+  <script>
+    este.dev.Monitor.create()
+
+    var component = new este.ui.Component
+    component.enterDocument = function() {
+      goog.base(this, 'enterDocument')
+      this.on(document.querySelector('h1'), 'click', function() {
+        alert('h1 clicked')
+      })
+      this.delegate('#someInput', goog.events.KeyCodes.ENTER, function(e) {
+        console.log(e.type, e.keyCode)
+      })
+      this.delegate('.box', ['mouseover', 'mouseout'], function(e) {
+        console.log(e.type, e.target.tagName)
+      })
+
+    }
+    component.decorate(document.getElementById('component'))
+  </script>
+</body>

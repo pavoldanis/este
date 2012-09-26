@@ -67,22 +67,6 @@ suite 'este.app.View', ->
       view.exitDocument()
       assert.isFalse view.isShown()
 
-  suite 'on', ->
-    test 'should throw exception if called before enterDocument', (done) ->
-      try
-        view.on {attachEvent: ->}, 'foo', ->
-      catch e
-        done()
-
-    test 'should not throw exception if called after enterDocument', ->
-      called = false
-      view.enterDocument()
-      try
-        view.on {attachEvent: ->}, 'foo', ->
-      catch e
-        called = true
-      assert.isFalse called
-
   suite 'exitDocument', ->
     test 'should call @getHandler().removeAll', (done) ->
       view.getHandler = ->
