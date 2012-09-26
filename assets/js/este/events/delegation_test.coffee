@@ -99,3 +99,24 @@ suite 'este.events.Delegation', ->
 				target:
 					parentNode: target
 			assert.isFalse called
+
+	suite 'w3c', ->
+		suite 'focus', ->
+			test 'should call addEventListener', (done) ->
+				element.addEventListener = (type, fn, capture) ->
+					assert.equal type, 'focus'
+					assert.isFunction fn
+					assert.isTrue capture
+					done()
+				delegation = new Delegation element, 'focus'
+
+		suite 'blur', ->
+			test 'should call addEventListener', (done) ->
+				element.addEventListener = (type, fn, capture) ->
+					assert.equal type, 'blur'
+					assert.isFunction fn
+					assert.isTrue capture
+					done()
+				delegation = new Delegation element, 'blur'
+
+	# todo: suite 'ie', ->
