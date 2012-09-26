@@ -13,7 +13,6 @@ goog.require 'goog.array'
 `
 /**
   Extracted and modified goog.dom.query getQueryParts method.
-  todo: rewrite into def object?
   Returns [
     query: null, // the full text of the part's rule
     pseudos: [], // CSS supports multiple pseudo-class matches in a single
@@ -350,17 +349,18 @@ goog.scope ->
 
   ###*
     ex. <a class='foo'></a>, 'a.foo'
-    @param {Element} el
+    todo: add pseudos and attrs, make tag case insensitive, tests
+    @param {Node} node
     @param {string} selector
     @return {boolean}
   ###
-  _.match = (el, selector) ->
+  _.match = (node, selector) ->
     queryParts = _.getQueryParts selector
     for part in queryParts
-      return false if part.tag && part.tag != '*' && el.tagName != part.tag
-      return false if part.id && el.id != part.id
+      return false if part.tag && part.tag != '*' && node.tagName != part.tag
+      return false if part.id && node.id != part.id
       for className in part.classes
-        return false if !goog.dom.classes.has el, className
+        return false if !goog.dom.classes.has node, className
     true
 
   ###*
