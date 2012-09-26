@@ -48,14 +48,12 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @on @todos, 'change', @onTodosChange
-
-    # tap handler
-    # submit (cross?)
-
-    @delegate '#clear-completed', 'click', @onClearCompletedClick
-    @delegate '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
-
+    # @delegate '#clear-completed', 'click', @onClearCompletedClick
+    # @delegate 'input.field', ['focus', 'blur'], @onClearCompletedClick
+    # @delegate '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
+    # # for mobile and desktop both
     # @delegate '#clear-completed', 'tap': @onClearCompletedTap
+    # # submit can bubble to, with automatic form2json
     # @delegate '#new-fok', 'submit', @onNewFokSubmit
 
   ###*
