@@ -1,28 +1,33 @@
 ###*
-	@fileoverview Simple and very useful event delegation. We can listen what we
-	want and filter it with custom filters. Similar to Diego Perini bottom-up
-	approach.
+	@fileoverview Simple and useful event delegation.
 	@see ../demos/delegation.html
 ###
 goog.provide 'este.events.Delegation'
 goog.provide 'este.events.Delegation.create'
 
+goog.require 'este.Base'
 goog.require 'goog.dom'
 goog.require 'goog.events'
-goog.require 'goog.events.EventTarget'
+goog.require 'goog.userAgent'
 
-class este.events.Delegation extends goog.events.EventTarget
+class este.events.Delegation extends este.Base
 
 	###*
 		@param {Element} element
-		@param {Array.<string>|string} eventTypes
+		@param {Array.<string>|string} types
 		@constructor
-		@extends {goog.events.EventTarget}
+		@extends {este.Base}
 	###
-	constructor: (@element, eventTypes) ->
-		eventTypes = [eventTypes] if typeof eventTypes == 'string'
-		@eventTypes = eventTypes
-		goog.events.listen @element, @eventTypes, @
+	constructor: (@element, types) ->
+		types = [types] if typeof types == 'string'
+		for type in types
+			if type in ['focus', 'blur']
+				if goog.userAgent.IE
+					type = 'focusin' if type == 'focus'
+					type = 'focusout' if type == 'blur'
+				@on @element, type, @onElementType, !goog.userAgent.IE
+			else
+				@on @element, type, @onElementType
 		super()
 
 	###*
@@ -45,12 +50,6 @@ class este.events.Delegation extends goog.events.EventTarget
 	element: null
 
 	###*
-		@type {Array.<string>} eventTypes
-		@protected
-	###
-	eventTypes: null
-
-	###*
 		@type {function(Node): boolean}
 	###
 	targetFilter: (node) ->
@@ -63,16 +62,10 @@ class este.events.Delegation extends goog.events.EventTarget
 		true
 
 	###*
-		@type {?number}
-		@private
-	###
-	listenKey_: null
-
-	###*
 		@param {goog.events.BrowserEvent} e
 		@protected
 	###
-	handleEvent: (e) ->
+	onElementType: (e) ->
 		return if !@matchFilter e
 		@dispatchEvent e
 
@@ -104,11 +97,3 @@ class este.events.Delegation extends goog.events.EventTarget
 			return !e.relatedTarget || !goog.dom.contains target, e.relatedTarget
 
 		true
-
-	###*
-		@inheritDoc
-	###
-	disposeInternal: ->
-		goog.events.unlisten @element, @eventTypes, @
-		super()
-		return
