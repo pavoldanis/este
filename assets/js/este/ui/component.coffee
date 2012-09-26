@@ -4,12 +4,13 @@
 
   Features
     on/off aliases for getHandler().listen, getHandler().unlisten
-    on is allowed only when component is in document (because exitDocument)
+    on is allowed only if component is in document (because exitDocument)
     delegate method for
       DOM events
       key (keyHandler)
-      submit
       focus blur
+      tap
+      submit
 
 ###
 goog.provide 'este.ui.Component'
@@ -17,6 +18,7 @@ goog.provide 'este.ui.Component'
 goog.require 'este.dom'
 goog.require 'este.events.Delegation'
 goog.require 'goog.asserts'
+goog.require 'goog.events.FocusHandler'
 goog.require 'goog.events.KeyHandler'
 goog.require 'goog.ui.Component'
 
@@ -42,12 +44,19 @@ class este.ui.Component extends goog.ui.Component
   keyHandler: null
 
   ###*
+    @type {goog.events.FocusHandler}
+    @protected
+  ###
+  focusHandler: null
+
+  ###*
     @protected
   ###
   enterDocument: ->
     super()
     @delegations = []
     @keyHandler = null
+    @focusHandler = null
     return
 
   ###*
@@ -57,6 +66,7 @@ class este.ui.Component extends goog.ui.Component
     super()
     delegation.dispose() for delegation in @delegations
     @keyHandler?.dispose()
+    @focusHandler?.dispose()
     return
 
   ###*

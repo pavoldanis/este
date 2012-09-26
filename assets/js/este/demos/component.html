@@ -13,7 +13,7 @@
       margin: 1em;
     }
     p {
-      padding: 1em;
+      padding: .3em 1em;
     }
   </style>
   <link href="/assets/js/este/demos/css/default.css" rel="stylesheet">
@@ -49,6 +49,9 @@
       })
       this.delegate('#someInput', goog.events.KeyCodes.ENTER, function(e) {
         console.log(e.type, e.keyCode)
+      })
+      this.delegate('#someInput', ['focus', 'blur'], function(e) {
+        console.log(e.type, e.target.tagName)
       })
       this.delegate('.box', ['mouseover', 'mouseout'], function(e) {
         console.log(e.type, e.target.tagName)
