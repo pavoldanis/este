@@ -15,17 +15,19 @@ class este.events.Delegation extends goog.events.EventTarget
 
 	###*
 		@param {Element} element
-		@param {Array.<string>} eventTypes
+		@param {Array.<string>|string} eventTypes
 		@constructor
 		@extends {goog.events.EventTarget}
 	###
-	constructor: (@element, @eventTypes) ->
+	constructor: (@element, eventTypes) ->
+		eventTypes = [eventTypes] if typeof eventTypes == 'string'
+		@eventTypes = eventTypes
+		goog.events.listen @element, @eventTypes, @
 		super()
-		@listenKey_ = goog.events.listen @element, @eventTypes, @
 
 	###*
 		@param {Element} element
-		@param {Array.<string>} eventTypes
+		@param {Array.<string>|string} eventTypes
 		@param {function(Node): boolean=} targetFilter
 		@param {function(Node): boolean=} targetParentFilter
 		@return {este.events.Delegation}
@@ -81,7 +83,7 @@ class este.events.Delegation extends goog.events.EventTarget
 	###
 	matchFilter: (e) ->
 		targetMatched = false
-		targetParentMatched = false
+		targetParentMatched = null
 		element = e.target
 		target = null
 
@@ -95,7 +97,7 @@ class este.events.Delegation extends goog.events.EventTarget
 				break
 			element = element.parentNode
 
-		return false if !targetMatched || !targetParentMatched
+		return false if !targetMatched || targetParentMatched == false
 
 		e.target = target
 		if e.type in ['mouseover', 'mouseout']
@@ -107,7 +109,6 @@ class este.events.Delegation extends goog.events.EventTarget
 		@inheritDoc
 	###
 	disposeInternal: ->
-		goog.events.unlistenByKey @listenKey_
-		delete @listenKey_
+		goog.events.unlisten @element, @eventTypes, @
 		super()
 		return

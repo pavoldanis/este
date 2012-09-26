@@ -29,6 +29,15 @@ suite 'este.events.Delegation', ->
 					parentNode:
 						className: 'parent'
 
+		test 'on element with className .target and without parent', (done) ->
+			delete delegation.targetParentFilter
+			goog.events.listenOnce delegation, 'click', ->
+				done()
+			goog.events.fireListeners element, 'click', false,
+				type: 'click'
+				target:
+					className: 'target'
+
 		test 'on element inside el with className .target and with parent className .parent', (done) ->
 			target =
 				className: 'target'
