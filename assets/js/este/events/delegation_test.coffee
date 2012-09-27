@@ -119,4 +119,21 @@ suite 'este.events.Delegation', ->
 					done()
 				delegation = new Delegation element, 'blur'
 
-	# todo: suite 'ie', ->
+	suite 'ie', ->
+		suite 'focus', ->
+			test 'should call addEventListener', (done) ->
+				element.addEventListener = (type, fn, capture) ->
+					assert.equal type, 'focusin'
+					assert.isFunction fn
+					assert.isFalse capture
+					done()
+				delegation = new Delegation element, 'focus', true
+
+		suite 'blur', ->
+			test 'should call addEventListener', (done) ->
+				element.addEventListener = (type, fn, capture) ->
+					assert.equal type, 'focusout'
+					assert.isFunction fn
+					assert.isFalse capture
+					done()
+				delegation = new Delegation element, 'blur', true

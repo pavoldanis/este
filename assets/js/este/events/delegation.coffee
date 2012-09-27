@@ -15,17 +15,19 @@ class este.events.Delegation extends este.Base
 	###*
 		@param {Element} element
 		@param {Array.<string>|string} types
+		@param {boolean=} forceIE
 		@constructor
 		@extends {este.Base}
 	###
-	constructor: (@element, types) ->
+	constructor: (@element, types, forceIE) ->
 		types = [types] if typeof types == 'string'
 		for type in types
 			if type in ['focus', 'blur']
-				if goog.userAgent.IE
+				isIe = forceIE || goog.userAgent.IE
+				if isIe
 					type = 'focusin' if type == 'focus'
 					type = 'focusout' if type == 'blur'
-				@on @element, type, @onElementType, !goog.userAgent.IE
+				@on @element, type, @onElementType, !isIe
 			else
 				@on @element, type, @onElementType
 		super()
