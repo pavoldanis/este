@@ -104,8 +104,3 @@ class este.events.DomReadyHandler extends goog.events.EventTarget
     return
 
 este.events.domReady = new este.events.DomReadyHandler
-
-
-
-
-
