@@ -72,11 +72,11 @@ suite 'este.ui.Component', ->
             parentNode:
               id: 'foo'
 
-      test 'should delegate to element by selector', ->
+      test 'should delegate to element by selector more types', ->
         calls = 0
         component.render()
-        component.delegate '#foo', ['mousedown', 'mouseup'], ->
-          calls++
+        fn = -> calls++
+        component.delegate '#foo', ['mousedown', 'mouseup'], fn
         goog.events.fireListeners component.getElement(), 'mousedown', false,
           type: 'mousedown'
           target:
@@ -124,10 +124,46 @@ suite 'este.ui.Component', ->
               className: 'foo'
 
       test 'should be disposed after exitDocument', ->
+        listenerCount = goog.events.getTotalListenerCount()
         component.render()
         component.delegate '.foo', 13, ->
         disposeCalled = false
         component.keyHandler.dispose = ->
           disposeCalled = true
+          goog.base @, 'dispose'
         component.exitDocument()
         assert.isTrue disposeCalled
+        assert.equal goog.events.getTotalListenerCount(), listenerCount
+
+    suite 'tap events', ->
+      test 'should delegate to element by selector', (done) ->
+        component.render()
+        component.delegate '.foo', 'tap', ->
+          done()
+        goog.events.fireListeners component.tapHandler, 'tap', false,
+          type: 'tap'
+          target:
+            className: 'foo'
+
+      test 'should delegate to element by selector via parent', (done) ->
+        component.render()
+        component.delegate '.foo', 'tap', ->
+          done()
+        goog.events.fireListeners component.tapHandler, 'tap', false,
+          type: 'key'
+          keyCode: 'tap'
+          target:
+            parentNode:
+              className: 'foo'
+
+      test 'should be disposed after exitDocument', ->
+        listenerCount = goog.events.getTotalListenerCount()
+        component.render()
+        component.delegate '.foo', 'tap', ->
+        disposeCalled = false
+        component.tapHandler.dispose = ->
+          disposeCalled = true
+          goog.base @, 'dispose'
+        component.exitDocument()
+        assert.isTrue disposeCalled
+        assert.equal goog.events.getTotalListenerCount(), listenerCount

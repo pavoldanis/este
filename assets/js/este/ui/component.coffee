@@ -17,8 +17,8 @@ goog.provide 'este.ui.Component'
 
 goog.require 'este.dom'
 goog.require 'este.events.Delegation'
+goog.require 'este.events.TapHandler'
 goog.require 'goog.asserts'
-goog.require 'goog.events.FocusHandler'
 goog.require 'goog.events.KeyHandler'
 goog.require 'goog.ui.Component'
 
@@ -44,10 +44,10 @@ class este.ui.Component extends goog.ui.Component
   keyHandler: null
 
   ###*
-    @type {goog.events.FocusHandler}
+    @type {este.events.TapHandler}
     @protected
   ###
-  focusHandler: null
+  tapHandler: null
 
   ###*
     @protected
@@ -56,7 +56,6 @@ class este.ui.Component extends goog.ui.Component
     super()
     @delegations = []
     @keyHandler = null
-    @focusHandler = null
     return
 
   ###*
@@ -66,7 +65,7 @@ class este.ui.Component extends goog.ui.Component
     super()
     delegation.dispose() for delegation in @delegations
     @keyHandler?.dispose()
-    @focusHandler?.dispose()
+    @tapHandler?.dispose()
     return
 
   ###*
@@ -106,10 +105,22 @@ class este.ui.Component extends goog.ui.Component
     @protected
   ###
   delegate: (selector, arg, fn) ->
+    if arg == 'tap'
+      @delegateTapEvents selector, fn
     if typeof arg == 'number'
       @delegateKeyEvents selector, arg, fn
     else
       @delegateDomEvents selector, arg, fn
+
+  ###*
+    @param {string} selector
+    @param {Function} fn
+    @protected
+  ###
+  delegateTapEvents: (selector, fn) ->
+    @tapHandler ?= new este.events.TapHandler @getElement()
+    @on @tapHandler, 'tap', (e) ->
+      @callDelegateCallbackIfMatched selector, e, fn
 
   ###*
     @param {string} selector
@@ -121,12 +132,7 @@ class este.ui.Component extends goog.ui.Component
     @keyHandler ?= new goog.events.KeyHandler @getElement()
     @on @keyHandler, 'key', (e) ->
       return if e.keyCode != keyCode
-      target = goog.dom.getAncestor e.target, (el) ->
-        este.dom.match el, selector
-      , true
-      return if !target
-      e.target = target
-      fn.call @, e
+      @callDelegateCallbackIfMatched selector, e, fn
 
   ###*
     @param {string} selector
@@ -135,7 +141,28 @@ class este.ui.Component extends goog.ui.Component
     @protected
   ###
   delegateDomEvents: (selector, events, fn) ->
-    delegation = este.events.Delegation.create @getElement(), events, (el) ->
-      este.dom.match el, selector
+    matcher = @getSelectorMatcher selector
+    delegation = este.events.Delegation.create @getElement(), events, matcher
     @delegations.push delegation
     @on delegation, events, fn
+
+  ###*
+    @param {string} selector
+    @param {goog.events.BrowserEvent} e
+    @param {Function} fn
+    @protected
+  ###
+  callDelegateCallbackIfMatched: (selector, e, fn) ->
+    matcher = @getSelectorMatcher selector
+    target = goog.dom.getAncestor e.target, matcher, true
+    return if !target
+    e.target = target
+    fn.call @, e
+
+  ###*
+    @param {string} selector
+    @return {function(Node): boolean}
+    @protected
+  ###
+  getSelectorMatcher: (selector) ->
+    (el) -> este.dom.match el, selector

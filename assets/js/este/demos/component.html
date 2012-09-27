@@ -12,6 +12,11 @@
       background-color: #ff8c55;
       margin: 1em;
     }
+    #tap {
+      background-color: #ff8c55;
+      font-size: 2em;
+      display: inline-block;
+    }
     p {
       padding: .3em 1em;
     }
@@ -28,7 +33,17 @@
 <body>
   <h1>este.ui.Component</h1>
   <div id="component">
-    <p>This is decorated component. Open console to see logs.</p>
+    <p>
+      este.ui.Component provides event delegation with simple CSS selector filter for these events:
+      <ul>
+        <li>click, mousedown etc.</li>
+        <li>keys via goog.events.KeyHandler</li>
+        <li>focus and blur</li>
+        <li>tap via este.events.TapHandler</li>
+        <li>submit with form2json serialization</li>
+      </ul>
+      Open console to see logs.
+    </p>
     <fieldset>
       <input id="someInput" type="text" placeholder="press enter here">
     </fieldset>
@@ -37,6 +52,7 @@
         Box with <em>inline element, note how inner mouseovers/mouseouts are ignored</em>. It's real mouseenter/mouseleave event delegation.
       </p>
     </div>
+    <div id="tap">tap me</div>
   </div>
   <script>
     este.dev.Monitor.create()
@@ -47,17 +63,20 @@
       this.on(document.querySelector('h1'), 'click', function() {
         alert('h1 clicked')
       })
+      this.delegate('.box', ['mouseover', 'mouseout'], function(e) {
+        console.log(e.type, e.target.tagName)
+      })
       this.delegate('#someInput', goog.events.KeyCodes.ENTER, function(e) {
         console.log(e.type, e.keyCode)
       })
       this.delegate('#someInput', ['focus', 'blur'], function(e) {
         console.log(e.type, e.target.tagName)
       })
-      this.delegate('.box', ['mouseover', 'mouseout'], function(e) {
+      this.delegate('#tap', 'tap', function(e) {
         console.log(e.type, e.target.tagName)
       })
-
     }
+
     component.decorate(document.getElementById('component'))
   </script>
 </body>
