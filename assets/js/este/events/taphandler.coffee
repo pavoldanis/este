@@ -22,13 +22,13 @@ class este.events.TapHandler extends este.Base
 
   ###*
     @param {Element} element
-    @param {boolean=} touchIsSupported
+    @param {boolean=} touchSupported
     @constructor
     @extends {este.Base}
   ###
-  constructor: (@element, touchIsSupported) ->
+  constructor: (@element, touchSupported) ->
     super
-    @registerEvents touchIsSupported
+    @registerEvents touchSupported
 
   ###*
     @type {number}
@@ -54,7 +54,7 @@ class este.events.TapHandler extends este.Base
     todo: check Android
     @return {boolean}
   ###
-  @touchIsSupported: ->
+  @touchSupported: ->
     return false if !goog.userAgent.MOBILE
     !este.mobile.iosVersion || este.mobile.iosVersion >= 5
 
@@ -94,11 +94,11 @@ class este.events.TapHandler extends este.Base
   scrolled: false
 
   ###*
-    @param {boolean=} touchIsSupported
+    @param {boolean=} touchSupported
     @protected
   ###
-  registerEvents: (touchIsSupported) ->
-    if touchIsSupported ? TapHandler.touchIsSupported()
+  registerEvents: (touchSupported) ->
+    if touchSupported ? TapHandler.touchSupported()
       scrollElement = if @element.tagName == 'BODY'
         goog.dom.getWindow @element.ownerDocument
       else
