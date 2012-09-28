@@ -18,17 +18,25 @@
   <h1>este.events.SubmitHandler</h1>
   <form>
     <fieldset>
+      <label>
+        <input name="foo" type="text">
+      </label>
+      <label>
+        <input name="bla" type="text">
+      </label>
       <legend>Some form</legend>
       <button>submit</button>
     </fieldset>
   </form>
+  <textarea id="output"></textarea>
   <script>
     este.dev.Monitor.create()
 
     var handler = new este.events.SubmitHandler(document.body)
     goog.events.listen(handler, 'submit', function(e) {
       e.preventDefault()
-      console.log(e)
+      var json = JSON.stringify(e.json)
+      document.getElementById('output').value = json
     })
   </script>
 </body>

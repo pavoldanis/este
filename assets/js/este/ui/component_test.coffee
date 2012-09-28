@@ -167,3 +167,36 @@ suite 'este.ui.Component', ->
         component.exitDocument()
         assert.isTrue disposeCalled
         assert.equal goog.events.getTotalListenerCount(), listenerCount
+
+    suite 'submit events', ->
+      test 'should delegate to element by selector', (done) ->
+        component.render()
+        component.delegate '.foo', 'submit', ->
+          done()
+        goog.events.fireListeners component.submitHandler, 'submit', false,
+          type: 'submit'
+          target:
+            className: 'foo'
+
+      test 'should delegate to element by selector via parent', (done) ->
+        component.render()
+        component.delegate '.foo', 'submit', ->
+          done()
+        goog.events.fireListeners component.submitHandler, 'submit', false,
+          type: 'key'
+          keyCode: 'submit'
+          target:
+            parentNode:
+              className: 'foo'
+
+      test 'should be disposed after exitDocument', ->
+        listenerCount = goog.events.getTotalListenerCount()
+        component.render()
+        component.delegate '.foo', 'submit', ->
+        disposeCalled = false
+        component.submitHandler.dispose = ->
+          disposeCalled = true
+          goog.base @, 'dispose'
+        component.exitDocument()
+        assert.isTrue disposeCalled
+        assert.equal goog.events.getTotalListenerCount(), listenerCount

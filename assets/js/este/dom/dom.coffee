@@ -426,8 +426,7 @@ goog.scope ->
     false
 
   ###*
-    Alias for goog.dom.forms.getForm...
-
+    Alias for goog.dom.forms.getFormDataMap(form).toObject().
     @param {Element} form
     @return {Object}
   ###
@@ -451,19 +450,6 @@ goog.scope ->
     return value if !goog.isArray value
     return null if value.length == 0
     value[0]
-
-  ###*
-    todo:
-      get element (parents) dompath
-      if retrieve localStored dompath (window.location involved)
-        unlisten previous listeners
-        restore states
-      register events to store fields state
-        store states into localStorage
-
-    @param {Element} element
-  ###
-  _.fieldsState = (element) ->
 
   ###*
     @param {Element} element

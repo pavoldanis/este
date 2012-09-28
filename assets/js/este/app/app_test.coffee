@@ -50,6 +50,7 @@ suite 'este.App', ->
     view
 
   suite 'constructor', ->
+
     test 'should work', ->
       assert.instanceOf app, App
 
