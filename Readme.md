@@ -1,13 +1,23 @@
 Este.js - The evolutionary JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
-With Este.js, just run one script to automatically update deps.js, run all your Mocha unit tests, and compile CoffeeScript, Stylus, and Soy templates. Browser is automatically reloaded
-or styles are updated if source file change.
+  - statically compiled CoffeeScript
+  - Google Closure Tools
+  - Mocha tests
+  - Stylus styles
+  - Dev Node.js server
+  - Este.js framework
+    - a lot of classes
+    - MVC mobile first framework
+  - settings and snippets for Sublime Text
+  - run.coffee
+
+With Este.js, just run one script to automatically update deps.js, run all your Mocha unit tests, and compile CoffeeScript, Stylus, and Soy templates. LiveReload supported.
 
 Tested on and compatible for OSX, Linux, and Windows.
 
 The bulk of the application is a well-documented, thoroughly tested JavaScript framework,
-written in statically-typed CoffeeScript.  This allows you to write powerful and efficient code for mobile devices and browsers.
+written in statically-typed CoffeeScript. This allows you to write powerful and efficient code for mobile devices and browsers.
 
 Consider it boilerplate for mobile first development, an offline capable MVC web application, streamlined for the developer user experience.
 
