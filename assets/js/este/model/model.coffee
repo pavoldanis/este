@@ -51,6 +51,7 @@ class este.Model extends goog.events.EventTarget
     @schema ?= {}
     @setId json
     @setClientId json, idGenerator
+    @setDefaults()
     @fromJson json, true
 
   ###*
@@ -176,6 +177,11 @@ class este.Model extends goog.events.EventTarget
         json[key] = meta @
 
     json
+
+  ###*
+    @protected
+  ###
+  setDefaults: ->
 
   ###*
     Accept shallow copy. It's used for deserialization.

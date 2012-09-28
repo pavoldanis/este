@@ -6,6 +6,10 @@ class Person extends este.Model
   constructor: (attrs, randomStringGenerator) ->
     super attrs, randomStringGenerator
 
+  setDefaults: ->
+    @fromJson
+      'defaultFoo': 1
+
   schema:
     'firstName':
       'set': trimSetter
@@ -48,9 +52,16 @@ suite 'este.Model', ->
       assert.isUndefined person.get 'firstName'
 
     test 'should return passed attributes', ->
-      assert.strictEqual person.get('firstName'), 'Joe'
-      assert.strictEqual person.get('lastName'), 'Satriani'
-      assert.strictEqual person.get('age'), 55
+      assert.equal person.get('firstName'), 'Joe'
+      assert.equal person.get('lastName'), 'Satriani'
+      assert.equal person.get('age'), 55
+
+    test 'should set defaults', ->
+      assert.equal person.get('defaultFoo'), 1
+
+    test 'should set defaults before attrs', ->
+      person = new Person 'defaultFoo': 2
+      assert.equal person.get('defaultFoo'), 2
 
   suite 'instance', ->
     test 'should have string urn property', ->
@@ -95,6 +106,7 @@ suite 'este.Model', ->
         assert.deepEqual json,
           'clientId': 1
           'name': 'undefined undefined'
+          'defaultFoo': 1
 
     suite 'with attrs', ->
       test 'false should return clientId and meta name', ->
@@ -105,6 +117,7 @@ suite 'este.Model', ->
           'lastName': 'Satriani'
           'name': 'Joe Satriani'
           'age': 55
+          'defaultFoo': 1
 
   suite 'has', ->
     test 'should work', ->
