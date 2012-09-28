@@ -1,8 +1,6 @@
 Este.js - The evolutionary JavaScript Framework and Dev Stack
 -------------------------------------------------------
 
-### Features
-
   - statically compiled CoffeeScript
   - Google Closure Tools
   - Mocha tests
