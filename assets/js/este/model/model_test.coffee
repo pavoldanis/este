@@ -6,9 +6,8 @@ class Person extends este.Model
   constructor: (attrs, randomStringGenerator) ->
     super attrs, randomStringGenerator
 
-  setDefaults: ->
-    @fromJson
-      'defaultFoo': 1
+  defaults:
+    'defaultFoo': 1
 
   schema:
     'firstName':

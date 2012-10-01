@@ -18,10 +18,9 @@ class este.demos.app.todomvc.todo.Model extends este.Model
   ###*
     @inheritDoc
   ###
-  setDefaults: ->
-    @fromJson
-      'title': ''
-      'completed': false
+  defaults:
+    'title': ''
+    'completed': false
 
   ###*
     @inheritDoc
