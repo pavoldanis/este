@@ -15,6 +15,8 @@
     do not use splats with annotations (foo, bla...)
     do not use foo in array, foo in [a, ...] is fine
 
+  Todo
+    consider this http://marijnhaverbeke.nl/blog/acorn.html
 ###
 
 goog.provide 'este.dev.CoffeeForClosure'

@@ -1,0 +1,22 @@
+// todo
+
+//suite('este.demos.typescript.Greeter', function() {
+//
+//  var Greeter = este.demos.typescript.Greeter
+//
+//  var instance = null
+//
+//  setup(function() {
+//    instance = new Greeter
+//  })
+//
+//  suite('constructor', function() {
+//    test('should work', function() {
+//      assert.instanceOf(instance, Greeter)
+//    })
+//  });
+//});
+
+//        suite 'x', ->
+//        test 'should do something', ->
+    //        instance.x()

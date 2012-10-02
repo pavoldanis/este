@@ -7,6 +7,7 @@
     update Google Closure deps.js
     run and watch *_test.coffee unit tests
     run simple NodeJS development server
+    experimental support for TypeScript.
 
   Options
     -b, --build
@@ -199,6 +200,21 @@ Commands = {
       }
     }
     return callback();
+  },
+  typeScripts: function(callback, path) {
+    var command, paths;
+    paths = (function() {
+      var _i, _len, _ref, _results;
+      _ref = getPaths('assets', ['.ts']);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        path = _ref[_i];
+        _results.push(path);
+      }
+      return _results;
+    })();
+    command = "node assets/js/dev/node_modules/typescript/bin/tsc      " + (paths.join(' '));
+    return exec(command, callback);
   },
   soyTemplates: function(callback) {
     var command, soyPaths;
@@ -475,7 +491,7 @@ getSoyCommand = function(paths) {
 
 watchPaths = function(callback) {
   var path, paths, _fn, _i, _len;
-  paths = getPaths('assets', ['.coffee', '.styl', '.soy', '.html'], true);
+  paths = getPaths('assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true);
   paths.push("" + options.project + "-template.html");
   paths.push('assets/js/dev/run.coffee');
   paths.push('assets/js/dev/mocks.coffee');
@@ -530,6 +546,16 @@ onPathChange = function(path, dir) {
       commands["coffeeForClosure"] = function(callback) {
         return Commands.coffeeForClosure(callback, path.replace('.coffee', '.js'));
       };
+      commands["closureDeps"] = Commands.closureDeps;
+      commands["mochaTests"] = Commands.mochaTests;
+      if (options.build) {
+        commands["closureCompilation"] = Commands.closureCompilation;
+      } else {
+        addBrowserLiveReloadCommand('page');
+      }
+      break;
+    case '.ts':
+      commands["coffeeScript: " + path] = "        node assets/js/dev/node_modules/typescript/bin/tsc          " + path;
       commands["closureDeps"] = Commands.closureDeps;
       commands["mochaTests"] = Commands.mochaTests;
       if (options.build) {

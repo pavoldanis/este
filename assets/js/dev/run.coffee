@@ -6,6 +6,7 @@
     update Google Closure deps.js
     run and watch *_test.coffee unit tests
     run simple NodeJS development server
+    experimental support for TypeScript.
 
   Options
     -b, --build
@@ -156,6 +157,12 @@ Commands =
 
     callback()
 
+  typeScripts: (callback, path) ->
+    paths = (path for path in getPaths 'assets', ['.ts'])
+    command = "node assets/js/dev/node_modules/typescript/bin/tsc
+      #{paths.join ' '}"
+    exec command, callback
+
   soyTemplates: (callback) ->
     soyPaths = getPaths 'assets', ['.soy']
     if !soyPaths.length
@@ -199,9 +206,7 @@ Commands =
 
     preservedClosureScripts = []
 
-    # strip all loggers from compiled code
     if !options.debug
-      # todo: fix brittle closure debug stuff removing
       for jsPath in getPaths 'assets', ['.js'], false, false
         source = fs.readFileSync jsPath, 'utf8'
         continue if source.indexOf('this.logger_.') == -1
@@ -386,7 +391,7 @@ getSoyCommand = (paths) ->
 # slower watchFile, because http://nodejs.org/api/fs.html#fs_caveats
 # todo: wait for fix
 watchPaths = (callback) ->
-  paths = getPaths 'assets', ['.coffee', '.styl', '.soy', '.html'], true
+  paths = getPaths 'assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true
   paths.push "#{options.project}-template.html"
   paths.push 'assets/js/dev/run.coffee'
   paths.push 'assets/js/dev/mocks.coffee'
@@ -433,6 +438,17 @@ onPathChange = (path, dir) ->
       commands["coffeeForClosure"] = (callback) ->
         Commands.coffeeForClosure callback, path.replace '.coffee', '.js'
 
+      commands["closureDeps"] = Commands.closureDeps
+      commands["mochaTests"] = Commands.mochaTests
+      if options.build
+        commands["closureCompilation"] = Commands.closureCompilation
+      else
+        addBrowserLiveReloadCommand 'page'
+
+    when '.ts'
+      commands["coffeeScript: #{path}"] = "
+        node assets/js/dev/node_modules/typescript/bin/tsc
+          #{path}"
       commands["closureDeps"] = Commands.closureDeps
       commands["mochaTests"] = Commands.mochaTests
       if options.build
