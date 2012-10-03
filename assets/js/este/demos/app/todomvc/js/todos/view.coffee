@@ -38,7 +38,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  render: ->
+  onLoad: ->
     @getElement().innerHTML = este.demos.app.todomvc.todos.templates.items()
     return
 
@@ -75,4 +75,4 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onTodosChange: (e) ->
-    # todo: persist and render
+    # todo: persist and onLoad

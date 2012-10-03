@@ -9,9 +9,7 @@ goog.require 'este.app.Request'
 goog.require 'este.app.View'
 goog.require 'este.Base'
 goog.require 'este.storage.Local'
-goog.require 'goog.array'
 goog.require 'goog.events.Event'
-goog.require 'goog.events.EventHandler'
 goog.require 'goog.result'
 goog.require 'goog.result.SimpleResult'
 
@@ -138,7 +136,7 @@ class este.App extends este.Base
     @load view, params, isNavigation
 
   ###*
-    @param {este.app.View.Event} e
+    @param {este.app.view.Event} e
     @protected
   ###
   onRedirect: (e) ->
@@ -165,7 +163,8 @@ class este.App extends este.Base
     return if !goog.array.peek(@pendingRequests).equal request
     @clearPendingRequests()
     @dispatchAppEvent App.EventType.BEFORESHOW, request
-    request.view.render()
+    request.view.render() if !request.view.isInDocument()
+    request.view.onLoad()
     if @urlEnabled && request.view.url? && !request.silent
       @router.pathNavigate request.view.url, request.params, true
     @layout.show request.view, request.params

@@ -47,7 +47,7 @@ class este.demos.app.simple.products.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  render: ->
+  onLoad: ->
     window['console']['log'] "products rendered"
     links = []
     for product in @products.toJson()

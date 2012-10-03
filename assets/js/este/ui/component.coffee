@@ -5,7 +5,7 @@
   Features
     on/off aliases for getHandler().listen, getHandler().unlisten
     on is allowed only if component is in document (because exitDocument)
-    delegate method for
+    delegate method (event bubbling)
       DOM events
       key (keyHandler)
       focus blur
@@ -26,11 +26,13 @@ goog.require 'goog.ui.Component'
 class este.ui.Component extends goog.ui.Component
 
   ###*
+    Default implementation of este UI component.
+    @param {goog.dom.DomHelper=} domHelper Optional DOM helper.
     @constructor
     @extends {goog.ui.Component}
   ###
-  constructor: ->
-    super
+  constructor: (domHelper) ->
+    super domHelper
 
   ###*
     @type {Array.<este.events.Delegation>}
@@ -57,7 +59,7 @@ class este.ui.Component extends goog.ui.Component
   submitHandler: null
 
   ###*
-    @protected
+    @inheritDoc
   ###
   enterDocument: ->
     super()
@@ -68,7 +70,7 @@ class este.ui.Component extends goog.ui.Component
     return
 
   ###*
-    @protected
+    @inheritDoc
   ###
   exitDocument: ->
     super()
