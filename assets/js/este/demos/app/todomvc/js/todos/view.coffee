@@ -10,13 +10,12 @@ goog.require 'este.demos.app.todomvc.todos.templates'
 class este.demos.app.todomvc.todos.View extends este.app.View
 
   ###*
-    @param {este.demos.app.todomvc.todos.Collection=} todos
     @constructor
     @extends {este.app.View}
   ###
-  constructor: (todos) ->
+  constructor: ->
     super()
-    @todos = todos ? new este.demos.app.todomvc.todos.Collection
+    @todos = new este.demos.app.todomvc.todos.Collection
 
   ###*
     @inheritDoc
