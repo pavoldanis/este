@@ -46,8 +46,9 @@ class este.app.View extends este.ui.Component
     este.result.ok params
 
   ###*
-    Use this method for UI refresh. It's called from enterDocument, e.g.
-    anytime when view is shown.
+    Use this method for UI refresh.
+    It's called from enterDocument.
+    enterDocument is called anytime the view is shown by Layout.
     todo
       autobind to model?
       how to prevent repeated updating?

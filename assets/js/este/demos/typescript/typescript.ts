@@ -1,5 +1,5 @@
 /// <reference path="typescript.d.ts" />
-goog.provide("este.demos.typescript.Greeter");
+//goog.provide("este.demos.typescript.Greeter");
 
 module este.demos.typescript {
   export class Greeter {
