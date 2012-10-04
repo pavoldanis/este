@@ -38,7 +38,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  onLoad: ->
+  update: ->
     @getElement().innerHTML = este.demos.app.todomvc.todos.templates.items()
     return
 

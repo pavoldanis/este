@@ -32,3 +32,9 @@ suite 'este.app.View', ->
       viewClass = prototype: url: 'detail/:id'
       url = view.getUrl viewClass, id: 123
       assert.equal url, 'detail/123'
+
+  suite 'enterDocument', ->
+    test 'should call update', (done) ->
+      view.update = ->
+        done()
+      view.enterDocument()

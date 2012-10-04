@@ -1,5 +1,6 @@
 ###*
-  @fileoverview este.app.Layout.
+  @fileoverview Layout manager for este.app.View's. Views are rendered lazily,
+  enter/exitDocument are called when view is shown/hidden.
 ###
 goog.provide 'este.app.Layout'
 
@@ -33,13 +34,17 @@ class este.app.Layout extends este.Base
     @param {Object=} params
   ###
   show: (view, params) ->
-    if view.getElement().parentNode != @element
-      @element.appendChild view.getElement()
-
     if @previousView
       @previousView.exitDocument()
+      # element is hidden instead of removed from dom, because
+      # dom removing would reset some fields states
       goog.style.showElement @previousView.getElement(), false
     @previousView = view
 
-    goog.style.showElement view.getElement(), true
+    # not rendered yet
+    if !view.getElement()
+      view.render @element
+      return
+
     view.enterDocument()
+    goog.style.showElement view.getElement(), true

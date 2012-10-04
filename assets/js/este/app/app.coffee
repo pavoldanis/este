@@ -114,7 +114,20 @@ class este.App extends este.Base
     @pendingRequests.push request
     result = view.load params
     goog.result.waitOnSuccess result, =>
-      @onViewSuccessLoad request
+      @onViewLoad request
+
+  ###*
+    @param {este.app.Request} request
+    @protected
+  ###
+  onViewLoad: (request) ->
+    return if !goog.array.contains @pendingRequests, request
+    return if !goog.array.peek(@pendingRequests).equal request
+    @clearPendingRequests()
+    @dispatchAppEvent App.EventType.BEFORESHOW, request
+    if @urlEnabled && request.view.url? && !request.silent
+      @router.pathNavigate request.view.url, request.params, true
+    @layout.show request.view, request.params
 
   ###*
     @protected
@@ -140,7 +153,7 @@ class este.App extends este.Base
     @protected
   ###
   onRedirect: (e) ->
-    view = @lookupView e.viewClass
+    view = @findView e.viewClass
     return if !view
     @load view, e.params
 
@@ -149,25 +162,10 @@ class este.App extends este.Base
     @return {este.app.View}
     @protected
   ###
-  lookupView: (viewClass) ->
+  findView: (viewClass) ->
     for view in @views
       return view if view instanceof viewClass
     null
-
-  ###*
-    @param {este.app.Request} request
-    @protected
-  ###
-  onViewSuccessLoad: (request) ->
-    return if !goog.array.contains @pendingRequests, request
-    return if !goog.array.peek(@pendingRequests).equal request
-    @clearPendingRequests()
-    @dispatchAppEvent App.EventType.BEFORESHOW, request
-    request.view.render() if !request.view.isInDocument()
-    request.view.onLoad()
-    if @urlEnabled && request.view.url? && !request.silent
-      @router.pathNavigate request.view.url, request.params, true
-    @layout.show request.view, request.params
 
   ###*
     @param {este.App.EventType} type

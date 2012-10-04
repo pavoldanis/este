@@ -38,7 +38,7 @@ class este.demos.app.simple.product.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  onLoad: ->
+  update: ->
     window['console']['log'] "product #{@params['id']} rendered"
     @getElement().innerHTML = """
       <p>product, id = #{@params['id']}</p>

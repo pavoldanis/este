@@ -46,10 +46,23 @@ class este.app.View extends este.ui.Component
     este.result.ok params
 
   ###*
-    onLoad method can be canceled, if another view is shown #lastclickwin
+    Use this method for UI refresh. It's called from enterDocument, e.g.
+    anytime when view is shown.
+    todo
+      autobind to model?
+      how to prevent repeated updating?
+    @protected
   ###
-  onLoad: ->
+  update: ->
     # innerHTML = template + viewModel
+
+  ###*
+    @inheritDoc
+  ###
+  enterDocument: ->
+    super()
+    @update()
+    return
 
   ###*
     @param {function(new:este.app.View)} viewClass
