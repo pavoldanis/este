@@ -25,8 +25,8 @@
 
     var updateForm = function(json) {
       var html = dommerge.templates.form({
-        input: json.input[0],
-        textarea: json.textarea[0]
+        input: json.input,
+        textarea: json.textarea
       })
       este.dom.merge(container, html)
     }
@@ -46,8 +46,8 @@
     }
 
     updateForm({
-      input: ['name'],
-      textarea: ['description']
+      input: 'name',
+      textarea: 'description'
     })
 
   </script>

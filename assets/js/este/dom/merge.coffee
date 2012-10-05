@@ -1,6 +1,7 @@
 ###*
   @fileoverview Non destructive innerHTML update. Preserve form fields states,
   prevents images flickering, changes only changed nodes.
+  EXPERIMENTAL
 
   How does it work
     element is clonned (without content)
@@ -9,18 +10,29 @@
     then clone is merged with element, see mergeInternal
     only changed elements are touched
 
+  este.dom.merge el, '<p>new html</p>'
+
   todo
     tests
-    better algorithm for temporally injected nodes
+    better algorithm for temporally injected nodes via siblings checks
     consider outerHTML optimalization
   @see ../demos/dommerge.html
 ###
 
-goog.provide 'este.dom.Merge'
 goog.provide 'este.dom.merge'
+goog.provide 'este.dom.Merge'
 
 goog.require 'este.dom'
 goog.require 'este.json'
+
+###*
+  @param {Element} element
+  @param {string} html
+###
+este.dom.merge = (element, html) ->
+  merge = new este.dom.Merge element, html
+  merge.merge()
+  return
 
 class este.dom.Merge
 
@@ -94,16 +106,13 @@ class este.dom.Merge
     @protected
   ###
   mergeAttributes: (toNode, fromNode) ->
-    toNodeAttributes = (attr.name for attr in toNode.attributes)
-    toNode.removeAttribute name for name in toNodeAttributes
-    toNode.setAttribute attr.name, attr.value for attr in fromNode.attributes
-    toNode.value = fromNode.value if fromNode.tagName in ['INPUT', 'TEXTAREA']
+    if toNode.hasAttributes()
+      for attr in toNode.attributes
+        continue if fromNode.hasAttribute attr.name
+        toNode.removeAttribute attr.name
 
-###*
-  @param {Element} element
-  @param {string} html
-###
-este.dom.merge = (element, html) ->
-  merge = new este.dom.Merge element, html
-  merge.merge()
-  return
+    if fromNode.hasAttributes()
+      for attr in fromNode.attributes
+        continue if toNode.hasAttribute(attr.name) &&
+                    toNode.getAttribute(attr.name) == attr.value
+        toNode.setAttribute attr.name, attr.value
