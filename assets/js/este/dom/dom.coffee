@@ -4,11 +4,11 @@
 
 goog.provide 'este.dom'
 
-goog.require 'goog.dom'
-goog.require 'goog.string'
-goog.require 'goog.dom.forms'
-goog.require 'goog.object'
+goog.require 'este.object'
 goog.require 'goog.array'
+goog.require 'goog.dom'
+goog.require 'goog.dom.forms'
+goog.require 'goog.string'
 
 `
 /**
@@ -427,12 +427,15 @@ goog.scope ->
 
   ###*
     Alias for goog.dom.forms.getFormDataMap(form).toObject().
+    getFormDataMap method always returns array which is not handy. That's why
+    this method normalize ['foo'] into 'foo'.
     @param {Element} form
     @return {Object}
   ###
   _.serializeForm = (form) ->
     `form = /** @type {HTMLFormElement} */ (form)`
-    goog.dom.forms.getFormDataMap(form).toObject()
+    object = goog.dom.forms.getFormDataMap(form).toObject()
+    este.object.normalizeOneItemArrayValues object
 
   ###*
     Returns a single value of a form element.
