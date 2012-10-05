@@ -10,7 +10,8 @@
 				"assets/js/este/*.js",
 				"assets/js/deps.js",
 				// *.css we don't want to see because we have Stylus
-				"assets/css/*.css"
+				"assets/css/*.css",
+				"assets/js/este/*.css"
 			]
 		}
 	]
