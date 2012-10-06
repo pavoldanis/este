@@ -1,6 +1,6 @@
 ###*
   @fileoverview DomReady ported from jQuery. IE workaround does not work in
-  frame so there is no need to inject document. Ready events is fired once.
+  frame so there is no need to inject document. Ready event is fired once.
   .. listen este.events.domReady, 'ready', (e) ->
   Manually tested.
 ###
@@ -8,8 +8,8 @@
 goog.provide 'este.events.domReady'
 goog.provide 'este.events.DomReadyHandler'
 
-goog.require 'goog.events.EventTarget'
 goog.require 'goog.events.EventHandler'
+goog.require 'goog.events.EventTarget'
 
 class este.events.DomReadyHandler extends goog.events.EventTarget
 
