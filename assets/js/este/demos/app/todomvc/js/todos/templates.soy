@@ -1,53 +1,65 @@
 {namespace este.demos.app.todomvc.todos.templates autoescape="contextual"}
 
 /**
+ * Why all HTML is in JavaScript code? It has a good reason.
+ * http://estejs.tumblr.com/post/32600427488/why-script-elements-used-for-templates-are-wrong
+ */
+
+/**
+ * @param todos
+ * @param remainingCount
+ * @param doneCount
  */
 {template .items}
   <header id="header">
     <h1>todos</h1>
-    <input id="new-todo" placeholder="What needs to be done?" autofocus>
+    <form id="new-todo-form">
+      <input name="title" id="new-todo" placeholder="What needs to be done?" autofocus>
+    </form>
   </header>
-  <!-- This section should be hidden by default and shown when there are todos -->
-  <section id="main">
-    <input id="toggle-all" type="checkbox">
-    <label for="toggle-all">Mark all as complete</label>
-    <ul id="todo-list">
-      <!-- These are here just to show the structure of the list items -->
-      <!-- List items should get the class `editing` when editing and `completed` when marked as completed -->
-      <li class="completed">
-        <div class="view">
-          <input class="toggle" type="checkbox" checked>
-          <label>Create a TodoMVC template</label>
-          <button class="destroy"></button>
-        </div>
-        <input class="edit" value="Create a TodoMVC template">
-      </li>
-      <li>
-        <div class="view">
-          <input class="toggle" type="checkbox">
-          <label>Rule the web</label>
-          <button class="destroy"></button>
-        </div>
-        <input class="edit" value="Rule the web">
-      </li>
-    </ul>
-  </section>
-  <!-- This footer should hidden by default and shown when there are todos -->
-  <footer id="footer">
-    <!-- This should be `0 items left` by default -->
-    <span id="todo-count"><strong>1</strong> item left</span>
-    <!-- Remove this if you don't implement routing -->
-    <ul id="filters">
-      <li>
-        <a class="selected" href="#/">All</a>
-      </li>
-      <li>
-        <a href="#/active">Active</a>
-      </li>
-      <li>
-        <a href="#/completed">Completed</a>
-      </li>
-    </ul>
-    <button id="clear-completed">Clear completed (1)</button>
-  </footer>
+  {if $todos.length}
+    <section id="main">
+      <input id="toggle-all" type="checkbox">
+      <label for="toggle-all">Mark all as complete</label>
+      <ul id="todo-list">
+        {foreach $todo in $todos}
+          {call .todo data="$todo" /}
+        {/foreach}
+      </ul>
+    </section>
+    <footer id="footer">
+      <span id="todo-count"><strong>{$remainingCount}</strong> item left</span>
+      <ul id="filters">
+        <li>
+          <a class="selected" href="#/">All</a>
+        </li>
+        <li>
+          <a href="#/active">Active</a>
+        </li>
+        <li>
+          <a href="#/completed">Completed</a>
+        </li>
+      </ul>
+      {if $doneCount}
+        <button id="clear-completed">Clear completed ({$doneCount})</button>
+      {/if}
+    </footer>
+  {/if}
+{/template}
+
+/**
+ * @param clientId
+ * @param title
+ * @param completed
+ * List items should get the class `editing` when editing and `completed` when marked as completed -->
+ */
+{template .todo}
+  <li {if $completed}class="completed"{/if} client-id='{$clientId}'>
+    <div class="view">
+      <input {if $completed}checked{/if} class="toggle" type="checkbox">
+      <label>{$title}</label>
+      <button class="destroy"></button>
+    </div>
+    <input class="edit" value="{$title}">
+  </li>
 {/template}
