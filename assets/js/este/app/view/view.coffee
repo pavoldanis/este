@@ -5,6 +5,7 @@ goog.provide 'este.app.View'
 goog.provide 'este.app.View.EventType'
 
 goog.require 'este.app.view.Event'
+goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'este.ui.Component'
