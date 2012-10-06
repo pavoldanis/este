@@ -11,9 +11,17 @@ suite 'este.Collection', ->
     collection = new Collection
 
   arrangeChildType = ->
-    Child = -> Model.apply @, arguments
+    Child = ->
+      Model.apply @, arguments
     goog.inherits Child, Model
-    Child::schema = c: meta: -> 'fok'
+    Child::schema =
+      c: meta: ->
+        'fok'
+
+  arrangeCollectionWithItems = ->
+    collection.add 'a': 1, 'aa': 1.5
+    collection.add 'b': 2, 'bb': 2.5
+    collection.add 'c': 3, 'cc': 3.5
 
   suite 'constructor', ->
     test 'should optionally allow inject json data', ->
@@ -189,6 +197,14 @@ suite 'este.Collection', ->
     test 'should return inner array', ->
       collection.add 1
       assert.deepEqual collection.toJson(), [1]
+
+    test 'should pass noMetas to model toJson method', (done) ->
+      collection = new Collection null, Model
+      collection.add 'a': 1
+      collection.at(0).toJson = (noMetas) ->
+        assert.isTrue noMetas
+        done()
+      collection.toJson true
 
   suite 'bubbling events', ->
     test 'from inner collection should work', ->
@@ -372,6 +388,83 @@ suite 'este.Collection', ->
       collection = new ChildCollection
       assert.equal collection.model, Child
 
-  # suite 'filter', ->
-  #   test 'should work', ->
-  #     collection.filter (item) ->
+  suite 'filter', ->
+    suite 'on collection with jsons', ->
+      setup ->
+        arrangeCollectionWithItems()
+
+      test 'should filter by function', ->
+        filtered = collection.filter (item) ->
+          item['a'] == 1
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ]
+
+        filtered = collection.filter (item) ->
+          item['a'] == 2
+        assert.deepEqual filtered, []
+
+        filtered = collection.filter (item) ->
+          item['a'] == 1 || item['bb'] == 2.5
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ,
+          'b': 2, 'bb': 2.5
+        ]
+
+      test 'should filter by object', ->
+        filtered = collection.filter 'a': 1
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ]
+
+        filtered = collection.filter 'a': 2
+        assert.deepEqual filtered, []
+
+        filtered = collection.filter 'bb': 2.5
+        assert.deepEqual filtered, [
+          'b': 2, 'bb': 2.5
+        ]
+
+    suite 'on collection with models', ->
+      setup ->
+        collection = new Collection null, Model
+        arrangeCollectionWithItems()
+
+      test 'should filter by function', ->
+        filtered = collection.filter (item) ->
+          item['a'] == 1
+        delete filtered[0]['clientId']
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ]
+
+        filtered = collection.filter (item) ->
+          item['a'] == 2
+        assert.deepEqual filtered, []
+
+        filtered = collection.filter (item) ->
+          item['a'] == 1 || item['bb'] == 2.5
+        delete filtered[0]['clientId']
+        delete filtered[1]['clientId']
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ,
+          'b': 2, 'bb': 2.5
+        ]
+
+      test 'should filter by object', ->
+        filtered = collection.filter 'a': 1
+        delete filtered[0]['clientId']
+        assert.deepEqual filtered, [
+          'a': 1, 'aa': 1.5
+        ]
+
+        filtered = collection.filter 'a': 2
+        assert.deepEqual filtered, []
+
+        filtered = collection.filter 'bb': 2.5
+        delete filtered[0]['clientId']
+        assert.deepEqual filtered, [
+          'b': 2, 'bb': 2.5
+        ]

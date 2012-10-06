@@ -1,5 +1,5 @@
 ###*
-  @fileoverview Collection for plain json or model. Fires add, remove, change
+  @fileoverview Collection for plain jsons or models. Fires add, remove, change
   events. Event bubbling supported via setParentEventTarget.
 
   Example
@@ -11,16 +11,13 @@
       by: (item) -> item.id
       compare: goog.array.defaultCompare
       reversed: false
-
-  todo
-    filter
-    docs&examples (see tests now)
-    consider arraylike
+    filtered = foos.filter 'foo': 'bla bla'
 ###
 
 goog.provide 'este.Collection'
 
 goog.require 'goog.array'
+goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
 
 class este.Collection extends goog.events.EventTarget
@@ -118,33 +115,6 @@ class este.Collection extends goog.events.EventTarget
     @remove toRemove
 
   ###*
-    @param {Array} added
-    @protected
-  ###
-  dispatchAddEvent: (added) ->
-    @dispatchEvent
-      type: Collection.EventType.ADD
-      added: added
-
-  ###*
-    @param {Array} removed
-    @protected
-  ###
-  dispatchRemoveEvent: (removed) ->
-    @dispatchEvent
-      type: Collection.EventType.REMOVE
-      removed: removed
-
-  ###*
-    @param {Array} changed
-    @protected
-  ###
-  dispatchChangeEvent: (changed) ->
-    @dispatchEvent
-      type: Collection.EventType.CHANGE
-      changed: changed
-
-  ###*
     @param {*} object The object for which to test.
     @return {boolean} true if obj is present.
   ###
@@ -172,11 +142,15 @@ class este.Collection extends goog.events.EventTarget
 
   ###*
     Serialize into JSON.
+    @param {boolean=} noMetas If true, metas and clientId are omitted. Works
+    only for models.
     @return {Array.<Object>}
   ###
-  toJson: ->
-    return @array.slice 0 if !@model
-    item.toJson() for item in @array
+  toJson: (noMetas) ->
+    if @model
+      item.toJson noMetas for item in @array
+    else
+      @array.slice 0
 
   ###*
     Deserialize from JSON.
@@ -235,6 +209,55 @@ class este.Collection extends goog.events.EventTarget
   ###
   getUrn: ->
     @model?.prototype?.urn ? null
+
+  ###*
+    Filter collection by object or function and returns array of jsons.
+    @param {Object|Function} param
+    @return {Array}
+  ###
+  filter: (param) ->
+    # remainingCount = (todo for todo in @todos.toJson() when !todo['completed']).length
+    array = @toJson()
+    switch goog.typeOf param
+      when 'function'
+        # Enforce tighter type assertion. The compiler can infer the type from
+        # the assert and removes it during compilation. http://goo.gl/Bxb5h
+        goog.asserts.assertInstanceof param, Function
+        item for item in array when param item
+      when 'object'
+        @filter (item) =>
+          for key, value of param
+            return false if item[key] != value
+          true
+      else
+        null
+
+  ###*
+    @param {Array} added
+    @protected
+  ###
+  dispatchAddEvent: (added) ->
+    @dispatchEvent
+      type: Collection.EventType.ADD
+      added: added
+
+  ###*
+    @param {Array} removed
+    @protected
+  ###
+  dispatchRemoveEvent: (removed) ->
+    @dispatchEvent
+      type: Collection.EventType.REMOVE
+      removed: removed
+
+  ###*
+    @param {Array} changed
+    @protected
+  ###
+  dispatchChangeEvent: (changed) ->
+    @dispatchEvent
+      type: Collection.EventType.CHANGE
+      changed: changed
 
   ###*
     @protected
