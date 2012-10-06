@@ -12,6 +12,9 @@
       compare: goog.array.defaultCompare
       reversed: false
     filtered = foos.filter 'foo': 'bla bla'
+
+  Note
+    use model-less collections for max performance (10000+ items)
 ###
 
 goog.provide 'este.Collection'
@@ -231,6 +234,14 @@ class este.Collection extends goog.events.EventTarget
           true
       else
         null
+
+  ###*
+    todo: add better annotation
+    @param {Function} fn
+  ###
+  each: (fn) ->
+    fn item for item in @array
+    return
 
   ###*
     @param {Array} added

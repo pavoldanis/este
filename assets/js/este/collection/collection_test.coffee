@@ -468,3 +468,32 @@ suite 'este.Collection', ->
         assert.deepEqual filtered, [
           'b': 2, 'bb': 2.5
         ]
+
+  suite 'each', ->
+    test 'should call passed callback with each collection item', ->
+      arrangeCollectionWithItems()
+      items = []
+      collection.each (item) ->
+        items.push item
+      assert.deepEqual items, [
+        'a': 1, 'aa': 1.5
+      ,
+        'b': 2, 'bb': 2.5
+      ,
+        'c': 3, 'cc': 3.5
+      ]
+
+    test 'should call passed callback with each collection model', ->
+      collection = new Collection null, Model
+      arrangeCollectionWithItems()
+      items = []
+      collection.each (item) ->
+        item.remove 'clientId'
+        items.push item.toJson()
+      assert.deepEqual JSON.stringify(items), JSON.stringify([
+        'a': 1, 'aa': 1.5
+      ,
+        'b': 2, 'bb': 2.5
+      ,
+        'c': 3, 'cc': 3.5
+      ])
