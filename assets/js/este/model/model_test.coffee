@@ -118,6 +118,21 @@ suite 'este.Model', ->
           'age': 55
           'defaultFoo': 1
 
+      test 'true, true should not return id', ->
+        attrs =
+          'id': 123
+          'firstName': 'Joe'
+          'lastName': 'Satriani'
+          'age': 55
+        idGenerator = -> 1
+        person = new Person attrs, idGenerator
+        json = person.toJson true, true
+        assert.deepEqual json,
+          'firstName': 'Joe'
+          'lastName': 'Satriani'
+          'age': 55
+          'defaultFoo': 1
+
   suite 'has', ->
     test 'should work', ->
       assert.isTrue person.has 'age'

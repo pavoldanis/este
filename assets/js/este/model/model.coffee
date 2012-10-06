@@ -163,8 +163,9 @@ class este.Model extends goog.events.EventTarget
 
   ###*
     Returns shallow copy. It's used for serialization.
-    @param {boolean=} noMetas If true, no metas nor clientId.
-    @param {boolean=} noId
+    todo: consider deep toJson
+    @param {boolean=} noMetas If true, metas and clientId are omitted.
+    @param {boolean=} noId If true, id is ommited (used in este.storage.Local).
     @return {Object}
   ###
   toJson: (noMetas, noId) ->
