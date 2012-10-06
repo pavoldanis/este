@@ -1,6 +1,9 @@
 ###*
   @fileoverview github.com/Steida/este.
 
+  todo
+    add -ba, --buildall options for all project classes compilation
+
   Features
     compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
