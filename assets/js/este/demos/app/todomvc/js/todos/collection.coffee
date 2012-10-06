@@ -20,3 +20,6 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
     @inheritDoc
   ###
   model: este.demos.app.todomvc.todo.Model
+
+  toggleCompleted: ->
+    @each (item) -> item.toggleCompleted()

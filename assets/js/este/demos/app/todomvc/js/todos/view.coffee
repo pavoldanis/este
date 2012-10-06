@@ -40,6 +40,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   update: ->
+    # console.log 'fok'
     remainingCount = @todos.filter('completed': false).length
     doneCount = @todos.getLength() - remainingCount
     json =
@@ -54,14 +55,21 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     return
 
   ###*
+    todo: convert clicks into tap events..., explain it
     @inheritDoc
   ###
   enterDocument: ->
     super()
     @on @todos, 'change', @onTodosChange
+
+    # Este.js enables very simple key events delegation:
     # @delegate '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
+    # ..., but submit handler is even better.
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
-    @delegate '.toggle', 'click', @onToggleClick
+
+    # 'tap' instead of 'click', because 'tap' supports touch devices too
+    @delegate '.toggle', 'tap', @onToggleTap
+    @delegate '#toggle-all', 'tap', @onToggleAllTap
 
     # @delegate '#clear-completed', 'click', @onClearCompletedClick
     # @delegate 'input.field', ['focus', 'blur'], @onClearCompletedClick
@@ -74,7 +82,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onTodosChange: (e) ->
-    @update()
+    @batchUpdate()
     # todo: persist and onLoad
 
   ###*
@@ -86,7 +94,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     todo = new este.demos.app.todomvc.todo.Model e.json
     errors = todo.validate()
     return if errors
-    # see how we don't have to use querySelector to retrieve #new-todo.
+    # See how we don't have to use querySelector to retrieve #new-todo.
     # Fields names are projected into form.elements.
     e.target.elements['title'].value = ''
     @todos.add todo
@@ -95,12 +103,19 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  onToggleClick: (e) ->
+  onToggleTap: (e) ->
     # Closure Compiler has a really good type interference. At methods returns
     # value annotated as {*}, still compiler checks toggleCompleted method.
     @todos.at(0).toggleCompleted()
     # todo = @getTodoFromEvent e
     # todo.toggleCompleted()
+
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @protected
+  ###
+  onToggleAllTap: (e) ->
+    @todos.toggleCompleted()
 
   ###*
     @param {goog.events.BrowserEvent} e
