@@ -187,10 +187,9 @@ class este.Collection extends goog.events.EventTarget
     @return {*}
   ###
   findById: (id) ->
-    for item in @array
+    @find (item) =>
       itemId = if @model then item.get('id') else item['id']
-      return item if itemId == id
-    return
+      itemId == id
 
   ###*
     todo: test
@@ -199,10 +198,9 @@ class este.Collection extends goog.events.EventTarget
     @return {*}
   ###
   findByClientId: (id) ->
-    for item in @array
+    @find (item) =>
       itemId = if @model then item.get('clientId') else item['clientId']
-      return item if itemId == id
-    return
+      itemId == id
 
   ###*
     @param {{by: Function, compare: Function, reversed: boolean}=} options

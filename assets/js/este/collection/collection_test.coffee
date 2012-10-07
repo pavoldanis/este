@@ -289,6 +289,43 @@ suite 'este.Collection', ->
       found = collection.findById 3
       assert.isUndefined found
 
+  suite 'findByClientId', ->
+    test 'should find item by clientId', ->
+      collection.add [
+        id: 1, clientId: ':1'
+      ,
+        id: 2, clientId: ':2'
+      ]
+      found = collection.findByClientId ':1'
+      assert.deepEqual found, id: 1, clientId: ':1'
+      found = collection.findByClientId ':2'
+      assert.deepEqual found, id: 2, clientId: ':2'
+      found = collection.findByClientId ':3'
+      assert.isUndefined found
+
+    test 'should find typed item by clientId', ->
+      arrangeChildType()
+      Child::schema = {}
+      json = [
+        id: 1, clientId: ':1'
+      ,
+        id: 2, clientId: ':2'
+      ]
+
+      collection = new Collection json, Child
+      found = collection.findByClientId ':1'
+      json = found.toJson()
+      delete json.clientId
+      assert.deepEqual json, id: 1
+
+      found = collection.findByClientId ':2'
+      json = found.toJson()
+      delete json.clientId
+      assert.deepEqual json, id: 2
+
+      found = collection.findByClientId ':3'
+      assert.isUndefined found
+
   suite 'add typed object into typed collection', ->
     test 'should work', ->
       arrangeChildType()
