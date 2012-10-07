@@ -29,8 +29,9 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   todos: null
 
   ###*
-    Loading is async by default. How this method works? localStorage.query
-    returns object with goog.result.Result interface, instead of old callback.
+    Each view is async loaded by default. Load method has to return object
+    implementing goog.result.Result interface. It's better than plain old
+    callbacks. todo: link to article
     @inheritDoc
   ###
   load: (params) ->
@@ -50,7 +51,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
 
     # consider: separate updateHtml method?
     # todo: explain non destructive innerHTML and why&when it should be used
-    html = este.demos.app.todomvc.todos.templates.items json
+    html = este.demos.app.todomvc.todos.templates.element json
     este.dom.merge @getElement(), html
     return
 

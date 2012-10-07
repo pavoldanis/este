@@ -1,53 +1,61 @@
 {namespace este.demos.app.todomvc.todos.templates autoescape="contextual"}
 
 /**
- * Why all HTML is in JavaScript code? It has a good reason.
+ *
+ * Good advice: Always render HTML from soy templates.
+ *
+ *  1) It's save, because auto escaping
+ *  2) It's fast, because soy templates precompilation
+ *  3) It's maintable, because each template is placed in separate namespace
+ *
  * http://estejs.tumblr.com/post/32600427488/why-script-elements-used-for-templates-are-wrong
  */
 
 /**
+ * Element template. See how easily whole layout can be defined, simply via
+ * nested '{call .xyz' commands.
  * @param todos
  * @param remainingCount
  * @param doneCount
  */
-{template .items}
+{template .element}
+  {call .header data="all" /}
+  {if $todos.length}
+    {call .main data="all" /}
+    {call .footer data="all" /}
+  {/if}
+{/template}
+
+/**
+ * Header template
+ */
+{template .header}
   <header id="header">
     <h1>todos</h1>
     <form id="new-todo-form">
       <input name="title" id="new-todo" placeholder="What needs to be done?" autofocus>
     </form>
   </header>
-  {if $todos.length}
-    <section id="main">
-      <input id="toggle-all" type="checkbox">
-      <label for="toggle-all">Mark all as complete</label>
-      <ul id="todo-list">
-        {foreach $todo in $todos}
-          {call .todo data="$todo" /}
-        {/foreach}
-      </ul>
-    </section>
-    <footer id="footer">
-      <span id="todo-count"><strong>{$remainingCount}</strong> item left</span>
-      <ul id="filters">
-        <li>
-          <a class="selected" href="#/">All</a>
-        </li>
-        <li>
-          <a href="#/active">Active</a>
-        </li>
-        <li>
-          <a href="#/completed">Completed</a>
-        </li>
-      </ul>
-      {if $doneCount}
-        <button id="clear-completed">Clear completed ({$doneCount})</button>
-      {/if}
-    </footer>
-  {/if}
 {/template}
 
 /**
+ * Main template
+ * @param todos
+ */
+{template .main}
+  <section id="main">
+    <input id="toggle-all" type="checkbox">
+    <label for="toggle-all">Mark all as complete</label>
+    <ul id="todo-list">
+      {foreach $todo in $todos}
+        {call .todo data="$todo" /}
+      {/foreach}
+    </ul>
+  </section>
+{/template}
+
+/**
+ * Todo template
  * @param clientId
  * @param title
  * @param completed
@@ -62,4 +70,29 @@
     </div>
     <input class="edit" value="{$title}">
   </li>
+{/template}
+
+/**
+ * Footer template
+ * @param remainingCount
+ * @param doneCount
+ */
+{template .footer}
+  <footer id="footer">
+    <span id="todo-count"><strong>{$remainingCount}</strong> item left</span>
+    <ul id="filters">
+      <li>
+        <a class="selected" href="#/">All</a>
+      </li>
+      <li>
+        <a href="#/active">Active</a>
+      </li>
+      <li>
+        <a href="#/completed">Completed</a>
+      </li>
+    </ul>
+    {if $doneCount}
+      <button id="clear-completed">Clear completed ({$doneCount})</button>
+    {/if}
+  </footer>
 {/template}
