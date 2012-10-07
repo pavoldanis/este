@@ -24,6 +24,7 @@ goog.provide 'este.dom.Merge'
 
 goog.require 'este.dom'
 goog.require 'este.json'
+goog.require 'goog.array'
 
 ###*
   @param {Element} element
@@ -106,13 +107,14 @@ class este.dom.Merge
     @protected
   ###
   mergeAttributes: (toNode, fromNode) ->
+    # goog.array.toArray, because .attributes is live collection
     if toNode.hasAttributes()
-      for attr in toNode.attributes
+      for attr in goog.array.toArray toNode.attributes
         continue if fromNode.hasAttribute attr.name
         toNode.removeAttribute attr.name
 
     if fromNode.hasAttributes()
-      for attr in fromNode.attributes
+      for attr in goog.array.toArray fromNode.attributes
         continue if toNode.hasAttribute(attr.name) &&
                     toNode.getAttribute(attr.name) == attr.value
         toNode.setAttribute attr.name, attr.value
