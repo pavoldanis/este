@@ -62,12 +62,12 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     super()
     @on @todos, 'change', @onTodosChange
 
-    # Este.js enables very simple key events delegation:
+    # Este.js provides very convenient key events delegation:
     # @delegate '#new-todo', goog.events.KeyCodes.ENTER, @onNewTodoEnter
     # ..., but submit handler is even better.
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
 
-    # 'tap' instead of 'click', because 'tap' supports touch devices too
+    # 'tap' instead of 'click', because 'tap' has a better support for touch devices
     @delegate '.toggle', 'tap', @onToggleTap
     @delegate '#toggle-all', 'tap', @onToggleAllTap
 
@@ -82,7 +82,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onTodosChange: (e) ->
-    @batchUpdate()
+    @defer @update
     # todo: persist and onLoad
 
   ###*

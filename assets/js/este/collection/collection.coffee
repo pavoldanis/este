@@ -15,6 +15,9 @@
 
   Note
     use model-less collections for max performance (10000+ items)
+
+  todo
+    consider .defer -> method
 ###
 
 goog.provide 'este.Collection'

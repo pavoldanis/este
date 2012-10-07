@@ -9,7 +9,6 @@ goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'este.ui.Component'
-goog.require 'goog.async.Delay'
 
 class este.app.View extends este.ui.Component
 
@@ -19,6 +18,7 @@ class este.app.View extends este.ui.Component
   ###
   constructor: ->
     super()
+    @deferredTimers = {}
 
   ###*
     @enum {string}
@@ -41,10 +41,10 @@ class este.app.View extends este.ui.Component
   localStorage: null
 
   ###*
-    @type {goog.async.Delay}
+    @type {Object}
     @private
   ###
-  updateDelay_: null
+  deferredTimers: null
 
   ###*
     @param {function(new:este.app.View)} viewClass
@@ -79,14 +79,21 @@ class este.app.View extends este.ui.Component
     # innerHTML = template + viewModel
 
   ###*
-    Operations on collection can dispatch many events. We don't want to make
-    silent changes, because data consistence is nice. JavaScript is fast, DOM
-    is slow, so this method postpone DOM update.
+    Defer passed method execution after current call stack.
+    ex.
+      foo = ->
+      defer foo
+      alert 'ok'
+      # foo is called now.
+    @param {Function} fn
     @protected
   ###
-  batchUpdate: ->
-    @updateDelay_ ?= new goog.async.Delay @update, 0, @
-    @updateDelay_.start()
+  defer: (fn) ->
+    uid = goog.getUid fn
+    clearTimeout @deferredTimers[uid]
+    @deferredTimers[uid] = setTimeout =>
+      fn.call @
+    , 0
 
   ###*
     @param {function(new:este.app.View)} viewClass
@@ -101,6 +108,6 @@ class este.app.View extends este.ui.Component
     @inheritDoc
   ###
   disposeInternal: ->
-    @updateDelay_.dispose() if @updateDelay_
     super()
+    clearTimeout value for key, value of @deferredTimers
     return
