@@ -44,19 +44,22 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     # console.log 'fok'
     remainingCount = @todos.filter('completed': false).length
     doneCount = @todos.getLength() - remainingCount
+    itemLeft = if remainingCount == 1 then 'item left' else 'items left'
+
     json =
       todos: @todos.toJson()
       remainingCount: remainingCount
       doneCount: doneCount
+      itemLeft: itemLeft
 
-    # consider: separate updateHtml method?
-    # todo: explain non destructive innerHTML and why&when it should be used
+    # todo:
+    #   consider: separate updateHtml method?
+    #   explain non destructive innerHTML and why&when it should be used
     html = este.demos.app.todomvc.todos.templates.element json
     este.dom.merge @getElement(), html
     return
 
   ###*
-    todo: convert clicks into tap events..., explain it
     @inheritDoc
   ###
   enterDocument: ->
@@ -105,8 +108,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onToggleTap: (e) ->
-    # Closure Compiler has a really good type interference. At methods returns
-    # value annotated as {*}, still compiler checks toggleCompleted method.
     @todos.at(0).toggleCompleted()
     # todo = @getTodoFromEvent e
     # todo.toggleCompleted()
@@ -116,7 +117,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onToggleAllTap: (e) ->
-    @todos.toggleCompleted()
+    allCompleted = !@todos.filter('completed': false).length
+    @todos.toggleCompleted !allCompleted
 
   ###*
     @param {goog.events.BrowserEvent} e

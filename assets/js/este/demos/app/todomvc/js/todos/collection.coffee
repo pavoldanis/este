@@ -21,5 +21,8 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
   ###
   model: este.demos.app.todomvc.todo.Model
 
-  toggleCompleted: ->
-    @each (item) -> item.toggleCompleted()
+  ###*
+    @param {boolean} completed
+  ###
+  toggleCompleted: (completed) ->
+    @each (item) -> item.set 'completed', completed

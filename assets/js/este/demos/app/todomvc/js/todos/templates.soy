@@ -13,10 +13,11 @@
 
 /**
  * Element template. See how easily whole layout can be defined, simply via
- * nested '{call .xyz' commands.
+ * nested '{call .xyz .. }' commands.
  * @param todos
  * @param remainingCount
  * @param doneCount
+ * @param itemLeft
  */
 {template .element}
   {call .header data="all" /}
@@ -75,11 +76,12 @@
 /**
  * Footer template
  * @param remainingCount
+ * @param itemLeft
  * @param doneCount
  */
 {template .footer}
   <footer id="footer">
-    <span id="todo-count"><strong>{$remainingCount}</strong> item left</span>
+    <span id="todo-count"><strong>{$remainingCount}</strong> {$itemLeft}</span>
     <ul id="filters">
       <li>
         <a class="selected" href="#/">All</a>
