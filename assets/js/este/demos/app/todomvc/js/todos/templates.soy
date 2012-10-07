@@ -2,18 +2,17 @@
 
 /**
  *
- * Good advice: Always render HTML from soy templates.
+ * Always render HTML with soy templates.
  *
- *  1) It's save, because auto escaping
+ *  1) It's save, because contextual auto escaping
  *  2) It's fast, because soy templates precompilation
- *  3) It's maintable, because each template is placed in separate namespace
+ *  3) It's maintable, because each template is placed in own namespace
  *
  * http://estejs.tumblr.com/post/32600427488/why-script-elements-used-for-templates-are-wrong
  */
 
 /**
- * Element template. See how easily whole layout can be defined, simply via
- * nested '{call .xyz .. }' commands.
+ * Element template.
  * @param todos
  * @param remainingCount
  * @param doneCount

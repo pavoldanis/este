@@ -105,6 +105,18 @@ class este.app.View extends este.ui.Component
     @dispatchEvent e
 
   ###*
+    @param {goog.events.BrowserEvent} e
+    @return {?string}
+    @protected
+  ###
+  getClientId: (e) ->
+    el = goog.dom.getAncestor e.target, (node) ->
+      node.hasAttribute 'client-id'
+    , true
+    return null if !el
+    el.getAttribute 'client-id'
+
+  ###*
     @inheritDoc
   ###
   disposeInternal: ->

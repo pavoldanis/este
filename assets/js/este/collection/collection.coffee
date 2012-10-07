@@ -188,7 +188,19 @@ class este.Collection extends goog.events.EventTarget
   ###
   findById: (id) ->
     for item in @array
-      itemId = if @model then item.get('id') else item.id
+      itemId = if @model then item.get('id') else item['id']
+      return item if itemId == id
+    return
+
+  ###*
+    todo: test
+    Find item by Id
+    @param {*} id
+    @return {*}
+  ###
+  findByClientId: (id) ->
+    for item in @array
+      itemId = if @model then item.get('clientId') else item['clientId']
       return item if itemId == id
     return
 
