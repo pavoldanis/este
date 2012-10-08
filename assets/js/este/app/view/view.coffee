@@ -57,6 +57,7 @@ class este.app.View extends este.ui.Component
     este.router.Route.getUrl url, params
 
   ###*
+    Default implementation. You should override this method.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
@@ -81,10 +82,9 @@ class este.app.View extends este.ui.Component
   ###*
     Defer passed method execution after current call stack.
     ex.
-      foo = ->
-      defer foo
-      alert 'ok'
-      # foo is called now.
+      defer -> alert 'second'
+      alert 'first'
+    todo: refactor into este.functions.defer
     @param {Function} fn
     @protected
   ###
@@ -105,16 +105,44 @@ class este.app.View extends este.ui.Component
     @dispatchEvent e
 
   ###*
+    @inheritDoc
+  ###
+  on: (src, type, fn, capture, handler) ->
+    oldFn = fn
+    fn = (e) =>
+      model = null
+      if goog.dom.isElement e.target
+        clientIdElement = @getClientIdElement e
+        if clientIdElement
+          clientId = clientIdElement.getAttribute 'client-id'
+          model = @findModelByClientId clientId
+          if model
+            e.model = model
+            e.modelElement = clientIdElement
+      oldFn.apply @, arguments
+    super src, type, fn, capture, handler
+
+  ###*
     @param {goog.events.BrowserEvent} e
-    @return {?string}
+    @return {Element}
     @protected
   ###
-  getClientId: (e) ->
-    el = goog.dom.getAncestor e.target, (node) ->
-      node.hasAttribute 'client-id'
+  getClientIdElement: (e) ->
+    node = goog.dom.getAncestor e.target, (node) ->
+      goog.dom.isElement(node) && node.hasAttribute 'client-id'
     , true
-    return null if !el
-    el.getAttribute 'client-id'
+    `/** @type {Element} */ (node)`
+
+  ###*
+    @param {*} clientId
+    @protected
+  ###
+  findModelByClientId: (clientId) ->
+    for key, value of @
+      continue if !(value instanceof este.Collection)
+      model = value.findByClientId clientId
+      return model if model
+    null
 
   ###*
     @inheritDoc

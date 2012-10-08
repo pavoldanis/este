@@ -21,6 +21,7 @@ class este.demos.app.todomvc.todo.Model extends este.Model
   defaults:
     'title': ''
     'completed': false
+    'editing': false
 
   ###*
     @inheritDoc
