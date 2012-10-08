@@ -41,7 +41,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   update: ->
-    # console.log 'fok'
     remainingCount = @todos.filter('completed': false).length
     doneCount = @todos.getLength() - remainingCount
     itemLeft = if remainingCount == 1 then 'item left' else 'items left'
@@ -53,11 +52,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       itemLeft: itemLeft
 
     # todo:
-    #   consider: separate updateHtml method?
+    #   consider: separate updateHtml method
     #   explain non destructive innerHTML and why&when it should be used
+    #   explain when to render whole template and when render inner templates
     html = este.demos.app.todomvc.todos.templates.element json
-    # todo: explain when render all template and when render inner templates
-    # separately
     este.dom.merge @getElement(), html
     return
 
@@ -70,22 +68,18 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
     @delegate '.toggle', 'tap', @onToggleTap
     @delegate '#toggle-all', 'tap', @onToggleAllTap
-    # todo: add support for touch devices via alternate tap event
+    # todo: add support for touch devices via tap event
     @delegate 'label', 'dblclick', @onLabelDblclick
     @delegate '.edit', 'blur', @onEditBlur
     @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditBlur
-
-    # @delegate '#clear-completed', 'click', @onClearCompletedClick
-    # @delegate 'input.field', ['focus', 'blur'], @onClearCompletedClick
-    # # for mobile and desktop both
-    # @delegate '#clear-completed', 'tap': @onClearCompletedTap
+    @delegate '.destroy', 'tap', @onDestroyTap
 
   ###*
     @protected
   ###
   onTodosChange: (e) ->
     @defer @update
-    # todo: persist and onLoad
+    # todo: persist
 
   ###*
     @protected
@@ -130,10 +124,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       'title': title.value
       'editing': false
 
-
-  # ###*
-  #   @param {goog.events.BrowserEvent} e
-  #   @protected
-  # ###
-  # onClearCompletedClick: (e) ->
-  #   window['console']['log'] e.type
+  ###*
+    @protected
+  ###
+  onDestroyTap: (e) ->
+    @todos.remove e.model
