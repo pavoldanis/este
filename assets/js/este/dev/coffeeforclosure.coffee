@@ -17,6 +17,7 @@
 
   Todo
     consider this http://marijnhaverbeke.nl/blog/acorn.html
+    new compiler should be able to parse nested annotations, check it!
 ###
 
 goog.provide 'este.dev.CoffeeForClosure'
