@@ -550,7 +550,6 @@ onPathChange = function(path, dir) {
         return Commands.coffeeForClosure(callback, path.replace('.coffee', '.js'));
       };
       commands["closureDeps"] = Commands.closureDeps;
-      commands["mochaTests"] = Commands.mochaTests;
       if (options.build) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {
@@ -630,9 +629,9 @@ runCommands = function(commands, complete, errors) {
     if (name === 'closureCompilation') {
       console.log('Compilation finished.');
     }
-    isError = !!err;
-    if (!isError && name === 'closureCompilation' && ~(stderr != null ? stderr.indexOf(': WARNING -') : void 0)) {
-      isError = true;
+    isError = !!err || stderr;
+    if (name === 'closureCompilation') {
+      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0);
     }
     if (isError) {
       output = stderr;

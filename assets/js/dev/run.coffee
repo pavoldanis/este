@@ -442,7 +442,7 @@ onPathChange = (path, dir) ->
         Commands.coffeeForClosure callback, path.replace '.coffee', '.js'
 
       commands["closureDeps"] = Commands.closureDeps
-      commands["mochaTests"] = Commands.mochaTests
+      # commands["mochaTests"] = Commands.mochaTests
       if options.build
         commands["closureCompilation"] = Commands.closureCompilation
       else
@@ -506,24 +506,26 @@ runCommands = (commands, complete, errors = []) ->
   nextCommands[k] = v for k, v of commands when k != name
 
   onExec = (err, stdout, stderr) ->
+    # console.log arguments
     if name == 'closureCompilation'
       console.log 'Compilation finished.'
 
-    isError = !!err
-    # workaround: closure doesn't return err for warnings
-    isError = true if !isError && name == 'closureCompilation' &&
-      ~stderr?.indexOf ': WARNING -'
+    isError = !!err || stderr
+    # Workaround for Google Closure Compiler, all output is returned as stderr.
+    if name == 'closureCompilation'
+      isError = ~stderr?.indexOf ': WARNING - '
 
     if isError
       output = stderr
+      
       if name == 'mochaTests'
         # we need stdout for console.log
-        # remove screen clearing from stdout
-        # todo: check windows
         stdout = stdout.trim()
+        # remove screen clearing from stdout
         `stdout = stdout.replace('\033[2J', '')`
         `stdout = stdout.replace('\033[1;3H', '')`
         output = stderr + stdout
+      
       if booting
         errors.push
           name: name
