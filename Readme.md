@@ -23,12 +23,17 @@ Consider it boilerplate for mobile first development, an offline capable MVC web
 
 ### Quick Start Guide
 
-  - Install Node.js (0.8+), Java, Python (Windows needs version < 3)
+  - Install Node.js (0.8+)
   - `git clone http://github.com/Steida/este.git`
   - `cd este`
   - `node run app`
   - Point your browser to `localhost:8000`
   - Build something beautiful
+
+### For Windows Users
+  - You have to install Java, Python (Windows for some reason needs version < 3)
+  - Then you have to set environment variables for Python and Java
+  - http://docs.python.org/using/windows.html#excursus-setting-environment-variables
 
 ### More Information
 
@@ -56,19 +61,14 @@ Must-have Packages
   - Package Control
   - CoffeeScript
   - Stylus
-  - SoyTemplate (install from here https://github.com/anvie/SoyTemplate)
+  - SoyTemplate (github.com/anvie/SoyTemplate)
 
 Recommended Packages
 
-  - SideBarEnhancements
+  - Open Related (github.com/vojtajina/sublime-OpenRelated)
   - Clipboard History
   - JsFormat
-  - Git - git commands for command palette
   - LESS
-  - SideBarGit, like Tortoise inside Sublimetext
-  - sublime-github, to create, edit and browse GitHub Gists
-  - Jade
-  - Open Related
 
 My Sublime Text settings and snippets are [here](https://github.com/Steida/Sublimetext-user-settings).
 Code snippets [cheat sheet](http://estejs.tumblr.com/post/29363589575/este-js-sublime-text-code-snippets-cheat-sheet).
