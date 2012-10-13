@@ -550,6 +550,7 @@ onPathChange = function(path, dir) {
         return Commands.coffeeForClosure(callback, path.replace('.coffee', '.js'));
       };
       commands["closureDeps"] = Commands.closureDeps;
+      commands["mochaTests"] = Commands.mochaTests;
       if (options.build) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {

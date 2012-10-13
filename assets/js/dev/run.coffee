@@ -442,7 +442,7 @@ onPathChange = (path, dir) ->
         Commands.coffeeForClosure callback, path.replace '.coffee', '.js'
 
       commands["closureDeps"] = Commands.closureDeps
-      # commands["mochaTests"] = Commands.mochaTests
+      commands["mochaTests"] = Commands.mochaTests
       if options.build
         commands["closureCompilation"] = Commands.closureCompilation
       else
@@ -506,6 +506,7 @@ runCommands = (commands, complete, errors = []) ->
   nextCommands[k] = v for k, v of commands when k != name
 
   onExec = (err, stdout, stderr) ->
+    # this is important for WindowsOnly error: [Error: Command failed: ] killed: false...
     # console.log arguments
     if name == 'closureCompilation'
       console.log 'Compilation finished.'
