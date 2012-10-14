@@ -30,7 +30,7 @@ Consider it boilerplate for mobile first development, an offline capable MVC web
   - Point your browser to `localhost:8000`
   - Build something beautiful
 
-### For Windows Users
+#### For Windows Users
   - You have to install Java, Python (Windows for some reason needs version < 3)
   - Then you have to set environment variables for Python and Java
   - http://docs.python.org/using/windows.html#excursus-setting-environment-variables
