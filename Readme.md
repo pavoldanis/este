@@ -45,11 +45,6 @@ We're actively working on a mobile version for ShopMVC on this stack, which shou
 clarity by means of example. In the meantime, take a look at the `assets/js/*` namespaces and
 `assets/js/este/demos/` demos.
 
-### Coming Soon
-
-  - ShopMVC (mobile version)
-  - localization
-
 ### Blog
 
 [http://estejs.tumblr.com](http://estejs.tumblr.com)
