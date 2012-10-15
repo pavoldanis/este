@@ -8,7 +8,7 @@
   <script src='/assets/js/google-closure/closure/goog/base.js'></script>
   <script src='/assets/js/deps.js'></script>
   <script>
-    goog.require('dommerge.templates')
+    goog.require('merge.templates')
     goog.require('este.dom.merge')
   </script>
 </head>
@@ -24,7 +24,7 @@
     var container = document.getElementById('container')
 
     var updateForm = function(json) {
-      var html = dommerge.templates.form({
+      var html = merge.templates.form({
         input: json.input,
         textarea: json.textarea
       })

@@ -13,10 +13,10 @@
   este.dom.merge el, '<p>new html</p>'
 
   todo
-    tests
+    tests (manually in IE and Gecko)
     better algorithm for temporally injected nodes via siblings checks
     consider outerHTML optimalization
-  @see ../demos/dommerge.html
+  @see ../demos/merge.html
 ###
 
 goog.provide 'este.dom.merge'
