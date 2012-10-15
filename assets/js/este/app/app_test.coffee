@@ -42,7 +42,7 @@ suite 'este.App', ->
       else
         setTimeout ->
           result.setValue params
-        , 4
+        , 8
       result
     # view.udpate = ->
     view.dispose = ->
@@ -196,7 +196,7 @@ suite 'este.App', ->
         app.load view2
         setTimeout ->
           app.load view2
-        , 2
+        , 4
 
     suite 'view 2, view 3 async', ->
       test 'should call layout.show', (done) ->
@@ -205,7 +205,7 @@ suite 'este.App', ->
         app.load view2
         setTimeout ->
           app.load view3
-        , 2
+        , 4
 
     suite 'view 2, view 3, view2 async', ->
       test 'should call layout.show', (done) ->
@@ -214,10 +214,10 @@ suite 'este.App', ->
         app.load view2
         setTimeout ->
           app.load view3
-        , 2
+        , 4
         setTimeout ->
           app.load view2
-        , 4
+        , 8
 
   suite 'dispose', ->
     test 'should dispose pendingRequests, views and layout', ->
