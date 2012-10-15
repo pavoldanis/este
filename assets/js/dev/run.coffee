@@ -518,15 +518,15 @@ runCommands = (commands, complete, errors = []) ->
 
     if isError
       output = stderr
-      
+
+      # we need stdout for console.log if some test fail
       if name == 'mochaTests'
-        # we need stdout for console.log
         stdout = stdout.trim()
         # remove screen clearing from stdout
         `stdout = stdout.replace('\033[2J', '')`
         `stdout = stdout.replace('\033[1;3H', '')`
         output = stderr + stdout
-      
+
       if booting
         errors.push
           name: name
