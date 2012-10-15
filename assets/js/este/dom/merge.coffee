@@ -62,10 +62,8 @@ class este.dom.Merge
   merge: ->
     clone = @element.cloneNode false
     clone.innerHTML = @html
-
     clone.normalize()
     @element.normalize()
-
     @mergeInternal @element, clone
 
   ###*
@@ -107,14 +105,6 @@ class este.dom.Merge
     @protected
   ###
   mergeAttributes: (toNode, fromNode) ->
-    # todo: add failing tests
-    # props =
-    #   'INPUT': 'checked'
-    #   'OPTION': 'selected'
-    #   'TEXTAREA': 'value'
-    # prop = props[fromNode.tagName]
-    # value = fromNode[prop] if prop && fromNode[prop]?
-
     if toNode.hasAttributes()
       for attr in goog.array.toArray toNode.attributes
         continue if fromNode.hasAttribute attr.name
@@ -122,8 +112,14 @@ class este.dom.Merge
 
     if fromNode.hasAttributes()
       for attr in goog.array.toArray fromNode.attributes
-        continue if toNode.hasAttribute(attr.name) &&
-                    toNode.getAttribute(attr.name) == attr.value
-        toNode.setAttribute attr.name, attr.value
+        # todo: investigate other brittle props
+        isProp = attr.name in ['value']
+        if toNode.hasAttribute attr.name
+          continue if isProp && toNode[attr.name] == attr.value
+          continue if !isProp && toNode.getAttribute(attr.name) == attr.value
+          if isProp
+            toNode[attr.name] = attr.value
+          else
+            toNode.setAttribute attr.name, attr.value
 
-    # toNode[prop] = value if value?
+    return
