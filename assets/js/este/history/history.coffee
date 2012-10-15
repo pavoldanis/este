@@ -1,7 +1,11 @@
 ###*
-  @fileoverview HTML5 pushState and hashchange history.
-  Facade for goog.History and goog.history.Html5History.
-  It dispatches goog.history.Event.
+  @fileoverview HTML5 pushState and hashchange history. Facade for goog.History
+  and goog.history.Html5History. It dispatches goog.history.Event.
+
+  Some browsers fires popstate event on page load. It's wrong, because we want
+  to control navigate event dispatching separately. These ghost popstate events
+  are filtered via location.href check.
+
   @see ../demos/history.html
 ###
 
@@ -10,8 +14,8 @@ goog.provide 'este.History'
 goog.require 'este.Base'
 goog.require 'este.history.TokenTransformer'
 goog.require 'este.mobile'
-goog.require 'goog.History'
 goog.require 'goog.dom'
+goog.require 'goog.History'
 goog.require 'goog.history.Event'
 goog.require 'goog.history.Html5History'
 goog.require 'goog.userAgent.product.isVersion'
@@ -67,6 +71,12 @@ class este.History extends este.Base
   silent: false
 
   ###*
+    @type {?string}
+    @protected
+  ###
+  currentHref: null
+
+  ###*
     @param {string} token
     @param {boolean=} silent
   ###
@@ -80,6 +90,7 @@ class este.History extends este.Base
     @history.getToken()
 
   ###*
+    It dispatches navigate event.
     @param {boolean=} enabled
   ###
   setEnabled: (enabled = true) ->
@@ -111,6 +122,10 @@ class este.History extends este.Base
     @protected
   ###
   onNavigate: (e) ->
+    # fix for browsers which fires popstate event on page load (webkit)
+    return if @currentHref == location.href
+    @currentHref = location.href
+
     if @silent
       @silent = false
       return

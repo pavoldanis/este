@@ -11,6 +11,10 @@
     .active {
       display: block;
     }
+
+    .shown {
+      text-decoration: none;
+    }
   </style>
   <link href='/assets/js/este/demos/css/default.css' rel='stylesheet'>
   <script src='/assets/js/dev/livereload.js'></script>
@@ -54,15 +58,23 @@
 
     var cur = 'kittens'
 
-    goog.events.listen(esteHistory, 'navigate', function(e) {
+    var updateUI = function(e) {
+      console.log('shown: ' + e.token)
       var token = e.token || 'kittens'
       var next = document.getElementById(token)
       if (!next) return
+
       document.getElementById(cur).className = 'section'
       next.className = 'section active'
       cur = token
-    })
 
+      var anchors = document.getElementsByTagName('a')
+      for (var i = 0, l = anchors.length; i < l; i++)
+        anchors[i].className = ''
+      document.querySelector('*[token=' + token + ']').className = 'shown'
+    }
+
+    goog.events.listen(esteHistory, 'navigate', updateUI)
     esteHistory.setEnabled()
 
     var links = document.getElementById('links')
