@@ -32,6 +32,9 @@
     -o, --only
       compile just one namespace
 
+    -p, --port
+      default is 8000
+
   Usage
     'node run app'
       to start app development
@@ -77,6 +80,7 @@ options =
   verbose: false
   ci: false
   only: ''
+  port: 8000
 
 socket = null
 startTime = Date.now()
@@ -298,6 +302,8 @@ setOptions = (args) ->
         options.ci = true
       when '--only', '-o'
         options.only = args.shift()
+      when '--port', '-p'
+        options.port = args.shift()
       else
         options.project = arg
 
@@ -364,9 +370,9 @@ startServer = ->
   wsServer.on 'connection', (p_socket) ->
     socket = p_socket
 
-  server.listen 8000
+  server.listen options.port
 
-  console.log 'Server is listening on http://localhost:8000/'
+  console.log "Server is listening on http://localhost:#{options.port}/"
 
 getPaths = (directory, extensions, includeDirs, enforceClosure) ->
   paths = []

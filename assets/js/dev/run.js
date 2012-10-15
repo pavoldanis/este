@@ -33,6 +33,9 @@
     -o, --only
       compile just one namespace
 
+    -p, --port
+      default is 8000
+
   Usage
     'node run app'
       to start app development
@@ -90,7 +93,8 @@ options = {
   debug: false,
   verbose: false,
   ci: false,
-  only: ''
+  only: '',
+  port: 8000
 };
 
 socket = null;
@@ -376,6 +380,10 @@ setOptions = function(args) {
       case '-o':
         options.only = args.shift();
         break;
+      case '--port':
+      case '-p':
+        options.port = args.shift();
+        break;
       default:
         options.project = arg;
     }
@@ -457,8 +465,8 @@ startServer = function() {
   wsServer.on('connection', function(p_socket) {
     return socket = p_socket;
   });
-  server.listen(8000);
-  return console.log('Server is listening on http://localhost:8000/');
+  server.listen(options.port);
+  return console.log("Server is listening on http://localhost:" + options.port + "/");
 };
 
 getPaths = function(directory, extensions, includeDirs, enforceClosure) {
