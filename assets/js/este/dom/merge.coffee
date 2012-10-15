@@ -107,12 +107,13 @@ class este.dom.Merge
     @protected
   ###
   mergeAttributes: (toNode, fromNode) ->
-    props =
-      'INPUT': 'checked'
-      'OPTION': 'selected'
-      'TEXTAREA': 'value'
-    prop = props[fromNode.tagName]
-    value = fromNode[prop] if prop && fromNode[prop]?
+    # todo: add failing tests
+    # props =
+    #   'INPUT': 'checked'
+    #   'OPTION': 'selected'
+    #   'TEXTAREA': 'value'
+    # prop = props[fromNode.tagName]
+    # value = fromNode[prop] if prop && fromNode[prop]?
 
     if toNode.hasAttributes()
       for attr in goog.array.toArray toNode.attributes
@@ -125,4 +126,4 @@ class este.dom.Merge
                     toNode.getAttribute(attr.name) == attr.value
         toNode.setAttribute attr.name, attr.value
 
-    toNode[prop] = value if value?
+    # toNode[prop] = value if value?
