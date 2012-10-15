@@ -57,19 +57,24 @@ class este.app.View extends este.ui.Component
     este.router.Route.getUrl url, params
 
   ###*
-    Default implementation. You should override this method.
+    This method should be overridden by inheriting objects. We can use
+    este.storage.Local or este.storage.Rest (todo) or any object implementing
+    goog.result.Result interface.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
   load: (params) ->
-    este.result.ok params
+    # examples
+    #   este.result.ok params
+    #   @localStorage.query @todos
 
   ###*
+    This method should be overridden by inheriting objects.
     @inheritDoc
   ###
   enterDocument: ->
     super()
-    @update()
+    # @update() can be called for every show
     return
 
   ###*
@@ -78,6 +83,13 @@ class este.app.View extends este.ui.Component
   ###
   update: ->
     # innerHTML = template + viewModel
+
+  ###*
+    Use this method for model persistence.
+    @protected
+  ###
+  persist: ->
+    # todo:
 
   ###*
     Defer passed method execution after current call stack.

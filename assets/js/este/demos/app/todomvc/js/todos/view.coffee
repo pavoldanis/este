@@ -40,46 +40,26 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  update: ->
-    remainingCount = @todos.filter('completed': false).length
-    doneCount = @todos.getLength() - remainingCount
-    itemLeft = if remainingCount == 1 then 'item left' else 'items left'
-
-    json =
-      todos: @todos.toJson()
-      remainingCount: remainingCount
-      doneCount: doneCount
-      itemLeft: itemLeft
-
-    # todo:
-    #   consider: separate updateHtml method
-    #   explain non destructive innerHTML and why&when it should be used
-    #   explain when to render whole template and when render inner templates
-    html = este.demos.app.todomvc.todos.templates.element json
-    este.dom.merge @getElement(), html
-    return
-
-  ###*
-    @inheritDoc
-  ###
   enterDocument: ->
     super()
+    @update()
     @on @todos, 'change', @onTodosChange
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
     @delegate '.toggle', 'tap', @onToggleTap
     @delegate '#toggle-all', 'tap', @onToggleAllTap
     # todo: add support for touch devices via tap event
     @delegate 'label', 'dblclick', @onLabelDblclick
-    @delegate '.edit', 'blur', @onEditBlur
-    @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditBlur
+    @delegate '.edit', 'blur', @onEditEnd
+    @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
     @delegate '.destroy', 'tap', @onDestroyTap
 
   ###*
     @protected
   ###
   onTodosChange: (e) ->
+    # todo: investigate direct update
     @defer @update
-    # todo: persist
+    # @defer @persist
 
   ###*
     @protected
@@ -118,14 +98,49 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @protected
   ###
-  onEditBlur: (e) ->
-    title = e.modelElement.querySelector '.edit'
+  onEditEnd: (e) ->
+    title = goog.string.trim e.modelElement.querySelector('.edit').value
+    # if !title
+    #   @todos.remove e.model
+    #   return
     e.model.set
-      'title': title.value
+      'title': title
       'editing': false
+    return
 
   ###*
     @protected
   ###
   onDestroyTap: (e) ->
     @todos.remove e.model
+
+  ###*
+    @protected
+  ###
+  update: ->
+    remainingCount = @todos.filter('completed': false).length
+    doneCount = @todos.getLength() - remainingCount
+    itemLeft = if remainingCount == 1 then 'item left' else 'items left'
+
+    json =
+      todos: @todos.toJson()
+      remainingCount: remainingCount
+      doneCount: doneCount
+      itemLeft: itemLeft
+
+    # console.log JSON.stringify @todos.toJson()
+    # todo:
+    #   consider: separate updateHtml method
+    #   explain non destructive innerHTML and why&when it should be used
+    #   explain when to render whole template and when render inner templates separately
+    html = este.demos.app.todomvc.todos.templates.element json
+    # console.log html
+    este.dom.merge @getElement(), html
+    # @getElement().innerHTML = html
+    # console.log 'todos view updated'
+    return
+
+  ###*
+    @inheritDoc
+  ###
+  persist: ->
