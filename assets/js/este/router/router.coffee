@@ -96,13 +96,13 @@ class este.router.Router extends este.Base
     @history.setToken token
 
   ###*
-    Start router.
+    Start router. It dispatched
   ###
   start: ->
-    @history.setEnabled true
     @getHandler().
       listen(@history, 'navigate', @onHistoryNavigate).
       listen(@tapHandler, 'tap', @onTapHandlerTap)
+    @history.setEnabled true
     return
 
   ###*
