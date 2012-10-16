@@ -111,8 +111,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onEditEnd: (e) ->
-    # enter removes todo from collection, so on blur there is no todo anymore
-    return if !e.model
     title = goog.string.trim e.modelElement.querySelector('.edit').value
     if !title
       @todos.remove e.model
@@ -135,17 +133,12 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       remainingCount: remainingCount
       doneCount: doneCount
       itemLeft: itemLeft
-
-    # console.log JSON.stringify @todos.toJson()
-    # todo:
-    #   consider: separate updateHtml method
-    #   explain non destructive innerHTML and why&when it should be used
-    #   explain when to render whole template and when render inner templates separately
     html = este.demos.app.todomvc.todos.templates.element json
-    # console.log html
+
+    # See how me can merge new HTML into existing element. Better than plain
+    # old .innerHTML = html, because innerHTML destroys DOM state.
     este.dom.merge @getElement(), html
-    # @getElement().innerHTML = html
-    # console.log 'todos view updated'
+
     return
 
   ###*
