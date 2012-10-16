@@ -41,10 +41,11 @@
 /**
  * Main template
  * @param todos
+ * @param remainingCount
  */
 {template .main}
   <section id="main">
-    <input id="toggle-all" type="checkbox">
+    <input {if $remainingCount == 0}checked{/if} id="toggle-all" type="checkbox">
     <label for="toggle-all">Mark all as complete</label>
     <ul id="todo-list">
       {foreach $todo in $todos}

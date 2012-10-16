@@ -47,11 +47,11 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
     @delegate '.toggle', 'tap', @onToggleTap
     @delegate '#toggle-all', 'tap', @onToggleAllTap
-    # todo: add support for touch devices via tap event
+    @delegate '.destroy', 'tap', @onDestroyTap
+    @delegate '#clear-completed', 'tap', @onClearCompletedTap
     @delegate 'label', 'dblclick', @onLabelDblclick
     @delegate '.edit', 'blur', @onEditEnd
     @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
-    @delegate '.destroy', 'tap', @onDestroyTap
 
   ###*
     @protected
@@ -90,6 +90,18 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @protected
   ###
+  onDestroyTap: (e) ->
+    @todos.remove e.model
+
+  ###*
+    @protected
+  ###
+  onClearCompletedTap: (e) ->
+    @todos.clearCompleted()
+
+  ###*
+    @protected
+  ###
   onLabelDblclick: (e) ->
     e.model.set 'editing', true
     edit = e.modelElement.querySelector '.edit'
@@ -99,20 +111,16 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onEditEnd: (e) ->
+    # enter removes todo from collection, so on blur there is no todo anymore
+    return if !e.model
     title = goog.string.trim e.modelElement.querySelector('.edit').value
-    # if !title
-    #   @todos.remove e.model
-    #   return
+    if !title
+      @todos.remove e.model
+      return
     e.model.set
       'title': title
       'editing': false
     return
-
-  ###*
-    @protected
-  ###
-  onDestroyTap: (e) ->
-    @todos.remove e.model
 
   ###*
     @protected

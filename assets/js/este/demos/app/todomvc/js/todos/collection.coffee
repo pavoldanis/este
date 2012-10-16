@@ -26,3 +26,6 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
   ###
   toggleCompleted: (completed) ->
     @each (item) -> item.set 'completed', completed
+
+  clearCompleted: ->
+    @removeIf (todo) -> todo.get 'completed'

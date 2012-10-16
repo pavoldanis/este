@@ -249,7 +249,9 @@ class este.Collection extends goog.events.EventTarget
         null
 
   ###*
-    todo: add better annotation
+    todo:
+      add better annotation
+      consider suppress event dispatching during iteration
     @param {Function} fn
   ###
   each: (fn) ->
