@@ -16,6 +16,10 @@
     tests (manually in IE and Gecko)
     better algorithm for temporally injected nodes via siblings checks
     consider outerHTML optimalization
+
+  scenarios for end2end tests
+    merge.html demo (form state is preserved)
+    todomvc demo (exact behaviour)
   @see ../demos/merge.html
 ###
 
@@ -105,6 +109,15 @@ class este.dom.Merge
     @protected
   ###
   mergeAttributes: (toNode, fromNode) ->
+    # 'checked' and 'selected' can be attribute less
+    # http://stackoverflow.com/questions/4228658/what-values-for-checked-and-selected-are-false
+    valueLessFields =
+      'INPUT': 'checked'
+      'OPTION': 'selected'
+    valueLessFieldProp = valueLessFields[fromNode.tagName]
+    valueLessFieldValue = fromNode.hasAttribute valueLessFieldProp
+
+    # remove all toNode.attrs which are not on fromNode
     if toNode.hasAttributes()
       for attr in goog.array.toArray toNode.attributes
         continue if fromNode.hasAttribute attr.name
@@ -112,14 +125,14 @@ class este.dom.Merge
 
     if fromNode.hasAttributes()
       for attr in goog.array.toArray fromNode.attributes
-        # todo: investigate other brittle props
-        isProp = attr.name in ['value']
-        if toNode.hasAttribute attr.name
-          continue if isProp && toNode[attr.name] == attr.value
-          continue if !isProp && toNode.getAttribute(attr.name) == attr.value
-          if isProp
-            toNode[attr.name] = attr.value
-          else
-            toNode.setAttribute attr.name, attr.value
+        if attr.name == 'value'
+          continue if toNode[attr.name] == attr.value
+          toNode[attr.name] = attr.value
+        else
+          continue if toNode.getAttribute(attr.name) == attr.value
+          toNode.setAttribute attr.name, attr.value
+
+    if valueLessFieldProp
+      toNode[valueLessFieldProp] = valueLessFieldValue
 
     return
