@@ -6,7 +6,7 @@
     update Google Closure deps.js
     run and watch *_test.coffee unit tests
     run simple NodeJS development server
-    experimental support for TypeScript.
+    experimental support for TypeScript (disabled now)
 
   Options
     -b, --build
@@ -166,11 +166,11 @@ Commands =
 
     callback()
 
-  typeScripts: (callback, path) ->
-    paths = (path for path in getPaths 'assets', ['.ts'])
-    command = "node assets/js/dev/node_modules/typescript/bin/tsc
-      #{paths.join ' '}"
-    exec command, callback
+  # typeScripts: (callback, path) ->
+  #   paths = (path for path in getPaths 'assets', ['.ts'])
+  #   command = "node assets/js/dev/node_modules/typescript/bin/tsc
+  #     #{paths.join ' '}"
+  #   exec command, callback
 
   soyTemplates: (callback) ->
     soyPaths = getPaths 'assets', ['.soy']
@@ -460,16 +460,16 @@ onPathChange = (path, dir) ->
       else
         addBrowserLiveReloadCommand 'page'
 
-    when '.ts'
-      commands["coffeeScript: #{path}"] = "
-        node assets/js/dev/node_modules/typescript/bin/tsc
-          #{path}"
-      commands["closureDeps"] = Commands.closureDeps
-      commands["mochaTests"] = Commands.mochaTests
-      if options.build || options.buildAll
-        commands["closureCompilation"] = Commands.closureCompilation
-      else
-        addBrowserLiveReloadCommand 'page'
+    # when '.ts'
+    #   commands["coffeeScript: #{path}"] = "
+    #     node assets/js/dev/node_modules/typescript/bin/tsc
+    #       #{path}"
+    #   commands["closureDeps"] = Commands.closureDeps
+    #   commands["mochaTests"] = Commands.mochaTests
+    #   if options.build || options.buildAll
+    #     commands["closureCompilation"] = Commands.closureCompilation
+    #   else
+    #     addBrowserLiveReloadCommand 'page'
 
     when '.styl'
       commands["stylusStyle: #{path}"] = "
