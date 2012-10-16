@@ -9,6 +9,7 @@ goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'este.ui.Component'
+goog.require 'goog.i18n.pluralRules'
 
 class este.app.View extends este.ui.Component
 

@@ -16,7 +16,7 @@
  * @param todos
  * @param remainingCount
  * @param doneCount
- * @param itemLeft
+ * @param itemsLocalized
  */
 {template .element}
   {call .header data="all" /}
@@ -78,12 +78,12 @@
 /**
  * Footer template
  * @param remainingCount
- * @param itemLeft
+ * @param itemsLocalized
  * @param doneCount
  */
 {template .footer}
   <footer id="footer">
-    <span id="todo-count"><strong>{$remainingCount}</strong> {$itemLeft}</span>
+    <span id="todo-count"><strong>{$remainingCount}</strong> {$itemsLocalized}</span>
     <ul id="filters">
       <li>
         <a class="selected" href="#/">All</a>

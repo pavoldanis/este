@@ -128,14 +128,11 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   update: ->
     remainingCount = @todos.filter('completed': false).length
-    doneCount = @todos.getLength() - remainingCount
-    itemLeft = if remainingCount == 1 then 'item left' else 'items left'
-
     json =
       todos: @todos.toJson()
       remainingCount: remainingCount
-      doneCount: doneCount
-      itemLeft: itemLeft
+      doneCount: @todos.getLength() - remainingCount
+      itemsLocalized: @getLocalizedItems remainingCount
     html = este.demos.app.todomvc.todos.templates.element json
 
     # See how me can merge new HTML into existing element. Better than plain
@@ -143,6 +140,19 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     este.dom.merge @getElement(), html
 
     return
+
+  ###*
+    @param {number} remainingCount
+    @return {string}
+    @protected
+  ###
+  getLocalizedItems: (remainingCount) ->
+    # every language has own plural rules, see goog.i18n.pluralRules
+    switch goog.i18n.pluralRules.select remainingCount
+      when goog.i18n.pluralRules.Keyword.ONE
+        'item left'
+      else
+        'items left'
 
   ###*
     @inheritDoc
