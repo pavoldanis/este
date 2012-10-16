@@ -2,9 +2,6 @@
 /**
   @fileoverview github.com/Steida/este.
 
-  todo
-    add -ba, --buildall options for all project classes compilation
-
   Features
     compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
@@ -14,7 +11,7 @@
 
   Options
     -b, --build
-      build and statically check source code
+      build and statically check all required namespaces
       [project].html will use one compiled script
       goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
@@ -35,6 +32,10 @@
 
     -p, --port
       default is 8000
+
+    -ba, --buildall
+      build and statically check all namespaces in project
+      useful for debugging, after closure update, etc.
 
   Usage
     'node run app'
@@ -90,6 +91,7 @@ lazyRequireCoffeeForClosure = function() {
 options = {
   project: null,
   build: false,
+  buildAll: false,
   debug: false,
   verbose: false,
   ci: false,
@@ -247,28 +249,23 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
-    if (options.only) {
-      startjs = ["goog.provide('" + options.project + ".start');"];
-      startjs.push("goog.require('" + options.only + "');");
-      source = startjs.join('\n');
-      fs.writeFileSync("./assets/js/" + options.project + "/start.js", source, 'utf8');
-    } else if (options.project === 'este') {
+    if (options.buildAll) {
       deps = tests.getDeps();
       namespaces = [];
       for (k in deps) {
         v = deps[k];
-        if (k.indexOf('este.') !== 0) {
+        if (k.indexOf("" + options.project + ".") !== 0) {
           continue;
         }
         namespaces.push(k);
       }
-      startjs = ["goog.provide('este.start');"];
+      startjs = ["goog.provide('" + options.project + ".start');"];
       for (_j = 0, _len1 = namespaces.length; _j < _len1; _j++) {
         namespace = namespaces[_j];
         startjs.push("goog.require('" + namespace + "');");
       }
       source = startjs.join('\n');
-      fs.writeFileSync("./assets/js/este/start.js", source, 'utf8');
+      fs.writeFileSync("./assets/js/" + options.project + "/start.js", source, 'utf8');
     }
     preservedClosureScripts = [];
     if (!options.debug) {
@@ -316,7 +313,7 @@ start = function(args) {
   if (!setOptions(args)) {
     return;
   }
-  if (!options.build) {
+  if (!options.build && !options.buildAll) {
     delete Commands.closureCompilation;
   }
   return runCommands(Commands, function(errors) {
@@ -371,6 +368,10 @@ setOptions = function(args) {
       case '--build':
       case '-b':
         options.build = true;
+        break;
+      case '--buildall':
+      case '-ba':
+        options.buildAll = true;
         break;
       case '--ci':
       case '-c':
@@ -559,7 +560,7 @@ onPathChange = function(path, dir) {
       };
       commands["closureDeps"] = Commands.closureDeps;
       commands["mochaTests"] = Commands.mochaTests;
-      if (options.build) {
+      if (options.build || options.buildAll) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {
         addBrowserLiveReloadCommand('page');
@@ -569,7 +570,7 @@ onPathChange = function(path, dir) {
       commands["coffeeScript: " + path] = "        node assets/js/dev/node_modules/typescript/bin/tsc          " + path;
       commands["closureDeps"] = Commands.closureDeps;
       commands["mochaTests"] = Commands.mochaTests;
-      if (options.build) {
+      if (options.build || options.buildAll) {
         commands["closureCompilation"] = Commands.closureCompilation;
       } else {
         addBrowserLiveReloadCommand('page');
@@ -582,7 +583,7 @@ onPathChange = function(path, dir) {
     case '.soy':
       commands["soyTemplate: " + path] = getSoyCommand([path]);
       commands["closureDeps"] = Commands.closureDeps;
-      if (options.build) {
+      if (options.build || options.buildAll) {
         commands["closureCompilation"] = Commands.closureCompilation;
       }
       addBrowserLiveReloadCommand('page');
@@ -640,7 +641,7 @@ runCommands = function(commands, complete, errors) {
     }
     isError = !!err || stderr;
     if (name === 'closureCompilation') {
-      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0);
+      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0);
     }
     if (isError) {
       output = stderr;

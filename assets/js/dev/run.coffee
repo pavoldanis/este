@@ -1,9 +1,6 @@
 ###*
   @fileoverview github.com/Steida/este.
 
-  todo
-    add -ba, --buildall options for all project classes compilation
-
   Features
     compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
     update Google Closure deps.js
@@ -13,7 +10,7 @@
 
   Options
     -b, --build
-      build and statically check source code
+      build and statically check all required namespaces
       [project].html will use one compiled script
       goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
@@ -34,6 +31,10 @@
 
     -p, --port
       default is 8000
+
+    -ba, --buildall
+      build and statically check all namespaces in project
+      useful for debugging, after closure update, etc.
 
   Usage
     'node run app'
@@ -76,6 +77,7 @@ lazyRequireCoffeeForClosure = ->
 options =
   project: null
   build: false
+  buildAll: false
   debug: false
   verbose: false
   ci: false
@@ -191,25 +193,26 @@ Commands =
     flagsText = ''
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
 
-    # just for este development, require all namespaces for compilation
-    # this is used when closure is updated, in we want to recompile
-    # everything just for sure that everything works
-    if options.only
-      startjs = ["goog.provide('#{options.project}.start');"]
-      startjs.push "goog.require('#{options.only}');"
-      source = startjs.join '\n'
-      fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
-    else if options.project == 'este'
+    # buildAll override start.js to require all namespaces in project
+    # useful for debugging, or when we want to compile all namespaces,
+    # not just required.
+    if options.buildAll
       deps = tests.getDeps()
       namespaces = []
       for k, v of deps
-        continue if k.indexOf('este.') != 0
+        continue if k.indexOf("#{options.project}.") != 0
         namespaces.push k
-      startjs = ["goog.provide('este.start');"]
+      startjs = ["goog.provide('#{options.project}.start');"]
       for namespace in namespaces
         startjs.push "goog.require('#{namespace}');"
       source = startjs.join '\n'
-      fs.writeFileSync "./assets/js/este/start.js", source, 'utf8'
+      fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
+
+    # if options.only
+    #   startjs = ["goog.provide('#{options.project}.start');"]
+    #   startjs.push "goog.require('#{options.only}');"
+    #   source = startjs.join '\n'
+    #   fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
 
     preservedClosureScripts = []
 
@@ -263,7 +266,8 @@ Commands =
 
 start = (args) ->
   return if !setOptions args
-  delete Commands.closureCompilation if !options.build
+  if !options.build && !options.buildAll
+    delete Commands.closureCompilation
 
   runCommands Commands, (errors) ->
     if !options.ci
@@ -298,6 +302,8 @@ setOptions = (args) ->
         options.verbose = true
       when '--build', '-b'
         options.build = true
+      when '--buildall', '-ba'
+        options.buildAll = true
       when '--ci', '-c'
         options.ci = true
       when '--only', '-o'
@@ -449,7 +455,7 @@ onPathChange = (path, dir) ->
 
       commands["closureDeps"] = Commands.closureDeps
       commands["mochaTests"] = Commands.mochaTests
-      if options.build
+      if options.build || options.buildAll
         commands["closureCompilation"] = Commands.closureCompilation
       else
         addBrowserLiveReloadCommand 'page'
@@ -460,7 +466,7 @@ onPathChange = (path, dir) ->
           #{path}"
       commands["closureDeps"] = Commands.closureDeps
       commands["mochaTests"] = Commands.mochaTests
-      if options.build
+      if options.build || options.buildAll
         commands["closureCompilation"] = Commands.closureCompilation
       else
         addBrowserLiveReloadCommand 'page'
@@ -474,7 +480,7 @@ onPathChange = (path, dir) ->
     when '.soy'
       commands["soyTemplate: #{path}"] = getSoyCommand [path]
       commands["closureDeps"] = Commands.closureDeps
-      if options.build
+      if options.build || options.buildAll
         commands["closureCompilation"] = Commands.closureCompilation
       addBrowserLiveReloadCommand 'page'
 
@@ -512,15 +518,17 @@ runCommands = (commands, complete, errors = []) ->
   nextCommands[k] = v for k, v of commands when k != name
 
   onExec = (err, stdout, stderr) ->
-    # this is important for WindowsOnly error: [Error: Command failed: ] killed: false...
+    # this is for debugging windows-only error:
+    # [Error: Command failed: ] killed: false...
     # console.log arguments
     if name == 'closureCompilation'
       console.log 'Compilation finished.'
 
     isError = !!err || stderr
-    # Workaround for Google Closure Compiler, all output is returned as stderr.
+    # workaround for Google Closure Compiler, all output is returned as stderr
     if name == 'closureCompilation'
-      isError = ~stderr?.indexOf ': WARNING - '
+      isError = ~stderr?.indexOf(': WARNING - ') ||
+                ~stderr?.indexOf(': ERROR - ')
 
     if isError
       output = stderr
