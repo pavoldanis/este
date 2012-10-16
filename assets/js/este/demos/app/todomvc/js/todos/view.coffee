@@ -111,6 +111,9 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onEditEnd: (e) ->
+    # If todo is removed via enter on empty item, then blur is still fired,
+    # with undefined modelElement, therefore e.modelElement check.
+    return if !e.modelElement
     title = goog.string.trim e.modelElement.querySelector('.edit').value
     if !title
       @todos.remove e.model
