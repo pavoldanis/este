@@ -279,4 +279,5 @@ class este.Model extends goog.events.EventTarget
   dispatchChangeEvent: (changed) ->
     @dispatchEvent
       type: Model.EventType.CHANGE
+      model: @
       changed: changed

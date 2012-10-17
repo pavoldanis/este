@@ -174,21 +174,21 @@ suite 'este.Model', ->
         assert.isNumber person.get 'age'
 
   suite 'change event', ->
-    test 'should be dispached if value change', (done) ->
+    test 'should be dispatched if value change', (done) ->
       goog.events.listenOnce person, 'change', (e) ->
-        assert.deepEqual e.changed,
-          age: 'foo'
+        assert.deepEqual e.changed, age: 'foo'
+        assert.equal e.model, person
         done()
       person.set 'age', 'foo'
 
-    test 'should not be dispached if value hasnt changed', ->
+    test 'should not be dispatched if value hasnt changed', ->
       called = false
       goog.events.listenOnce person, 'change', (e) ->
         called = true
       person.set 'age', 55
       assert.isFalse called
 
-    test 'should be dispached if value is removed', ->
+    test 'should be dispatched if value is removed', ->
       called = false
       goog.events.listenOnce person, 'change', (e) ->
         called = true
