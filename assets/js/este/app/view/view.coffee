@@ -58,10 +58,10 @@ class este.app.View extends este.ui.Component
     este.router.Route.getUrl url, params
 
   ###*
-    This method should be overridden by inheriting objects. We can use
-    este.storage.Local or este.storage.Rest (todo) or any object implementing
-    goog.result.Result interface. If you don't want to load anything, just call
-    default super implementation.
+    This method should be overridden by inheriting objects.
+    este.storage.Local or este.storage.Rest can be used, or any other object
+    implementing goog.result.Result interface. If you don't want to load
+    anything, just call default super implementation.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
@@ -70,6 +70,7 @@ class este.app.View extends este.ui.Component
 
   ###*
     This method should be overridden by inheriting objects.
+
     @inheritDoc
   ###
   enterDocument: ->
@@ -78,15 +79,23 @@ class este.app.View extends este.ui.Component
     return
 
   ###*
-    Use this method for UI refresh. It's called from enterDocument.
-    ex.
-      innerHTML = template + viewModel
+    This method should be overridden by inheriting objects. Use this method for
+    UI refresh. It can be called from enterDocument or on model change.
     @protected
   ###
   update: goog.abstractMethod
 
   ###*
-    Use this method for persistence.
+    Save innerHTML update.
+    @param {string} html
+    @protected
+  ###
+  mergeHtml: (html) ->
+    este.dom.merge @getElement(), html
+
+  ###*
+    This method should be overridden by inheriting objects.
+    Use this method for custom persistence.
     @protected
   ###
   persist: goog.abstractMethod

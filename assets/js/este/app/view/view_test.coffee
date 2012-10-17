@@ -44,6 +44,17 @@ suite 'este.app.View', ->
       view.defer view.update
       view.defer view.update
 
+  suite 'mergeHtml', ->
+    test 'should call este.dom.merge', (done) ->
+      _merge = este.dom.merge
+      html = ''
+      este.dom.merge = (el, html) ->
+        este.dom.merge = _merge
+        assert.equal el, view.getElement()
+        assert.equal html, 'html'
+        done()
+      view.mergeHtml 'html'
+
   suite 'dispose', ->
     test 'should defer passed method call', (done) ->
       called = false

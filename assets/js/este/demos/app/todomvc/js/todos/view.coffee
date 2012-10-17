@@ -135,11 +135,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       itemsLocalized: @getLocalizedItems remainingCount
     html = este.demos.app.todomvc.todos.templates.element json
 
-    # See how me can merge new HTML into existing element. Better than plain
-    # old .innerHTML = html, because innerHTML destroys DOM state.
-    este.dom.merge @getElement(), html
-
-    return
+    # See how we can merge HTML into element. Better than plain .innerHTML = ,
+    # because it updates only changed nodes and attributes, therefore does not
+    # destroy form fields state nor cause image flickering.
+    @mergeHtml html
 
   ###*
     @param {number} remainingCount
