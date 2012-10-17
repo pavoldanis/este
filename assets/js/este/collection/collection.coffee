@@ -46,7 +46,6 @@ class este.Collection extends goog.events.EventTarget
   @EventType:
     ADD: 'add'
     REMOVE: 'remove'
-    CHANGE: 'change'
 
   ###*
     @type {Array.<Object>}
@@ -95,7 +94,6 @@ class este.Collection extends goog.events.EventTarget
     @array.push.apply @array, added
     @sortInternal()
     @dispatchAddEvent added
-    @dispatchChangeEvent added
     return
 
   ###*
@@ -110,7 +108,6 @@ class este.Collection extends goog.events.EventTarget
       removed.push item if goog.array.remove @array, item
     return false if !removed.length
     @dispatchRemoveEvent removed
-    @dispatchChangeEvent removed
     true
 
   ###*
@@ -210,7 +207,7 @@ class este.Collection extends goog.events.EventTarget
     @sortCompare = options.compare if options?.compare != undefined
     @sortReversed = options.reversed if options?.reversed != undefined
     @sortInternal()
-    @dispatchChangeEvent null
+    # @dispatchChangeEvent null
     return
 
   ###*
@@ -228,6 +225,7 @@ class este.Collection extends goog.events.EventTarget
 
   ###*
     Filter collection by object or function and returns array of jsons.
+    todo: consider return collection if model is defined
     @param {Object|Function} param
     @return {Array}
   ###
@@ -275,15 +273,6 @@ class este.Collection extends goog.events.EventTarget
     @dispatchEvent
       type: Collection.EventType.REMOVE
       removed: removed
-
-  ###*
-    @param {Array} changed
-    @protected
-  ###
-  dispatchChangeEvent: (changed) ->
-    @dispatchEvent
-      type: Collection.EventType.CHANGE
-      changed: changed
 
   ###*
     @protected

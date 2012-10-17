@@ -526,6 +526,7 @@ runCommands = (commands, complete, errors = []) ->
 
     isError = !!err || stderr
     # workaround for Google Closure Compiler, all output is returned as stderr
+    # consider: "JavaScript compilation succeeded.""
     if name == 'closureCompilation'
       isError = ~stderr?.indexOf(': WARNING - ') ||
                 ~stderr?.indexOf(': ERROR - ')

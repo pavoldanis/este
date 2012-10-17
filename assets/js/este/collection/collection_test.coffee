@@ -99,67 +99,55 @@ suite 'este.Collection', ->
       assert.equal collection.getLength(), 0
 
   suite 'add item', ->
-    test 'should fire add, change events', ->
-      addCalled = changeCalled = false
+    test 'should fire add event', ->
+      addCalled = false
       added = null
       goog.events.listenOnce collection, 'add', (e) ->
         added = e.added
         addCalled = true
-      goog.events.listenOnce collection, 'change', ->
-        changeCalled = true
       collection.add 1
       assert.isTrue addCalled
-      assert.isTrue changeCalled
       assert.deepEqual added, [1]
 
   suite 'add items', ->
-    test 'should fire add, change events', ->
-      addCalled = changeCalled = false
+    test 'should fire add event', ->
+      addCalled = false
       added = null
       goog.events.listenOnce collection, 'add', (e) ->
         added = e.added
         addCalled = true
-      goog.events.listenOnce collection, 'change', ->
-        changeCalled = true
       collection.add [1, 2]
       assert.isTrue addCalled
-      assert.isTrue changeCalled
       assert.deepEqual added, [1, 2]
 
   suite 'remove item', ->
-    test 'should fire remove, change events', ->
-      removeCalled = changeCalled = false
+    test 'should fire remove event', ->
+      removeCalled = false
       removed = null
       collection.add 1
       goog.events.listen collection, 'remove', (e) ->
         removed = e.removed
         removeCalled = true
-      goog.events.listen collection, 'change', -> changeCalled = true
       collection.remove 1
       assert.isTrue removeCalled, 'removeCalled'
-      assert.isTrue changeCalled, 'changeCalled'
       assert.deepEqual removed, [1]
 
-    test 'should not fire remove, change events', ->
-      removeCalled = changeCalled = false
+    test 'should not fire remove event', ->
+      removeCalled = false
       goog.events.listen collection, 'remove', -> removeCalled = true
-      goog.events.listen collection, 'change', -> changeCalled = true
       collection.remove 1
       assert.isFalse removeCalled
-      assert.isFalse changeCalled
 
   suite 'remove item', ->
-    test 'should fire remove, change events', ->
-      removeCalled = changeCalled = false
+    test 'should fire remove event', ->
+      removeCalled = false
       removed = null
       collection.add 1
       goog.events.listen collection, 'remove', (e) ->
         removed = e.removed
         removeCalled = true
-      goog.events.listen collection, 'change', -> changeCalled = true
       collection.remove [1]
       assert.isTrue removeCalled, 'removeCalled'
-      assert.isTrue changeCalled, 'changeCalled'
       assert.deepEqual removed, [1]
 
     test 'should not fire remove, change events', ->
@@ -207,24 +195,6 @@ suite 'este.Collection', ->
       collection.toJson true
 
   suite 'bubbling events', ->
-    test 'from inner collection should work', ->
-      called = 0
-      innerCollection = new Collection
-      collection.add innerCollection
-      goog.events.listen collection, 'change', (e) ->
-        switch called
-          when 0
-            assert.equal e.changed[0], 1
-          when 1
-            assert.equal e.changed[0], innerCollection
-        called++
-      innerCollection.add 1
-      assert.equal called, 1
-      collection.remove innerCollection
-      assert.equal called, 2
-      innerCollection.add 1
-      assert.equal called, 2
-
     test 'from inner model should work', ->
       called = 0
       innerModel = new Model
@@ -234,9 +204,9 @@ suite 'este.Collection', ->
       innerModel.set '1', 1
       assert.equal called, 1
       collection.remove innerModel
-      assert.equal called, 2
+      assert.equal called, 1
       innerModel.set '1', 2
-      assert.equal called, 2
+      assert.equal called, 1
 
   suite 'find', ->
     test 'should find item', ->
@@ -342,10 +312,9 @@ suite 'este.Collection', ->
       collection = new Collection
       collection.add 1
       collection.add 2
-      goog.events.listenOnce collection, 'change', -> count++
       goog.events.listenOnce collection, 'remove', -> count++
       collection.clear()
-      assert.equal count, 2
+      assert.equal count, 1
       assert.isUndefined collection.at 0
       assert.isUndefined collection.at 1
 
@@ -366,10 +335,10 @@ suite 'este.Collection', ->
         assert.deepEqual collection.toJson(), ['b', 'c']
 
     suite 'sort', ->
-      test 'should fire change event', (done) ->
-        goog.events.listenOnce collection, 'change', (e) ->
-          done()
-        collection.sort()
+      # test 'should fire change event', (done) ->
+      #   goog.events.listenOnce collection, 'change', (e) ->
+      #     done()
+      #   collection.sort()
 
       suite 'by', ->
         test 'before should work', ->

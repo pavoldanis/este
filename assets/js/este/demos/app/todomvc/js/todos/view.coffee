@@ -43,7 +43,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @update()
-    @on @todos, 'change', @onTodosChange
+    @on @todos, ['add', 'remove','change'], @onTodosChange
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
     @delegate '.toggle', 'tap', @onToggleTap
     @delegate '#toggle-all', 'tap', @onToggleAllTap
@@ -57,9 +57,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onTodosChange: (e) ->
-    # todo: investigate direct update
     @defer @update
-    # @defer @persist
+    @persist e
 
   ###*
     @protected
@@ -155,6 +154,18 @@ class este.demos.app.todomvc.todos.View extends este.app.View
         'items left'
 
   ###*
-    @inheritDoc
+    @param {goog.events.Event} e
+    @protected
   ###
-  persist: ->
+  persist: (e) ->
+    # todo: encapsulate this pattern
+    switch e.type
+      when 'add'
+        @localStorage.save added for added in e.added
+      when 'remove'
+        @localStorage.delete removed for removed in e.removed
+      when 'change'
+        # console.log e.changed
+        # todo: remove explicit casting
+        `var model = /** @type {este.Model} */ (e.target)`
+        @localStorage.save model

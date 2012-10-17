@@ -1,7 +1,5 @@
 ###*
   @fileoverview Base class for Este.js storages.
-  todo
-    consider make it as interface
 ###
 goog.provide 'este.storage.Base'
 
@@ -42,6 +40,7 @@ class este.storage.Base
   ###*
     @param {este.Collection} collection
     @param {Object=} params
+    @return {!goog.result.Result}
   ###
   query: goog.abstractMethod
 

@@ -80,17 +80,17 @@ class este.app.View extends este.ui.Component
 
   ###*
     Use this method for UI refresh. It's called from enterDocument.
+    ex.
+      innerHTML = template + viewModel
     @protected
   ###
-  update: ->
-    # innerHTML = template + viewModel
+  update: goog.abstractMethod
 
   ###*
-    Use this method for model persistence.
+    Use this method for persistence.
     @protected
   ###
-  persist: ->
-    # todo:
+  persist: goog.abstractMethod
 
   ###*
     Defer passed method execution after current call stack.

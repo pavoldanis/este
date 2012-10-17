@@ -1,10 +1,13 @@
 ###*
   @fileoverview Local storage for este.Model's via HTML5 or IE user data.
-  todo
-    use goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED and check IE 64kb limit
-    check if value was really stored
-    version, scheme and updaters
-    micro-optimize it via session cache
+
+  todo:
+    implements <templates>
+    check if value was stored
+      fire goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED if not
+    scheme
+      version
+      updaters
 ###
 goog.provide 'este.storage.Local'
 
@@ -44,8 +47,7 @@ class este.storage.Local extends este.storage.Base
   idFactory: ->
 
   ###*
-    @param {este.Model} model
-    @return {!goog.result.Result}
+    @inheritDoc
   ###
   save: (model) ->
     @checkModelUrn model
@@ -57,8 +59,7 @@ class este.storage.Local extends este.storage.Base
     este.result.ok id
 
   ###*
-    @param {este.Model} model
-    @return {!goog.result.Result}
+    @inheritDoc
   ###
   load: (model) ->
     @checkModelUrn model
@@ -71,8 +72,7 @@ class este.storage.Local extends este.storage.Base
     este.result.ok id
 
   ###*
-    @param {este.Model} model
-    @return {!goog.result.Result}
+    @inheritDoc
   ###
   delete: (model) ->
     @checkModelUrn model
@@ -86,9 +86,7 @@ class este.storage.Local extends este.storage.Base
     este.result.fail()
 
   ###*
-    @param {este.Collection} collection
-    @param {Object=} params
-    @return {!goog.result.Result}
+    @inheritDoc
   ###
   query: (collection, params) ->
     urn = @checkCollectionUrn collection
@@ -97,9 +95,21 @@ class este.storage.Local extends este.storage.Base
     collection.fromJson array
     este.result.ok params
 
+  # ###*
+  #   @inheritDoc
+  # ###
+  # update: (todos) ->
+    # @checkModelUrn model
+    # id = @ensureModelId model
+    # serializedModels = @mechanism.get model.urn
+    # models = if serializedModels then este.json.parse serializedModels else {}
+    # models[id] = model.toJson true, true
+    # @saveModels models, model.urn
+    # este.result.ok id
+
   ###*
     @param {este.Model} model
-    @return {string} model id
+    @return {string} id
     @protected
   ###
   ensureModelId: (model) ->
