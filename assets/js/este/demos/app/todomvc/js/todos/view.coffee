@@ -54,6 +54,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
 
   ###*
+    @param {goog.events.Event} e
     @protected
   ###
   onTodosChange: (e) ->
@@ -158,14 +159,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   persist: (e) ->
-    # todo: encapsulate this pattern
     switch e.type
       when 'add'
         @localStorage.save added for added in e.added
       when 'remove'
         @localStorage.delete removed for removed in e.removed
       when 'change'
-        # console.log e.changed
-        # todo: remove explicit casting
-        `var model = /** @type {este.Model} */ (e.target)`
-        @localStorage.save model
+        @localStorage.save e.model
