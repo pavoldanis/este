@@ -60,14 +60,13 @@ class este.app.View extends este.ui.Component
   ###*
     This method should be overridden by inheriting objects. We can use
     este.storage.Local or este.storage.Rest (todo) or any object implementing
-    goog.result.Result interface.
+    goog.result.Result interface. If you don't want to load anything, just call
+    default super implementation.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
   load: (params) ->
-    # examples
-    #   este.result.ok params
-    #   @localStorage.query @todos
+    este.result.ok params
 
   ###*
     This method should be overridden by inheriting objects.

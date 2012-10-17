@@ -11,6 +11,12 @@ suite 'este.app.View', ->
     test 'should work', ->
       assert.instanceOf view, View
 
+  suite 'load', ->
+    test 'should return successful result', ->
+      result = view.load id: 1
+      assert.deepEqual result.getValue(), id: 1
+      assert.equal result.getState(), goog.result.Result.State.SUCCESS
+
   suite 'redirect', ->
     test 'should dispatch redirect event with viewClass and params', (done) ->
       goog.events.listenOnce view, 'redirect', (e) ->
