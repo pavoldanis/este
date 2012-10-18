@@ -65,8 +65,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onNewTodoSubmit: (e) ->
-    e.preventDefault()
-
     todo = new este.demos.app.todomvc.todo.Model e.json
     errors = todo.validate()
     return if errors

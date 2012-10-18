@@ -12,12 +12,14 @@ class este.events.SubmitHandler extends este.Base
 
   ###*
     @param {Element|Document=} node
+    @param {boolean=} preventDefault
     @constructor
     @extends {este.Base}
   ###
-  constructor: (node = document) ->
+  constructor: (node = document, @preventDefault = true) ->
     super()
-    # ie doesn't bubble submit event, but focusin with lazy submit works.
+    # IE doesn't bubble submit event, but focusin with lazy submit registration
+    # workarounds it well.
     eventType = if goog.userAgent.IE && !goog.userAgent.isDocumentMode 9
       'focusin'
     else
@@ -31,6 +33,12 @@ class este.events.SubmitHandler extends este.Base
     SUBMIT: 'submit'
 
   ###*
+    @type {boolean}
+    @protected
+  ###
+  preventDefault: true
+
+  ###*
     @param {goog.events.BrowserEvent} e
     @protected
   ###
@@ -41,4 +49,5 @@ class este.events.SubmitHandler extends este.Base
       return
     `var target = /** @type {Element} */ (e.target)`
     e.json = este.dom.serializeForm target
+    e.preventDefault() if @preventDefault
     @dispatchEvent e
