@@ -59,7 +59,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onTodosChange: (e) ->
     @defer @update
-    @persist e
+    @localStorage.saveChanges e
 
   ###*
     @protected
@@ -152,16 +152,3 @@ class este.demos.app.todomvc.todos.View extends este.app.View
         'item left'
       else
         'items left'
-
-  ###*
-    @param {goog.events.Event} e
-    @protected
-  ###
-  persist: (e) ->
-    switch e.type
-      when 'add'
-        @localStorage.save added for added in e.added
-      when 'remove'
-        @localStorage.delete removed for removed in e.removed
-      when 'change'
-        @localStorage.save e.model

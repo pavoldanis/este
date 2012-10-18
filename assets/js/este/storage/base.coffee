@@ -1,5 +1,7 @@
 ###*
-  @fileoverview Base class for Este.js storages.
+  @fileoverview Base class for various sync/async storages. It defines common
+  api for models/collections persitence.
+
 ###
 goog.provide 'este.storage.Base'
 
@@ -20,16 +22,16 @@ class este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {!goog.result.Result}
-  ###
-  save: goog.abstractMethod
-
-  ###*
-    @param {este.Model} model
     @param {string} id
     @return {!goog.result.Result}
   ###
   load: goog.abstractMethod
+
+  ###*
+    @param {este.Model} model
+    @return {!goog.result.Result}
+  ###
+  save: goog.abstractMethod
 
   ###*
     @param {este.Model} model
@@ -43,6 +45,24 @@ class este.storage.Base
     @return {!goog.result.Result}
   ###
   query: goog.abstractMethod
+
+  ###*
+    This method maps event type to its method.
+    todo: add tests once api will be stabilized
+    @param {goog.events.Event} e
+    @return {!goog.result.Result}
+  ###
+  saveChanges: (e) ->
+    switch e.type
+      when 'add'
+        results = (@save added for added in e.added)
+      when 'remove'
+        results = (@delete removed for removed in e.removed)
+      when 'change'
+        results = [@save e.model]
+      else
+        goog.asserts.fail "Only add, remove, and change events are supported, not: #{e.type}."
+    goog.result.combineOnSuccess.apply null, results
 
   ###*
     @param {este.Model} model

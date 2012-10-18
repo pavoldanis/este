@@ -70,35 +70,20 @@ class este.app.View extends este.ui.Component
 
   ###*
     This method should be overridden by inheriting objects.
-
-    @inheritDoc
-  ###
-  enterDocument: ->
-    super()
-    # @update() can be called for every show
-    return
-
-  ###*
-    This method should be overridden by inheriting objects. Use this method for
-    UI refresh. It can be called from enterDocument or on model change.
+    Use this method for UI refresh. It can be called from enterDocument or on
+    model change.
     @protected
   ###
   update: goog.abstractMethod
 
   ###*
     Save innerHTML update.
+    todo: write and link article about this approach
     @param {string} html
     @protected
   ###
   mergeHtml: (html) ->
     este.dom.merge @getElement(), html
-
-  ###*
-    This method should be overridden by inheriting objects.
-    Use this method for custom persistence.
-    @protected
-  ###
-  persist: goog.abstractMethod
 
   ###*
     Defer passed method execution after current call stack.

@@ -2,7 +2,7 @@
   @fileoverview Local storage for este.Model's via HTML5 or IE user data.
 
   todo:
-    implements <templates>
+    consider Este <templates>
     check if value was stored
       fire goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED if not
     scheme
@@ -94,18 +94,6 @@ class este.storage.Local extends este.storage.Base
     array = @modelsToArray models
     collection.fromJson array
     este.result.ok params
-
-  # ###*
-  #   @inheritDoc
-  # ###
-  # update: (todos) ->
-    # @checkModelUrn model
-    # id = @ensureModelId model
-    # serializedModels = @mechanism.get model.urn
-    # models = if serializedModels then este.json.parse serializedModels else {}
-    # models[id] = model.toJson true, true
-    # @saveModels models, model.urn
-    # este.result.ok id
 
   ###*
     @param {este.Model} model
