@@ -28,7 +28,8 @@ class este.storage.Local extends este.storage.Base
     @constructor
     @extends {este.storage.Base}
   ###
-  constructor: (@namespace, mechanism, idFactory) ->
+  constructor: (namespace, mechanism, idFactory) ->
+    super namespace
     @mechanism = mechanism ?
       goog.storage.mechanism.mechanismfactory.create @namespace
     @idFactory = idFactory ?

@@ -13,7 +13,7 @@ class este.storage.Base
     @param {string} namespace
     @constructor
   ###
-  constructor: (namespace) ->
+  constructor: (@namespace) ->
 
   ###*
     @type {string}
@@ -50,7 +50,7 @@ class este.storage.Base
     This method maps event type to its method.
     todo: add tests once api will be stabilized
     @param {goog.events.Event} e
-    @return {!goog.result.Result}
+    at return {!goog.result.Result}
   ###
   saveChanges: (e) ->
     switch e.type
@@ -62,6 +62,7 @@ class este.storage.Base
         results = [@save e.model]
       else
         goog.asserts.fail "Only add, remove, and change events are supported, not: #{e.type}."
+    # todo: fix Uncaught CustomError: Multiple attempts to set the state of this Result
     goog.result.combineOnSuccess.apply null, results
 
   ###*
