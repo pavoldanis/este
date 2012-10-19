@@ -113,6 +113,7 @@ class este.App extends este.Base
     @dispatchAppEvent App.EventType.BEFORELOAD, request
     @pendingRequests.push request
     result = view.load params
+    # todo: implement waitOnError
     goog.result.waitOnSuccess result, =>
       @onViewLoad request
 

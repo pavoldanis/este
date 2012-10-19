@@ -82,13 +82,6 @@ suite 'este.Collection', ->
         c: 'fok'
       ]
 
-    test 'fromJson should deserialize model', ->
-      collection = new Collection null, Model
-      collection.fromJson [{1: 'a'}, {2: 'b'}]
-      assert.instanceOf collection.at(0), Model
-      assert.instanceOf collection.at(1), Model
-      assert.isUndefined collection.at 2
-
   suite 'add, remove and getLength', ->
     test 'should work', ->
       assert.equal collection.getLength(), 0

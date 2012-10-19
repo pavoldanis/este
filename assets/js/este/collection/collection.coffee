@@ -17,7 +17,7 @@
     use model-less collections for max performance (10000+ items)
 
   todo
-    consider .defer -> method
+    consider primary keys and relations
 ###
 
 goog.provide 'este.Collection'
@@ -37,7 +37,7 @@ class este.Collection extends goog.events.EventTarget
   constructor: (array, @model = @model) ->
     super()
     @array = []
-    @fromJson array if array
+    @add array if array
     return
 
   ###*
@@ -80,10 +80,10 @@ class este.Collection extends goog.events.EventTarget
   sortReversed: false
 
   ###*
-    @param {Array.<Object>|Object} array
+    @param {Array.<Object>|Object} arg
   ###
-  add: (array) ->
-    array = [array] if !goog.isArray array
+  add: (arg) ->
+    array = if goog.isArray arg then arg else [arg]
     added = []
     for item in array
       if @model && !(item instanceof @model)
@@ -154,13 +154,6 @@ class este.Collection extends goog.events.EventTarget
       item.toJson noMetas for item in @array
     else
       @array.slice 0
-
-  ###*
-    Deserialize from JSON.
-    @param {Array.<Object>} array
-  ###
-  fromJson: (array) ->
-    @add array
 
   ###*
     Clear collection.

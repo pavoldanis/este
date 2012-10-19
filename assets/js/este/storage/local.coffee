@@ -93,7 +93,7 @@ class este.storage.Local extends este.storage.Base
     urn = @checkCollectionUrn collection
     models = @loadModels urn
     array = @modelsToArray models
-    collection.fromJson array
+    collection.add array
     este.result.ok params
 
   ###*

@@ -42,7 +42,7 @@ suite 'este.storage.Local', ->
     collection =
       getModel: -> Model
       getUrn: -> Model::urn
-      fromJson: ->
+      add: ->
 
     local = new Local root, mechanism, idFactory
 
@@ -217,7 +217,7 @@ suite 'este.storage.Local', ->
 
     test 'should load collection', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"},"456":{"bla":"foo"}}'
-      collection.fromJson = (array) ->
+      collection.add = (array) ->
         assert.deepEqual array, [
           foo: 'bla', id: '123'
         ,

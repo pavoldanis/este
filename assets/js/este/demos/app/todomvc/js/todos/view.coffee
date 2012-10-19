@@ -36,7 +36,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   load: (params) ->
-    # console.log params
     @localStorage.query @todos
 
   ###*
@@ -62,7 +61,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onTodosChange: (e) ->
     @defer @update
-    # console.log e
+    # console.log @todos.toJson()
     @localStorage.saveChanges e
 
   ###*
