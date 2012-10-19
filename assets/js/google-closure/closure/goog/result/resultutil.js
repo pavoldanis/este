@@ -303,9 +303,11 @@ goog.result.combine = function(var_args) {
   };
 
   var checkResults = function() {
-    if (goog.array.every(results, isResolved)) {
-      combinedResult.setValue(results);
-    }
+    if (!isResolved(combinedResult)) {
+      if (goog.array.every(results, isResolved)) {
+        combinedResult.setValue(results);
+      }
+     }
   };
 
   goog.array.forEach(results, function(result) {
