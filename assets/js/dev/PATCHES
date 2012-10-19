@@ -1,0 +1,4 @@
+MONKEY PATCHES
+
+  - Mocha and CoffeeScript, process.exit(1) sucks on Windows
+  - Closure Library - http://code.google.com/p/closure-library/issues/detail?id=495
