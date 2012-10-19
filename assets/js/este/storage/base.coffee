@@ -62,7 +62,6 @@ class este.storage.Base
         results = [@save e.model]
       else
         goog.asserts.fail "Only add, remove, and change events are supported, not: #{e.type}."
-    # todo: fix Uncaught CustomError: Multiple attempts to set the state of this Result
     goog.result.combineOnSuccess.apply null, results
 
   ###*

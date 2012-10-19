@@ -19,7 +19,6 @@ este.demos.app.todomvc.start = (data) ->
     este.demos.app.todomvc.todos.View
   ]
   app.localStorageNamespace = 'todos-este'
-  app.urlEnabled = true
   app.start()
 
 # ensures the symbol will be visible after compiler renaming
