@@ -38,6 +38,14 @@ class este.demos.app.simple.product.View extends este.app.View
   ###*
     @inheritDoc
   ###
+  enterDocument: ->
+    super()
+    @update()
+    @on @getElement(), 'click', @onClick
+
+  ###*
+    @inheritDoc
+  ###
   update: ->
     window['console']['log'] "product #{@params['id']} rendered"
     @getElement().innerHTML = """
@@ -45,13 +53,6 @@ class este.demos.app.simple.product.View extends este.app.View
       <a e-href>show products</a>
     """
     return
-
-  ###*
-    @inheritDoc
-  ###
-  enterDocument: ->
-    super()
-    @on @getElement(), 'click', @onClick
 
   ###*
     @param {goog.events.BrowserEvent} e

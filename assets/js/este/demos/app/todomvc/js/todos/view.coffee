@@ -20,7 +20,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  url: ''
+  url: '*'
+  # / (all - default), #/active and #/completed
 
   ###*
     @type {este.demos.app.todomvc.todos.Collection}
@@ -35,6 +36,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   load: (params) ->
+    # console.log params
     @localStorage.query @todos
 
   ###*
@@ -43,6 +45,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @update()
+    # todo: consider one über-change event (este.model.ChangeEvent)
     @on @todos, ['add', 'remove','change'], @onTodosChange
     @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
     @delegate '.toggle', 'tap', @onToggleTap
@@ -59,6 +62,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onTodosChange: (e) ->
     @defer @update
+    # console.log e
     @localStorage.saveChanges e
 
   ###*
