@@ -15,7 +15,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   constructor: ->
     super()
-    @todos = new este.demos.app.todomvc.todos.Collection
 
   ###*
     @inheritDoc
@@ -36,7 +35,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   load: (params) ->
-    @localStorage.query @todos
+    if !@todos
+      @todos = new este.demos.app.todomvc.todos.Collection
+      return @localStorage.query @todos
+    super()
 
   ###*
     @inheritDoc
