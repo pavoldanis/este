@@ -18,10 +18,7 @@
   Notes
     - to modify complex attribute: joe.get('items').add 'foo'
 
-  todo
-    consider to make urn class static
-    consider imperative schema definition (methods call instead of {} literal)
-      will be self inherited automatically
+  @see ../demos/model.html
 ###
 
 goog.provide 'este.Model'

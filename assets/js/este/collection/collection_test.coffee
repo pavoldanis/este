@@ -102,6 +102,29 @@ suite 'este.Collection', ->
       assert.isTrue addCalled
       assert.deepEqual added, [1]
 
+    test 'should throw exception for model item with same id', ->
+      called = false
+      arrangeChildType()
+      collection = new Collection [], Child
+      collection.add id: 1
+      try
+        collection.add id: 1
+      catch e
+        called = true
+      assert.isTrue called
+
+    test 'should not throw exception for model item with same id if item was removed', ->
+      called = false
+      arrangeChildType()
+      collection = new Collection [], Child
+      collection.add id: 1
+      collection.remove collection.at 0
+      try
+        collection.add id: 1
+      catch e
+        called = true
+      assert.isFalse called
+
   suite 'add items', ->
     test 'should fire add event', ->
       addCalled = false

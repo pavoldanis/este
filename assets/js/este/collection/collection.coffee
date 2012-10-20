@@ -1,27 +1,13 @@
 ###*
-  @fileoverview Collection for plain jsons or models. Fires add, remove, change
-  events. Event bubbling supported via setParentEventTarget.
-
-  Example
-    foos = new Collection [
-      id: 1, foo: 'bla bla'
-      id: 2, foo: '... bla?'
-    ]
-    foos.sort
-      by: (item) -> item.id
-      compare: goog.array.defaultCompare
-      reversed: false
-    filtered = foos.filter 'foo': 'bla bla'
-
-  Note
-    use model-less collections for max performance (10000+ items)
-
-  todo
-    consider primary keys and relations
+  @fileoverview Collection. Use it for storing various items. JSON, este.Model,
+  EventTarget instance, whatever. Sorting & Filtering included. If item is
+  instanceof este.Model, two models with the same id will throw an exception.
+  @see ../demos/collection.html
 ###
 
 goog.provide 'este.Collection'
 
+goog.require 'este.Model'
 goog.require 'goog.array'
 goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
@@ -36,6 +22,7 @@ class este.Collection extends goog.events.EventTarget
   ###
   constructor: (array, @model = @model) ->
     super()
+    @ids = {}
     @array = []
     @add array if array
     return
@@ -46,6 +33,12 @@ class este.Collection extends goog.events.EventTarget
   @EventType:
     ADD: 'add'
     REMOVE: 'remove'
+
+  ###*
+    @type {Object.<string, boolean>}
+    @protected
+  ###
+  ids: null
 
   ###*
     @type {Array.<Object>}
@@ -88,6 +81,7 @@ class este.Collection extends goog.events.EventTarget
     for item in array
       if @model && !(item instanceof @model)
         item = new @model item
+      @ensureUnique item
       if item instanceof goog.events.EventTarget
         item.setParentEventTarget @
       added.push item
@@ -106,6 +100,7 @@ class este.Collection extends goog.events.EventTarget
     for item in array
       item.setParentEventTarget null if item instanceof goog.events.EventTarget
       removed.push item if goog.array.remove @array, item
+      @removeUnique item
     return false if !removed.length
     @dispatchRemoveEvent removed
     true
@@ -278,3 +273,27 @@ class este.Collection extends goog.events.EventTarget
       @sortCompare a, b
     @array.reverse() if @sortReversed
     return
+
+  ###*
+    Ensure unique item in collection if item is instanceof este.Model.
+    @param {*} item
+    @protected
+  ###
+  ensureUnique: (item) ->
+    return if !(item instanceof este.Model)
+    id = item.get('id') || item.get('clientId')
+    key = '$' + id
+    if @ids[key]
+      goog.asserts.fail "Not allowed to add two models with the same id: #{id}"
+    @ids[key] = true
+
+  ###*
+    Remove unique id.
+    @param {*} item
+    @protected
+  ###
+  removeUnique: (item) ->
+    return if !(item instanceof este.Model)
+    id = item.get('id') || item.get('clientId')
+    key = '$' + id
+    delete @ids[key]
