@@ -41,7 +41,7 @@ class este.demos.app.simple.product.View extends este.app.View
   enterDocument: ->
     super()
     @update()
-    @on @getElement(), 'click', @onClick
+    @delegate 'button', 'click', @onButtonClick
 
   ###*
     @inheritDoc
@@ -50,7 +50,7 @@ class este.demos.app.simple.product.View extends este.app.View
     window['console']['log'] "product #{@params['id']} rendered"
     @getElement().innerHTML = """
       <p>product, id = #{@params['id']}</p>
-      <a e-href>show products</a>
+      <button>show all products</button>
     """
     return
 
@@ -58,7 +58,6 @@ class este.demos.app.simple.product.View extends este.app.View
     @param {goog.events.BrowserEvent} e
     @protected
   ###
-  onClick: (e) ->
-    return if !e.target.hasAttribute 'e-href'
-    # example of explicit redirection (without link with href)
+  onButtonClick: (e) ->
+    # example of explicit redirection
     @redirect este.demos.app.simple.products.View

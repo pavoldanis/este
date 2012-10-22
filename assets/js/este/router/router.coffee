@@ -2,13 +2,11 @@
   @fileoverview este.router.Router.
   @see ../demos/router.html
 
-  Anchor can be any element with 'e-href' attribute. Classic anchor is not
-    sufficient for rich client navigation.
-    - native anchors have some nasty behaviour on mobile devices
-    - native anchors can't be nested (like anchor in anchor)
-    - clickable table rows sucks, tr can't have href
-    Why traditional href behaviour isn't overridden? Because sometimes we still
-    need classic non-ajax anchors.
+  Navigation element is any element with 'href' attribute. Not only anchor, but
+  li or tr too. Of course only <a href='..'s are crawable with search engines.
+  But if we are creating pure client side rendered web app, we can use 'href'
+  attribute on any element we need. We can even nest anchors, which is very
+  useful for touch devices.
 ###
 goog.provide 'este.router.Router'
 
@@ -31,6 +29,7 @@ class este.router.Router extends este.Base
 
   ###*
     If true, tapHandler will not change url.
+    todo: add docs
     @type {boolean}
   ###
   silentTapHandler: false
@@ -90,38 +89,38 @@ class este.router.Router extends este.Base
     @navigate route.getUrl params
 
   ###*
-    @param {string} token
-  ###
-  navigate: (token) ->
-    @history.setToken token
-
-  ###*
-    Start router. It dispatched
-  ###
-  start: ->
-    @getHandler().
-      listen(@history, 'navigate', @onHistoryNavigate).
-      listen(@tapHandler, 'tap', @onTapHandlerTap)
-    @history.setEnabled true
-    return
-
-  ###*
     @param {string} path
     @protected
   ###
   findRoute: (path) ->
-    goog.array.find @routes, (item) ->
-      item.path == path
+    goog.array.find @routes, (item) -> item.path == path
 
   ###*
-    @param {goog.history.Event} e
+    @param {string} token
+  ###
+  navigate: (token) ->
+    # console.log token
+    @history.setToken token
+
+  ###*
+    Start router.
+  ###
+  start: ->
+    @on @tapHandler.getElement(), 'click', @onTapHandlerElementClick
+    @on @tapHandler, 'tap', @onTapHandlerTap
+    @on @history, 'navigate', @onHistoryNavigate
+    @history.setEnabled true
+    return
+
+  ###*
+    todo: ignore unmatched tokens
+    @param {goog.events.BrowserEvent} e
     @protected
   ###
-  onHistoryNavigate: (e) ->
-    if @ignoreNextOnHistoryNavigate
-      @ignoreNextOnHistoryNavigate = false
-      return
-    @processRoutes e.token, e.isNavigation
+  onTapHandlerElementClick: (e) ->
+    token = @tryGetToken e.target
+    return if !token
+    e.preventDefault()
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -136,18 +135,27 @@ class este.router.Router extends este.Base
     @history.setToken token
 
   ###*
+    @param {goog.history.Event} e
+    @protected
+  ###
+  onHistoryNavigate: (e) ->
+    if @ignoreNextOnHistoryNavigate
+      @ignoreNextOnHistoryNavigate = false
+      return
+    @processRoutes e.token, e.isNavigation
+
+  ###*
     @param {Node} target
     @return {string}
     @protected
   ###
   tryGetToken: (target) ->
-    href = ''
+    token = ''
     goog.dom.getAncestor target, (node) ->
       return false if node.nodeType != 1
-      href = node.getAttribute 'e-href'
-      !!href
+      token = node.getAttribute 'href'
     , true
-    href
+    token
 
   ###*
     @param {string} token

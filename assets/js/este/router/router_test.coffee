@@ -15,6 +15,7 @@ suite 'este.router.Router', ->
     tapHandler =
       dispose: ->
       addEventListener: ->
+      getElement: -> document.createElement 'div'
     router = new Router history, tapHandler
 
   dispatchHistoryNavigateEvent = (token, isNavigation = true) ->
@@ -27,6 +28,7 @@ suite 'este.router.Router', ->
     goog.events.fireListeners tapHandler, 'tap', false,
       type: 'tap'
       target: target
+      preventDefault: ->
 
   suite 'constructor', ->
     test 'should work', ->
@@ -118,7 +120,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'e-href'
+              return token if name == 'href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -142,7 +144,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'e-href'
+              return token if name == 'href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -160,7 +162,7 @@ suite 'este.router.Router', ->
             parentNode:
               nodeType: 1
               getAttribute: (name) ->
-                return token if name == 'e-href'
+                return token if name == 'href'
       testRoute 'foo', 'foo'
       testRoute 'bla', 'bla'
       testRoute 'user/:user', 'user/joe'
@@ -175,7 +177,7 @@ suite 'este.router.Router', ->
           dispatchTapHandlerTapEvent
             nodeType: 1
             getAttribute: (name) ->
-              return token if name == 'e-href'
+              return token if name == 'href'
       testRoute 'foo', 'bla'
       testRoute 'bla', 'foo'
       testRoute 'user/:user', 'product/joe'

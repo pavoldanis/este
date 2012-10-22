@@ -94,6 +94,12 @@ class este.events.TapHandler extends este.Base
   scrolled: false
 
   ###*
+    @return {Element}
+  ###
+  getElement: ->
+    @element
+
+  ###*
     @param {boolean=} touchSupported
     @protected
   ###

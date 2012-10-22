@@ -4,14 +4,15 @@
   <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
   <title>este.History</title>
   <style>
+    a {
+      color: blue;
+    }
     .section {
       display: none;
     }
-
     .active {
       display: block;
     }
-
     .shown {
       text-decoration: none;
     }
@@ -59,8 +60,8 @@
     var cur = 'kittens'
 
     var updateUI = function(e) {
-      console.log('shown: ' + e.token)
       var token = e.token || 'kittens'
+      console.log('shown: ' + token)
       var next = document.getElementById(token)
       if (!next) return
 

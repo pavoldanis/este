@@ -35,6 +35,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   load: (params) ->
+    # console.log params
     if !@todos
       @todos = new este.demos.app.todomvc.todos.Collection
       return @localStorage.query @todos

@@ -61,7 +61,7 @@ class este.demos.app.simple.products.View extends este.app.View
     for product in @products.toJson()
       # no url hardcoding, urls are always generated
       url = @getUrl este.demos.app.simple.product.View, id: product['clientId']
-      links.push "<li><a e-href='#{url}'>#{url}</a>"
+      links.push "<li><a href='#{url}'>#{url}</a>"
 
     @getElement().innerHTML = """
       <p>products</p>
