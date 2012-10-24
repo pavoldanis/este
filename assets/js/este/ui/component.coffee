@@ -82,9 +82,9 @@ class este.ui.Component extends goog.ui.Component
 
   ###*
     Just alias for getHandler().listen.
-    @param {goog.events.EventTarget|EventTarget} src Event source.
-    @param {string|Array.<string>} type Event type to listen for or array of
-      event types.
+    @param {goog.events.EventTarget|EventTarget|string} src Event source.
+    @param {string|Array.<string>|number} type Event type to listen for or array of
+      event types or key code number.
     @param {Function|Object=} fn Optional callback function to be used as
       the listener or an object with handleEvent function.
     @param {boolean=} capture Optional whether to use capture phase.
@@ -94,6 +94,11 @@ class este.ui.Component extends goog.ui.Component
   on: (src, type, fn, capture, handler) ->
     goog.asserts.assert @isInDocument(),
       'on method can be called only when component is in document'
+    if goog.isString src
+      # todo: add capture, handler args
+      @delegate src, type, fn if goog.isFunction fn
+      return
+    `type = /** @type {string|Array.<string>} */ (type)`
     @getHandler().listen src, type, fn, capture, handler
 
   ###*
