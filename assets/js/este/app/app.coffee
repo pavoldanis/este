@@ -19,7 +19,7 @@ class este.App extends este.Base
   ###*
     @param {Array.<este.app.View>} views
     @param {este.app.Layout} layout
-    @param {este.router.Router} router
+    @param {este.Router} router
     @constructor
     @extends {este.Base}
   ###
@@ -65,7 +65,7 @@ class este.App extends este.Base
   layout: null
 
   ###*
-    @type {este.router.Router}
+    @type {este.Router}
     @protected
   ###
   router: null

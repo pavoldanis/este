@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.router.Router.
+  @fileoverview este.Router.
   @see ../demos/router.html
 
   Navigation element is any element with 'href' attribute. Not only anchor, but
@@ -8,7 +8,7 @@
   attribute on any element we need. We can even nest anchors, which is useful
   for touch devices.
 ###
-goog.provide 'este.router.Router'
+goog.provide 'este.Router'
 
 goog.require 'este.array'
 goog.require 'este.Base'
@@ -16,7 +16,7 @@ goog.require 'este.router.Route'
 goog.require 'este.string'
 goog.require 'goog.dom'
 
-class este.router.Router extends este.Base
+class este.Router extends este.Base
 
   ###*
     @param {este.History} history
@@ -63,7 +63,7 @@ class este.router.Router extends este.Base
     @param {string} path
     @param {Function} show
     @param {este.router.Route.Options=} options
-    @return {este.router.Router}
+    @return {este.Router}
   ###
   add: (path, show, options = {}) ->
     path = este.string.stripSlashHashPrefixes path

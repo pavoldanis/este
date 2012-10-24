@@ -1,6 +1,6 @@
-suite 'este.router.Router', ->
+suite 'este.Router', ->
 
-  Router = este.router.Router
+  Router = este.Router
   history = null
   tapHandler = null
   router = null
@@ -32,7 +32,7 @@ suite 'este.router.Router', ->
 
   suite 'constructor', ->
     test 'should work', ->
-      assert.instanceOf router, este.router.Router
+      assert.instanceOf router, este.Router
 
   suite 'start', ->
     test 'should call history.setEnabled with true', (done) ->
