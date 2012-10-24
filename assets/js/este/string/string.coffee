@@ -197,10 +197,17 @@ goog.scope ->
   _.chunkToObject = (str, size) ->
     chunked = _.chunk str, size
     for chunk, i in chunked
-      {
-        text: chunk
-        index: i
-        total: chunked.length
-      }
+      text: chunk
+      index: i
+      total: chunked.length
+
+  ###*
+    @param {string} str
+    @return {string}
+  ###
+  _.stripSlashHashPrefixes = (str) ->
+    while str && str.charAt(0) in ['/', '#']
+      str = str.substring 1
+    str
 
   return
