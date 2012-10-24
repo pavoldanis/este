@@ -1,11 +1,11 @@
 ###*
-  @fileoverview este.demos.app.simple.product.Model.
+  @fileoverview este.demos.app.simplehtml5.product.Model.
 ###
-goog.provide 'este.demos.app.simple.product.Model'
+goog.provide 'este.demos.app.simplehtml5.product.Model'
 
 goog.require 'este.Model'
 
-class este.demos.app.simple.product.Model extends este.Model
+class este.demos.app.simplehtml5.product.Model extends este.Model
 
   ###*
     @param {Object=} json

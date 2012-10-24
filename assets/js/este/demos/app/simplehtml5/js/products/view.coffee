@@ -1,12 +1,12 @@
 ###*
-  @fileoverview este.demos.app.simple.products.View.
+  @fileoverview este.demos.app.simplehtml5.products.View.
 ###
-goog.provide 'este.demos.app.simple.products.View'
+goog.provide 'este.demos.app.simplehtml5.products.View'
 
 goog.require 'este.app.View'
-goog.require 'este.demos.app.simple.products.Collection'
+goog.require 'este.demos.app.simplehtml5.products.Collection'
 
-class este.demos.app.simple.products.View extends este.app.View
+class este.demos.app.simplehtml5.products.View extends este.app.View
 
   ###*
     @constructor
@@ -16,13 +16,12 @@ class este.demos.app.simple.products.View extends este.app.View
     super()
 
   ###*
-    '' is root.
     @inheritDoc
   ###
-  url: ''
+  url: '/'
 
   ###*
-    @type {este.demos.app.simple.products.Collection} products
+    @type {este.demos.app.simplehtml5.products.Collection} products
     @protected
   ###
   products: null
@@ -33,7 +32,7 @@ class este.demos.app.simple.products.View extends este.app.View
   load: (params) ->
     result = new goog.result.SimpleResult
     setTimeout =>
-      @products ?= new este.demos.app.simple.products.Collection [
+      @products ?= new este.demos.app.simplehtml5.products.Collection [
         name: 'Magic box', description: 'Something wonderful...'
       ,
         name: 'Blue table', description: 'Just a table.'
@@ -41,7 +40,7 @@ class este.demos.app.simple.products.View extends este.app.View
         name: 'Red light', description: 'You know it from district.'
       ]
       result.setValue true
-    , 2000
+    , 1000
     result
 
   ###*
@@ -59,8 +58,8 @@ class este.demos.app.simple.products.View extends este.app.View
     window['console']['log'] "products rendered"
     links = []
     for product in @products.toJson()
-      # no url hardcoding, urls are always generated
-      url = @getUrl este.demos.app.simple.product.View, id: product['clientId']
+      # no url strings hardcoding, urls are always generated
+      url = @getUrl este.demos.app.simplehtml5.product.View, id: product['clientId']
       links.push "<li><a href='#{url}'>#{url}</a>"
 
     @getElement().innerHTML = """

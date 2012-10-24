@@ -2,7 +2,7 @@
 <head>
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-  <title>este.router.Router</title>
+  <title>este.router.Router hash</title>
   <link href='/assets/js/este/demos/css/default.css' rel='stylesheet'>
   <style>
     a {
@@ -28,14 +28,14 @@
   </script>
 </head>
 <body>
-  <h1>este.router.Router</h1>
+  <h1>este.router.Router hash</h1>
   <p id='links'>
-    <a href='kittens' title='Kittens'>Kittens</a> |
-    <a href='puppies' title='Puppies'>Puppies</a> |
-    <a href='pandas' title='Pandas'>Pandas</a> |
-    <a href='bucket' title='Bucket'>Bucket</a>
+    <a href='#/kittens' title='Kittens'>Kittens</a> |
+    <a href='#/puppies' title='Puppies'>Puppies</a> |
+    <a href='#/pandas' title='Pandas'>Pandas</a> |
+    <a href='#/bucket' title='Bucket'>Bucket</a>
   </p>
-  <div id='kittens' class='section active'>
+  <div id='kittens' class='section'>
     <img src='http://farm4.static.flickr.com/3045/2481490798_bba0c585b4.jpg'>
   </div>
   <div id='puppies' class='section'>
@@ -51,37 +51,30 @@
     este.dev.Monitor.create()
 
     var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var forceHash = false
-    var router = este.router.create(document.body, pathPrefix, forceHash)
+    var router = este.router.create(document.body, pathPrefix, true)
     var cur = 'kittens'
 
     var updateUI = function(token) {
-      console.log('shown: ' + token)
+      console.log('token: ' + token)
+
+      var id = token
       var next = document.getElementById(token)
       if (!next) return
 
       document.getElementById(cur).className = 'section'
       next.className = 'section active'
-      cur = token
+      cur = id
 
       var anchors = document.getElementsByTagName('a')
       for (var i = 0, l = anchors.length; i < l; i++)
         anchors[i].className = ''
-      el = document.querySelector('*[href=' + token + ']')
+      el = document.querySelector('*[href="#/' + token + '"]')
       el.className = 'shown'
     }
 
-    router.add(':what?', function(params) {
-      what = params['what']
-      switch (what) {
-        case undefined:
-        case 'kittens':
-        case 'puppies':
-        case 'pandas':
-        case 'bucket':
-          updateUI(what || 'kittens')
-          break
-      }
+    router.add('#/:token?', function(params) {
+      var token = params.token || 'kittens'
+      updateUI(token)
     })
     router.start()
 

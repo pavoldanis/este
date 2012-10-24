@@ -1,11 +1,11 @@
 ###*
-  @fileoverview este.demos.app.simple.product.View.
+  @fileoverview este.demos.app.simplehtml5.product.View.
 ###
-goog.provide 'este.demos.app.simple.product.View'
+goog.provide 'este.demos.app.simplehtml5.product.View'
 
 goog.require 'este.app.View'
 
-class este.demos.app.simple.product.View extends este.app.View
+class este.demos.app.simplehtml5.product.View extends este.app.View
 
   ###*
     @constructor
@@ -17,7 +17,7 @@ class este.demos.app.simple.product.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  url: 'product/:id'
+  url: '/product/:id'
 
   ###*
     @type {Object}
@@ -32,7 +32,7 @@ class este.demos.app.simple.product.View extends este.app.View
     result = new goog.result.SimpleResult
     setTimeout =>
       result.setValue true
-    , 2000
+    , 1000
     result
 
   ###*
@@ -59,5 +59,5 @@ class este.demos.app.simple.product.View extends este.app.View
     @protected
   ###
   onButtonClick: (e) ->
-    # example of explicit redirection
-    @redirect este.demos.app.simple.products.View
+    # example of explicit redirection without element with href
+    @redirect este.demos.app.simplehtml5.products.View

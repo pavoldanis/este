@@ -17,6 +17,8 @@ suite 'este.App', ->
       show: ->
       dispose: ->
     router =
+      isHtml5historyEnabled: ->
+        true
       start: ->
         app.load view1
       add: ->
@@ -46,7 +48,7 @@ suite 'este.App', ->
       result
     # view.udpate = ->
     view.dispose = ->
-    view.url = ''
+    view.url = '/'
     view
 
   suite 'constructor', ->
@@ -101,11 +103,11 @@ suite 'este.App', ->
       router.start = ->
         assert.isTrue router.silentTapHandler
         assert.lengthOf routes, 3
-        assert.equal routes[0].url, ''
+        assert.equal routes[0].url, '/'
         assert.isFunction routes[0].callback
-        assert.equal routes[1].url, ''
+        assert.equal routes[1].url, '/'
         assert.isFunction routes[1].callback
-        assert.equal routes[2].url, ''
+        assert.equal routes[2].url, '/'
         assert.isFunction routes[2].callback
         done()
       app.start()
@@ -165,7 +167,7 @@ suite 'este.App', ->
 
       test 'should call router.pathNavigate if urlEnabled', (done) ->
         router.pathNavigate = (url, params, silent) ->
-          assert.equal url, ''
+          assert.equal url, '/'
           assert.deepEqual params, id: 1
           assert.isTrue silent
           done()

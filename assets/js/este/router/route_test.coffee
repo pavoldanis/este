@@ -67,11 +67,6 @@ suite 'este.router.Route', ->
         path: 'user/:id.:format?'
         params: id: '12', format: 'json'
 
-      # todo: add regex routes
-      # 'foo/adam/eva':
-      #   path: /foo\/(\w+)\/(\w+)/
-      #   params: ['adam', 'eva']
-
   suite 'constructor', ->
     test 'should work', ->
       assert.instanceOf route, Route

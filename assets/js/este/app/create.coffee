@@ -10,13 +10,12 @@ goog.require 'este.router.create'
 ###*
   @param {string|Element} element
   @param {Array.<function(new:este.app.View)>} viewsClasses
-  @param {este.router.Router=} router
+  @param {boolean=} forceHash
   @return {este.App}
 ###
-este.app.create = (element, viewsClasses, router) ->
+este.app.create = (element, viewsClasses, forceHash) ->
   element = goog.dom.getElement element
-
   views = (new viewClass for viewClass in viewsClasses)
   layout = new este.app.Layout element
-  router ?= este.router.create element
+  router = este.router.create element, undefined, forceHash
   new este.App views, layout, router

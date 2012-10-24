@@ -5,14 +5,15 @@
   Navigation element is any element with 'href' attribute. Not only anchor, but
   li or tr too. Of course only <a href='..'s are crawable with search engines.
   But if we are creating pure client side rendered web app, we can use 'href'
-  attribute on any element we need. We can even nest anchors, which is very
-  useful for touch devices.
+  attribute on any element we need. We can even nest anchors, which is useful
+  for touch devices.
 ###
 goog.provide 'este.router.Router'
 
-goog.require 'este.Base'
 goog.require 'este.array'
+goog.require 'este.Base'
 goog.require 'este.router.Route'
+goog.require 'este.string'
 goog.require 'goog.dom'
 
 class este.router.Router extends este.Base
@@ -29,7 +30,7 @@ class este.router.Router extends este.Base
 
   ###*
     If true, tapHandler will not change url.
-    todo: add docs
+    todo: add demo for such case
     @type {boolean}
   ###
   silentTapHandler: false
@@ -65,15 +66,17 @@ class este.router.Router extends este.Base
     @return {este.router.Router}
   ###
   add: (path, show, options = {}) ->
+    path = este.string.stripSlashHashPrefixes path
     route = new este.router.Route path, show, options
     @routes.push route
     @
 
   ###*
-    @param {string|RegExp} path
+    @param {string} path
     @return {boolean}
   ###
   remove: (path) ->
+    path = este.string.stripSlashHashPrefixes path
     este.array.removeAllIf @routes, (item) ->
       item.path == path
 
@@ -83,6 +86,7 @@ class este.router.Router extends este.Base
     @param {boolean=} silent
   ###
   pathNavigate: (path, params, silent = false) ->
+    path = este.string.stripSlashHashPrefixes path
     route = @findRoute path
     return if !route
     @ignoreNextOnHistoryNavigate = silent
@@ -93,14 +97,22 @@ class este.router.Router extends este.Base
     @protected
   ###
   findRoute: (path) ->
-    goog.array.find @routes, (item) -> item.path == path
+    path = este.string.stripSlashHashPrefixes path
+    goog.array.find @routes, (item) ->
+      item.path == path
 
   ###*
     @param {string} token
   ###
   navigate: (token) ->
-    # console.log token
+    token = este.string.stripSlashHashPrefixes token
     @history.setToken token
+
+  ###*
+    @return {boolean}
+  ###
+  isHtml5historyEnabled: ->
+    @history.html5historyEnabled
 
   ###*
     Start router.
@@ -153,7 +165,8 @@ class este.router.Router extends este.Base
     token = ''
     goog.dom.getAncestor target, (node) ->
       return false if node.nodeType != 1
-      token = node.getAttribute 'href'
+      token = este.string.stripSlashHashPrefixes node.getAttribute 'href'
+      !!token
     , true
     token
 
@@ -163,6 +176,7 @@ class este.router.Router extends este.Base
     @protected
   ###
   processRoutes: (token, isNavigation) ->
+    token = este.string.stripSlashHashPrefixes token
     firstRouteMatched = false
     for route in @routes
       try

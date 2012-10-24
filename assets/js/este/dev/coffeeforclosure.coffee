@@ -9,15 +9,15 @@
     very.long.namespace.Foo.EventType.CLICK
 
   Notes
-    do not declare class inside function, it does not work
+    do not declare class inside function, it does not work (yet)
 
-  There are some edge issues, which will be fixed very soon.
+  There are some edge issues, which will be fixed soon.
     do not use splats with annotations (foo, bla...)
-    do not use foo in array, foo in [a, ...] is fine
+    do not use 'foo in someArray', foo in [a, ...] is ok
 
   Todo
     consider this http://marijnhaverbeke.nl/blog/acorn.html
-    new compiler should be able to parse nested annotations, check it!
+    new compiler should be able to parse nested annotations, check it
 ###
 
 goog.provide 'este.dev.CoffeeForClosure'

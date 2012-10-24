@@ -6,7 +6,8 @@
   to control navigate event dispatching separately. These ghost popstate events
   are filtered via location.href check.
 
-  @see ../demos/history.html
+  @see ../demos/historyhtml5.html
+  @see ../demos/historyhash.html
 ###
 
 goog.provide 'este.History'
@@ -14,6 +15,7 @@ goog.provide 'este.History'
 goog.require 'este.Base'
 goog.require 'este.history.TokenTransformer'
 goog.require 'este.mobile'
+goog.require 'este.string'
 goog.require 'goog.dom'
 goog.require 'goog.History'
 goog.require 'goog.history.Event'
@@ -81,6 +83,12 @@ class este.History extends este.Base
     @param {boolean=} silent
   ###
   setToken: (token, @silent = false) ->
+    # Token for html5 navigation has to be without '/', '#' prefixes.
+    # Token for hash navigation has to be with '/' prefix, to make it look more
+    # like a route and make sure it doesn't conflict with IDs on the page.
+    token = este.string.stripSlashHashPrefixes token
+    if !@html5historyEnabled
+      token = '/' + token
     @history.setToken token
 
   ###*
@@ -129,6 +137,9 @@ class este.History extends este.Base
     if @silent
       @silent = false
       return
+
+    # because hash navigation needs '/' token prefix to render '#/' path prefix
+    e.token = e.token.substring 1 if !@html5historyEnabled
     @dispatchEvent e
 
   ###*

@@ -61,10 +61,10 @@ suite 'este.router.Router', ->
             done()
           router.start()
           dispatchHistoryNavigateEvent token
-      testRoute 'foo', 'foo'
-      testRoute 'bla', 'bla'
-      testRoute 'user/:user', 'user/joe'
-      testRoute 'user/:user', 'user/satriani'
+      testRoute '/foo', 'foo'
+      testRoute '/bla', 'bla'
+      testRoute '/user/:user', 'user/joe'
+      testRoute '/user/:user', 'user/satriani'
 
     suite 'show should not be called with sensitive true', ->
       testRoute = (path, token) ->
@@ -74,10 +74,10 @@ suite 'este.router.Router', ->
           , sensitive: true
           router.start()
           dispatchHistoryNavigateEvent token
-      testRoute 'Foo', 'foo'
-      testRoute 'Bla', 'bla'
-      testRoute 'User/:user', 'user/joe'
-      testRoute 'User/:user', 'user/satriani'
+      testRoute '/Foo', 'foo'
+      testRoute '/Bla', 'bla'
+      testRoute '/User/:user', 'user/joe'
+      testRoute '/User/:user', 'user/satriani'
 
     suite 'hide should work', ->
       testRoute = (path, token) ->
@@ -86,18 +86,18 @@ suite 'este.router.Router', ->
             done()
           router.start()
           dispatchHistoryNavigateEvent token
-      testRoute 'foo', 'bla'
-      testRoute 'bla', 'foo'
-      testRoute 'user/:user', 'product/joe'
-      testRoute 'user/:user', 'product/satriani'
+      testRoute '/foo', 'bla'
+      testRoute '/bla', 'foo'
+      testRoute '/user/:user', 'product/joe'
+      testRoute '/user/:user', 'product/satriani'
 
     suite 'exception in callback', ->
       test 'should not break processing', ->
         count = 0
-        router.add 'foo', ->
+        router.add '/foo', ->
           count++
           throw 'Error'
-        router.add 'foo', ->
+        router.add '/foo', ->
           count++
         router.start()
         dispatchHistoryNavigateEvent 'foo'
@@ -121,10 +121,10 @@ suite 'este.router.Router', ->
             nodeType: 1
             getAttribute: (name) ->
               return token if name == 'href'
-      testRoute 'foo', 'foo'
-      testRoute 'bla', 'bla'
-      testRoute 'user/:user', 'user/joe'
-      testRoute 'user/:user', 'user/satriani'
+      testRoute '/foo', 'foo'
+      testRoute '/bla', 'bla'
+      testRoute '/user/:user', 'user/joe'
+      testRoute '/user/:user', 'user/satriani'
 
     suite 'show should work, but should not call history.setToken', ->
       testRoute = (path, token) ->
@@ -145,10 +145,10 @@ suite 'este.router.Router', ->
             nodeType: 1
             getAttribute: (name) ->
               return token if name == 'href'
-      testRoute 'foo', 'foo'
-      testRoute 'bla', 'bla'
-      testRoute 'user/:user', 'user/joe'
-      testRoute 'user/:user', 'user/satriani'
+      testRoute '/foo', 'foo'
+      testRoute '/bla', 'bla'
+      testRoute '/user/:user', 'user/joe'
+      testRoute '/user/:user', 'user/satriani'
 
     suite 'show should work in parent', ->
       testRoute = (path, token) ->
@@ -163,10 +163,10 @@ suite 'este.router.Router', ->
               nodeType: 1
               getAttribute: (name) ->
                 return token if name == 'href'
-      testRoute 'foo', 'foo'
-      testRoute 'bla', 'bla'
-      testRoute 'user/:user', 'user/joe'
-      testRoute 'user/:user', 'user/satriani'
+      testRoute '/foo', 'foo'
+      testRoute '/bla', 'bla'
+      testRoute '/user/:user', 'user/joe'
+      testRoute '/user/:user', 'user/satriani'
 
     suite 'hide should work', ->
       testRoute = (path, token) ->
@@ -178,15 +178,15 @@ suite 'este.router.Router', ->
             nodeType: 1
             getAttribute: (name) ->
               return token if name == 'href'
-      testRoute 'foo', 'bla'
-      testRoute 'bla', 'foo'
-      testRoute 'user/:user', 'product/joe'
-      testRoute 'user/:user', 'product/satriani'
+      testRoute '/foo', 'bla'
+      testRoute '/bla', 'foo'
+      testRoute '/user/:user', 'product/joe'
+      testRoute '/user/:user', 'product/satriani'
 
   suite 'remove route', ->
     test 'should work for string route', ->
       called = false
-      router.add 'user/:user', (params) ->
+      router.add '/user/:user', (params) ->
         assert.equal params['user'], 'joe'
         called = true
       router.start()
@@ -207,13 +207,13 @@ suite 'este.router.Router', ->
         assert.equal token, 'user/joe'
         done()
       router.start()
-      router.add 'user/:name', ->
+      router.add '/user/:name', ->
       router.pathNavigate 'user/:name', name: 'joe'
 
     test 'should call router show', ->
       called = false
       router.start()
-      router.add 'user/:name', ->
+      router.add '/user/:name', ->
         called = true
       router.pathNavigate 'user/:name', name: 'joe'
       assert.isTrue called
@@ -224,13 +224,13 @@ suite 'este.router.Router', ->
         assert.equal token, 'user/joe'
         done()
       router.start()
-      router.add 'user/:name', ->
+      router.add '/user/:name', ->
       router.pathNavigate 'user/:name', name: 'joe', true
 
     test 'should not call router show', ->
       called = false
       router.start()
-      router.add 'user/:name', -> called = true
+      router.add '/user/:name', -> called = true
       router.pathNavigate 'user/:name', name: 'joe', true
       assert.isFalse called
 
@@ -238,8 +238,8 @@ suite 'este.router.Router', ->
     test 'should be processed', ->
       # arrange
       calls = ''
-      router.add 'foo/bar', (-> calls += 1)
-      router.add 'foo/*', (-> calls += 2), hide: -> calls += 3
+      router.add '/foo/bar', (-> calls += 1)
+      router.add '/foo/*', (-> calls += 2), hide: -> calls += 3
       router.start()
 
       # act

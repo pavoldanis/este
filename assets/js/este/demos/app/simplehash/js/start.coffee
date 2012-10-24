@@ -1,18 +1,18 @@
 ###*
-  @fileoverview este.demos.app.simple.start.
+  @fileoverview este.demos.app.simplehash.start.
 ###
 
-goog.provide 'este.demos.app.simple.start'
+goog.provide 'este.demos.app.simplehash.start'
 
 goog.require 'este.app.create'
-goog.require 'este.demos.app.simple.product.View'
-goog.require 'este.demos.app.simple.products.View'
+goog.require 'este.demos.app.simplehash.product.View'
+goog.require 'este.demos.app.simplehash.products.View'
 goog.require 'este.dev.Monitor.create'
 
 ###*
   @param {Object} data JSON from server
 ###
-este.demos.app.simple.start = (data) ->
+este.demos.app.simplehash.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
@@ -22,14 +22,12 @@ este.demos.app.simple.start = (data) ->
 
   # app definition
   myApp = este.app.create appEl, [
-    este.demos.app.simple.products.View
-    este.demos.app.simple.product.View
-  ]
+    este.demos.app.simplehash.products.View
+    este.demos.app.simplehash.product.View
+  ], true
   myApp.data = data
-  # false to disable url projection
-  myApp.urlEnabled = true
 
-  # progress bar
+  # progress bar, just for demo purposes
   goog.events.listen myApp, 'beforeload', (e) ->
     goog.dom.classes.add progressEl, 'loading'
     progressEl.innerHTML = 'loading'
@@ -53,4 +51,4 @@ este.demos.app.simple.start = (data) ->
   myApp.start()
 
 # ensures the symbol will be visible after compiler renaming
-goog.exportSymbol 'este.demos.app.simple.start', este.demos.app.simple.start
+goog.exportSymbol 'este.demos.app.simplehash.start', este.demos.app.simplehash.start

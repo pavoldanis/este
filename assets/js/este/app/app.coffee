@@ -1,5 +1,6 @@
 ###*
   @fileoverview este.App.
+  todo: add docs and list of demos
 ###
 goog.provide 'este.App'
 goog.provide 'este.App.Event'
@@ -100,6 +101,7 @@ class este.App extends este.Base
     for view in @views
       view.setParentEventTarget @
       view.localStorage = @localStorage
+      view.html5historyEnabled = @router.isHtml5historyEnabled()
     return
 
   ###*
@@ -126,7 +128,7 @@ class este.App extends este.Base
     return if !goog.array.peek(@pendingRequests).equal request
     @clearPendingRequests()
     @dispatchAppEvent App.EventType.BEFORESHOW, request
-    if @urlEnabled && request.view.url? && !request.silent
+    if @urlEnabled && request.view.url && !request.silent
       @router.pathNavigate request.view.url, request.params, true
     @layout.show request.view, request.params
 
@@ -135,7 +137,7 @@ class este.App extends este.Base
   ###
   startRouter: ->
     for view in @views
-      continue if !view.url?
+      continue if !view.url
       @router.add view.url, goog.bind @onRouteMatch, @, view
     @router.silentTapHandler = true
     @router.start()

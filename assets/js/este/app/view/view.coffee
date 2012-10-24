@@ -28,18 +28,23 @@ class este.app.View extends este.ui.Component
     REDIRECT: 'redirect'
 
   ###*
-    Null - no url projection
-    empty string - root
-    some url - 'detail/:id'
-    Handle actions with switch.
-    @type {?string}
+    Url has to always start with '/' prefix. If html5 is not supported, then
+    urls will be converted to '#/' prefix. If url == '', then view is not url
+    projected.
+    Various url definitions: este/assets/js/este/router/route_test.coffee
+    @type {string}
   ###
-  url: null
+  url: ''
 
   ###*
     @type {este.storage.Local}
   ###
   localStorage: null
+
+  ###*
+    @type {boolean}
+  ###
+  html5historyEnabled: true
 
   ###*
     @type {Object}
@@ -55,7 +60,10 @@ class este.app.View extends este.ui.Component
   getUrl: (viewClass, params) ->
     url = viewClass::url
     return null if !url?
-    este.router.Route.getUrl url, params
+    url = este.router.Route.getUrl url, params
+    if !@html5historyEnabled
+      url = '#/' + url
+    url
 
   ###*
     This method should be overridden by inheriting objects.

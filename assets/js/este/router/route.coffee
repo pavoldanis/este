@@ -3,6 +3,8 @@
 ###
 goog.provide 'este.router.Route'
 
+goog.require 'este.string'
+
 class este.router.Route
 
   ###*
@@ -32,7 +34,7 @@ class este.router.Route
         path = path.replace regex, value
     path = path.slice 0, -1 if path.charAt(path.length - 1) == '?'
     path = path.slice 0, -1 if path.charAt(path.length - 1) in ['/', '.']
-    path
+    este.string.stripSlashHashPrefixes path
 
   ###*
     - sensitive: if routing is case sensitive
