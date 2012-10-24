@@ -49,14 +49,14 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @update()
     # todo: consider one über-change event (este.model.ChangeEvent)
     @on @todos, ['add', 'remove','change'], @onTodosChange
-    @delegate '#new-todo-form', 'submit', @onNewTodoSubmit
-    @delegate '.toggle', 'tap', @onToggleTap
-    @delegate '#toggle-all', 'tap', @onToggleAllTap
-    @delegate '.destroy', 'tap', @onDestroyTap
-    @delegate '#clear-completed', 'tap', @onClearCompletedTap
-    @delegate 'label', 'dblclick', @onLabelDblclick
-    @delegate '.edit', 'blur', @onEditEnd
-    @delegate '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
+    @on '#new-todo-form', 'submit', @onNewTodoSubmit
+    @on '.toggle', 'tap', @onToggleTap
+    @on '#toggle-all', 'tap', @onToggleAllTap
+    @on '.destroy', 'tap', @onDestroyTap
+    @on '#clear-completed', 'tap', @onClearCompletedTap
+    @on 'label', 'dblclick', @onLabelDblclick
+    @on '.edit', 'blur', @onEditEnd
+    @on '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
 
   ###*
     @param {goog.events.Event} e

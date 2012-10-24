@@ -41,7 +41,7 @@ class este.demos.app.simplehash.product.View extends este.app.View
   enterDocument: ->
     super()
     @update()
-    @delegate 'button', 'click', @onButtonClick
+    @on 'button', 'click', @onButtonClick
 
   ###*
     @inheritDoc
