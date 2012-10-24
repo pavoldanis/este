@@ -526,10 +526,12 @@ runCommands = (commands, complete, errors = []) ->
 
     isError = !!err || stderr
     # workaround for Google Closure Compiler, all output is returned as stderr
-    # consider: "JavaScript compilation succeeded.""
+    # consider: 'JavaScript compilation succeeded' message
     if name == 'closureCompilation'
       isError = ~stderr?.indexOf(': WARNING - ') ||
-                ~stderr?.indexOf(': ERROR - ')
+                ~stderr?.indexOf(': ERROR - ') ||
+                # for closurebuilder.py errors
+                ~stderr?.indexOf('Traceback (most recent call last):')
 
     if isError
       output = stderr

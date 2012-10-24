@@ -616,7 +616,7 @@ runCommands = function(commands, complete, errors) {
     }
     isError = !!err || stderr;
     if (name === 'closureCompilation') {
-      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0);
+      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0) || ~(stderr != null ? stderr.indexOf('Traceback (most recent call last):') : void 0);
     }
     if (isError) {
       output = stderr;
