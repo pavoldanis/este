@@ -15,9 +15,11 @@ este.demos.app.todomvc.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
+  # for sake of todomvc, hash is enforced
+  forceHash = true
   app = este.app.create 'todoapp', [
     este.demos.app.todomvc.todos.View
-  ]
+  ], forceHash
   app.localStorageNamespace = 'todos-este'
   app.start()
 

@@ -17,10 +17,10 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     super()
 
   ###*
+    undefined, active, completed
     @inheritDoc
   ###
-  url: '*'
-  # / (all - default), #/active and #/completed
+  url: '/:filter?'
 
   ###*
     @type {este.demos.app.todomvc.todos.Collection}
@@ -29,13 +29,20 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   todos: null
 
   ###*
+    todo: consider enum
+    @type {string}
+    @protected
+  ###
+  filter: ''
+
+  ###*
     Each view is async loaded by default. Load method has to return object
     implementing goog.result.Result interface. It's better than plain old
     callbacks. todo: link to article
     @inheritDoc
   ###
   load: (params) ->
-    # console.log params
+    @filter = params['filter']
     if !@todos
       @todos = new este.demos.app.todomvc.todos.Collection
       return @localStorage.query @todos
@@ -64,7 +71,6 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onTodosChange: (e) ->
     @defer @update
-    # console.log @todos.toJson()
     @localStorage.saveChanges e
 
   ###*
@@ -131,17 +137,29 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   update: ->
+    # todo: refactor
     remainingCount = @todos.filter('completed': false).length
+    todosLength = @todos.getLength()
+    filterObject = {}
+    if @filter
+      isCompleted = @filter == 'completed'
+      filterObject['completed'] = isCompleted
+      filter = if isCompleted then 'completed' else 'active'
+    else
+      filter = 'all'
+    todos = @todos.filter filterObject
     json =
-      todos: @todos.toJson()
-      remainingCount: remainingCount
-      doneCount: @todos.getLength() - remainingCount
+      doneCount: todosLength - remainingCount
+      filter: filter
       itemsLocalized: @getLocalizedItems remainingCount
+      remainingCount: remainingCount
+      todos: todos
+      todosLength: todosLength
     html = este.demos.app.todomvc.todos.templates.element json
 
     # See how we can merge HTML into element. Better than plain .innerHTML = ,
     # because it updates only changed nodes and attributes, therefore does not
-    # destroy form fields state nor cause image flickering.
+    # destroy form fields states nor cause image flickering.
     @mergeHtml html
 
   ###*
@@ -150,7 +168,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   getLocalizedItems: (remainingCount) ->
-    # every language has own plural rules, see goog.i18n.pluralRules
+    # see goog.i18n.pluralRules for other languages plural rules
     switch goog.i18n.pluralRules.select remainingCount
       when goog.i18n.pluralRules.Keyword.ONE
         'item left'

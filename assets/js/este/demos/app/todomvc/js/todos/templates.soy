@@ -13,14 +13,16 @@
 
 /**
  * Element template.
- * @param todos
- * @param remainingCount
  * @param doneCount
+ * @param filter
  * @param itemsLocalized
+ * @param remainingCount
+ * @param todos
+ * @param todosLength
  */
 {template .element}
   {call .header data="all" /}
-  {if $todos.length}
+  {if $todosLength}
     {call .main data="all" /}
     {call .footer data="all" /}
   {/if}
@@ -40,8 +42,8 @@
 
 /**
  * Main template
- * @param todos
  * @param remainingCount
+ * @param todos
  */
 {template .main}
   <section id="main">
@@ -58,9 +60,9 @@
 /**
  * Todo template
  * @param clientId
- * @param title
  * @param completed
  * @param editing
+ * @param title
  */
 {template .todo}
   <li
@@ -77,22 +79,23 @@
 
 /**
  * Footer template
- * @param remainingCount
- * @param itemsLocalized
  * @param doneCount
+ * @param itemsLocalized
+ * @param remainingCount
+ * @param filter
  */
 {template .footer}
   <footer id="footer">
     <span id="todo-count"><strong>{$remainingCount}</strong> {$itemsLocalized}</span>
     <ul id="filters">
       <li>
-        <a class="selected" href="#/">All</a>
+        <a class="{if $filter == 'all'}selected{/if}" href="#/">All</a>
       </li>
       <li>
-        <a href="#active">Active</a>
+        <a class="{if $filter == 'active'}selected{/if}" href="#/active">Active</a>
       </li>
       <li>
-        <a href="#/completed">Completed</a>
+        <a class="{if $filter == 'completed'}selected{/if}" href="#/completed">Completed</a>
       </li>
     </ul>
     {if $doneCount}
