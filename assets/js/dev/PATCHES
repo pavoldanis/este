@@ -1,7 +1,7 @@
 MONKEY PATCHES
 
   - Mocha and CoffeeScript, process.exit(1) sucks on Windows
-    cs
+    CoffeeScript
       0 && process.exit(1); in compile path
       return 0 && process.exit(1); in } catch (err) {
         CoffeeScript.emit('failure', err, task);
