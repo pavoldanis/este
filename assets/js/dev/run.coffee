@@ -518,8 +518,8 @@ runCommands = (commands, complete, errors = []) ->
   nextCommands[k] = v for k, v of commands when k != name
 
   onExec = (err, stdout, stderr) ->
-    # this is for debugging windows-only error:
-    # [Error: Command failed: ] killed: false...
+    # This 'console.log arguments' is for debugging windows-only error:
+    #   [Error: Command failed: ] killed: false...
     # console.log arguments
     if name == 'closureCompilation'
       console.log 'Compilation finished.'
