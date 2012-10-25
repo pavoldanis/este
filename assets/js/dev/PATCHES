@@ -1,6 +1,11 @@
 MONKEY PATCHES
 
   - Mocha and CoffeeScript, process.exit(1) sucks on Windows
+    cs
+      0 && process.exit(1); in compile path
+      return 0 && process.exit(1); in } catch (err) {
+        CoffeeScript.emit('failure', err, task);
+
   - Closure Library
       closure/goog/result/resultutil.js
         http://code.google.com/p/closure-library/issues/detail?id=495
