@@ -24,7 +24,7 @@
     var collection = new este.Collection
     var count = 0
 
-    goog.events.listen(collection, 'change', function(e) {
+    goog.events.listen(collection, 'add', function(e) {
       document.getElementById('output').value = collection.toJson()
     })
 
@@ -33,6 +33,5 @@
       if (count == 3)
         clearInterval(timer)
     }, 1000)
-
   </script>
 </body>
