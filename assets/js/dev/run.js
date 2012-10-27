@@ -242,6 +242,9 @@ Commands = {
         if (k.indexOf("" + options.project + ".") !== 0) {
           continue;
         }
+        if (k === ("" + options.project + ".start")) {
+          continue;
+        }
         namespaces.push(k);
       }
       startjs = ["goog.provide('" + options.project + ".start');"];

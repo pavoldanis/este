@@ -201,6 +201,8 @@ Commands =
       namespaces = []
       for k, v of deps
         continue if k.indexOf("#{options.project}.") != 0
+        # prevents circular dependency issues
+        continue if k == "#{options.project}.start"
         namespaces.push k
       startjs = ["goog.provide('#{options.project}.start');"]
       for namespace in namespaces
