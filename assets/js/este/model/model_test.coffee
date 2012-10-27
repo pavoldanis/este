@@ -133,6 +133,13 @@ suite 'este.Model', ->
           'age': 55
           'defaultFoo': 1
 
+    suite 'defined on model', ->
+      test 'should be called', ->
+        model = new este.Model
+        model.set 'a', toJson: -> 'b'
+        assert.deepEqual model.toJson(true, true),
+          a: 'b'
+
   suite 'has', ->
     test 'should work', ->
       assert.isTrue person.has 'age'
