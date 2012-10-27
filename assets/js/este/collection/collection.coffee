@@ -5,12 +5,13 @@
   @see ../demos/collection.html
 
   todo
-    consider sort on bubbled change event
+    consider resort after bubbled change event
 ###
 
 goog.provide 'este.Collection'
 
 goog.require 'este.Model'
+goog.require 'este.Model.Event'
 goog.require 'goog.array'
 goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
@@ -29,15 +30,6 @@ class este.Collection extends goog.events.EventTarget
     @array = []
     @add array if array
     return
-
-  ###*
-    @enum {string}
-  ###
-  @EventType:
-    ADD: 'add'
-    REMOVE: 'remove'
-    SORT: 'sort'
-    UPDATE: 'update'
 
   ###*
     @type {Object.<string, boolean>}
@@ -250,38 +242,41 @@ class este.Collection extends goog.events.EventTarget
     return
 
   ###*
-    @inheritDoc
-  ###
-  dispatchEvent: (e) ->
-    return false if !super e
-    super
-      type: Collection.EventType.UPDATE
-      origin: e
-
-  ###*
     @param {Array} added
     @protected
   ###
   dispatchAddEvent: (added) ->
-    @dispatchEvent
-      type: Collection.EventType.ADD
-      added: added
+    addEvent = new este.Model.Event este.Model.EventType.ADD, @
+    addEvent.added = added
+    return false if !@dispatchEvent addEvent
+
+    updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
+    updateEvent.origin = addEvent
+    @dispatchEvent updateEvent
 
   ###*
     @param {Array} removed
     @protected
   ###
   dispatchRemoveEvent: (removed) ->
-    @dispatchEvent
-      type: Collection.EventType.REMOVE
-      removed: removed
+    removeEvent = new este.Model.Event este.Model.EventType.REMOVE, @
+    removeEvent.removed = removed
+    return false if !@dispatchEvent removeEvent
+
+    updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
+    updateEvent.origin = removeEvent
+    @dispatchEvent updateEvent
 
   ###*
     @protected
   ###
   dispatchSortEvent: ->
-    @dispatchEvent
-      type: Collection.EventType.SORT
+    sortEvent = new este.Model.Event este.Model.EventType.SORT, @
+    return false if !@dispatchEvent sortEvent
+
+    updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
+    updateEvent.origin = sortEvent
+    @dispatchEvent updateEvent
 
   ###*
     @protected

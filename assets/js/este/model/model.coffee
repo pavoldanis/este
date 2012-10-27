@@ -23,12 +23,14 @@
 
 goog.provide 'este.Model'
 goog.provide 'este.Model.EventType'
+goog.provide 'este.Model.Event'
 
 goog.require 'este.json'
 goog.require 'este.model.getters'
 goog.require 'este.model.setters'
 goog.require 'este.model.validators'
 goog.require 'goog.asserts'
+goog.require 'goog.events.Event'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
 goog.require 'goog.ui.IdGenerator'
@@ -54,7 +56,13 @@ class este.Model extends goog.events.EventTarget
     @enum {string}
   ###
   @EventType:
+    # dispatched on model change
     CHANGE: 'change'
+    # dispatched on collection change
+    ADD: 'add'
+    REMOVE: 'remove'
+    SORT: 'sort'
+    # dispatched always on any change
     UPDATE: 'update'
 
   ###*
@@ -272,20 +280,57 @@ class este.Model extends goog.events.EventTarget
     errors
 
   ###*
-    @inheritDoc
-  ###
-  dispatchEvent: (e) ->
-    return false if !super e
-    super
-      type: Model.EventType.UPDATE
-      origin: e
-
-  ###*
     @param {Object} changed
     @protected
   ###
   dispatchChangeEvent: (changed) ->
-    @dispatchEvent
-      type: Model.EventType.CHANGE
-      model: @
-      changed: changed
+    changeEvent = new este.Model.Event Model.EventType.CHANGE, @
+    changeEvent.model = @
+    changeEvent.changed = changed
+    return false if !@dispatchEvent changeEvent
+
+    updateEvent = new este.Model.Event Model.EventType.UPDATE, @
+    updateEvent.origin = changeEvent
+    @dispatchEvent updateEvent
+
+###*
+  @fileoverview este.Model.Event.
+###
+class este.Model.Event extends goog.events.Event
+
+  ###*
+    @param {string} type Event Type.
+    @param {goog.events.EventTarget} target
+    @constructor
+    @extends {goog.events.Event}
+  ###
+  constructor: (type, target) ->
+    super type, target
+
+  ###*
+    @type {este.Model}
+  ###
+  model: null
+
+  ###*
+    Changed model attributes.
+    @type {Object}
+  ###
+  changed: null
+
+  ###*
+    Added models.
+    @type {Array.<este.Model>}
+  ###
+  added: null
+
+  ###*
+    Removed models.
+    @type {Array.<este.Model>}
+  ###
+  removed: null
+
+  ###*
+    @type {este.Model.Event}
+  ###
+  origin: null

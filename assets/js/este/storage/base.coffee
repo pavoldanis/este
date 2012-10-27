@@ -49,7 +49,7 @@ class este.storage.Base
   ###*
     This method maps event type to its method.
     todo: add tests once api will be stabilized
-    @param {goog.events.Event} e
+    @param {este.Model.Event} e
     at return {!goog.result.Result}
   ###
   saveChanges: (e) ->
@@ -60,8 +60,10 @@ class este.storage.Base
         results = (@delete removed for removed in e.removed)
       when 'change'
         results = [@save e.model]
+      when 'update'
+        return @saveChanges e.origin
       else
-        goog.asserts.fail "Only add, remove, and change events are supported, not: #{e.type}."
+        goog.asserts.fail "Only add, remove, change, and update events are supported, not: #{e.type}."
     goog.result.combineOnSuccess.apply null, results
 
   ###*

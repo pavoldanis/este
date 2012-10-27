@@ -65,11 +65,12 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @on '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
 
   ###*
+    @param {este.Model.Event} e
     @protected
   ###
   onTodosUpdate: (e) ->
     @defer @update
-    @localStorage.saveChanges e.origin
+    @localStorage.saveChanges e
 
   ###*
     @protected
