@@ -14,6 +14,9 @@
       [project].html will use one compiled script
       goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
+      Example how to set compiler_flags:
+        node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
+
     -d, --debug
       just for build
       compiler flags: '--formatting=PRETTY_PRINT --debug=true'
@@ -77,6 +80,7 @@ lazyRequireCoffeeForClosure = ->
 options =
   project: null
   build: false
+  compilerFlags: ''
   buildAll: false
   debug: false
   verbose: false
@@ -191,7 +195,9 @@ Commands =
       flags = '--define=goog.DEBUG=false'
 
     flagsText = ''
+
     flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
+    flagsText += "--compiler_flags=\"#{flag}\" " for flag in options.compilerFlags
 
     # buildAll override start.js to require all namespaces in project
     # useful for debugging, or when we want to compile all namespaces,
@@ -304,6 +310,7 @@ setOptions = (args) ->
         options.verbose = true
       when '--build', '-b'
         options.build = true
+        options.compilerFlags = args.splice 0, args.length
       when '--buildall', '-ba'
         options.buildAll = true
       when '--ci', '-c'
@@ -533,6 +540,7 @@ runCommands = (commands, complete, errors = []) ->
       isError = ~stderr?.indexOf(': WARNING - ') ||
                 ~stderr?.indexOf(': ERROR - ') ||
                 # for closurebuilder.py errors
+                ~stderr?.indexOf('JavaScript compilation failed.') ||
                 ~stderr?.indexOf('Traceback (most recent call last):')
 
     if isError

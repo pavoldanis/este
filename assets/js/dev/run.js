@@ -15,6 +15,9 @@
       [project].html will use one compiled script
       goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
 
+      Example how to set compiler_flags:
+        node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
+
     -d, --debug
       just for build
       compiler flags: '--formatting=PRETTY_PRINT --debug=true'
@@ -91,6 +94,7 @@ lazyRequireCoffeeForClosure = function() {
 options = {
   project: null,
   build: false,
+  compilerFlags: '',
   buildAll: false,
   debug: false,
   verbose: false,
@@ -222,7 +226,7 @@ Commands = {
   },
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, preservedClosureScripts, source, startjs, v, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    var command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, preservedClosureScripts, source, startjs, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
@@ -232,6 +236,11 @@ Commands = {
     _ref = flags.split(' ');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       flag = _ref[_i];
+      flagsText += "--compiler_flags=\"" + flag + "\" ";
+    }
+    _ref1 = options.compilerFlags;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      flag = _ref1[_j];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
     if (options.buildAll) {
@@ -248,8 +257,8 @@ Commands = {
         namespaces.push(k);
       }
       startjs = ["goog.provide('" + options.project + ".start');"];
-      for (_j = 0, _len1 = namespaces.length; _j < _len1; _j++) {
-        namespace = namespaces[_j];
+      for (_k = 0, _len2 = namespaces.length; _k < _len2; _k++) {
+        namespace = namespaces[_k];
         startjs.push("goog.require('" + namespace + "');");
       }
       source = startjs.join('\n');
@@ -257,9 +266,9 @@ Commands = {
     }
     preservedClosureScripts = [];
     if (!options.debug) {
-      _ref1 = getPaths('assets', ['.js'], false, false);
-      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-        jsPath = _ref1[_k];
+      _ref2 = getPaths('assets', ['.js'], false, false);
+      for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+        jsPath = _ref2[_l];
         source = fs.readFileSync(jsPath, 'utf8');
         if (source.indexOf('this.logger_.') === -1) {
           continue;
@@ -277,9 +286,9 @@ Commands = {
     }
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > " + options.outputFilename;
     return exec(command, function() {
-      var script, _l, _len3;
-      for (_l = 0, _len3 = preservedClosureScripts.length; _l < _len3; _l++) {
-        script = preservedClosureScripts[_l];
+      var script, _len4, _m;
+      for (_m = 0, _len4 = preservedClosureScripts.length; _m < _len4; _m++) {
+        script = preservedClosureScripts[_m];
         fs.writeFileSync(script.jsPath, script.source, 'utf8');
       }
       if (options.project === 'este') {
@@ -356,6 +365,7 @@ setOptions = function(args) {
       case '--build':
       case '-b':
         options.build = true;
+        options.compilerFlags = args.splice(0, args.length);
         break;
       case '--buildall':
       case '-ba':
@@ -619,7 +629,7 @@ runCommands = function(commands, complete, errors) {
     }
     isError = !!err || stderr;
     if (name === 'closureCompilation') {
-      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0) || ~(stderr != null ? stderr.indexOf('Traceback (most recent call last):') : void 0);
+      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0) || ~(stderr != null ? stderr.indexOf('JavaScript compilation failed.') : void 0) || ~(stderr != null ? stderr.indexOf('Traceback (most recent call last):') : void 0);
     }
     if (isError) {
       output = stderr;
