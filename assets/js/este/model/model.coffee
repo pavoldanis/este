@@ -31,7 +31,6 @@ goog.require 'este.model.validators'
 goog.require 'goog.asserts'
 goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
-goog.require 'goog.string'
 goog.require 'goog.ui.IdGenerator'
 
 class este.Model extends goog.events.EventTarget
@@ -56,6 +55,7 @@ class este.Model extends goog.events.EventTarget
   ###
   @EventType:
     CHANGE: 'change'
+    UPDATE: 'update'
 
   ###*
     http://en.wikipedia.org/wiki/Uniform_resource_name
@@ -268,6 +268,15 @@ class este.Model extends goog.events.EventTarget
         errors[key] ?= {}
         errors[key][name] = true
     errors
+
+  ###*
+    @inheritDoc
+  ###
+  dispatchEvent: (e) ->
+    return false if !super e
+    super
+      type: Model.EventType.UPDATE
+      origin: e
 
   ###*
     @param {Object} changed

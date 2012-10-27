@@ -3,6 +3,9 @@
   EventTarget instance, whatever. Sorting & Filtering included. If item is
   instanceof este.Model, two models with the same id will throw an exception.
   @see ../demos/collection.html
+
+  todo
+    consider sort on bubbled change event
 ###
 
 goog.provide 'este.Collection'
@@ -34,6 +37,7 @@ class este.Collection extends goog.events.EventTarget
     ADD: 'add'
     REMOVE: 'remove'
     SORT: 'sort'
+    UPDATE: 'update'
 
   ###*
     @type {Object.<string, boolean>}
@@ -244,6 +248,15 @@ class este.Collection extends goog.events.EventTarget
   each: (fn) ->
     fn item for item in @array
     return
+
+  ###*
+    @inheritDoc
+  ###
+  dispatchEvent: (e) ->
+    return false if !super e
+    super
+      type: Collection.EventType.UPDATE
+      origin: e
 
   ###*
     @param {Array} added

@@ -195,6 +195,26 @@ suite 'este.Model', ->
       person.remove 'age'
       assert.isTrue called
 
+  suite 'update event', ->
+    test 'should be dispatched if value change', (done) ->
+      goog.events.listenOnce person, 'update', (e) ->
+        done()
+      person.set 'age', 'foo'
+
+    test 'should not be dispatched if value hasnt changed', ->
+      called = false
+      goog.events.listenOnce person, 'update', (e) ->
+        called = true
+      person.set 'age', 55
+      assert.isFalse called
+
+    test 'should be dispatched if value is removed', ->
+      called = false
+      goog.events.listenOnce person, 'update', (e) ->
+        called = true
+      person.remove 'age'
+      assert.isTrue called
+
   suite 'meta', ->
     test 'should define meta attribute', ->
       assert.equal person.get('name'), 'Joe Satriani'

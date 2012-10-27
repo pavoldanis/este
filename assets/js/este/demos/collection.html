@@ -24,7 +24,7 @@
     var collection = new este.Collection
     var count = 0
 
-    goog.events.listen(collection, 'add', function(e) {
+    goog.events.listen(collection, 'update', function(e) {
       document.getElementById('output').value = collection.toJson()
     })
 

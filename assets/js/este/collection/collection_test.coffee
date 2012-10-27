@@ -102,6 +102,11 @@ suite 'este.Collection', ->
       assert.isTrue addCalled
       assert.deepEqual added, [1]
 
+    test 'should fire update event', (done) ->
+      goog.events.listenOnce collection, 'update', (e) ->
+        done()
+      collection.add 1
+
     test 'should throw exception for model item with same id', ->
       called = false
       arrangeChildType()
@@ -147,6 +152,12 @@ suite 'este.Collection', ->
       collection.remove 1
       assert.isTrue removeCalled, 'removeCalled'
       assert.deepEqual removed, [1]
+
+    test 'should fire update event', (done) ->
+      collection.add 1
+      goog.events.listenOnce collection, 'update', (e) ->
+        done()
+      collection.remove 1
 
     test 'should not fire remove event', ->
       removeCalled = false
@@ -334,10 +345,6 @@ suite 'este.Collection', ->
       assert.isUndefined collection.at 0
       assert.isUndefined collection.at 1
 
-  # todo:
-  #   Collections with comparator functions will not automatically re-sort if you
-  #   later change model attributes, so you may wish to call sort after changing
-  #   model attributes that would affect the order.
   suite 'sorting', ->
     suite 'default compare', ->
       test 'should work with numbers', ->
@@ -353,6 +360,11 @@ suite 'este.Collection', ->
     suite 'sort', ->
       test 'should fire sort event', (done) ->
         goog.events.listenOnce collection, 'sort', (e) ->
+          done()
+        collection.sort()
+
+      test 'should fire update event', (done) ->
+        goog.events.listenOnce collection, 'update', (e) ->
           done()
         collection.sort()
 
