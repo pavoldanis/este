@@ -54,8 +54,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   enterDocument: ->
     super()
     @update()
-    # todo: consider one über-change event (este.model.ChangeEvent)
-    @on @todos, ['add', 'remove','change'], @onTodosChange
+    @on @todos, 'update', @onTodosUpdate
     @on '#new-todo-form', 'submit', @onNewTodoSubmit
     @on '.toggle', 'tap', @onToggleTap
     @on '#toggle-all', 'tap', @onToggleAllTap
@@ -66,12 +65,11 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @on '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
 
   ###*
-    @param {goog.events.Event} e
     @protected
   ###
-  onTodosChange: (e) ->
+  onTodosUpdate: (e) ->
     @defer @update
-    @localStorage.saveChanges e
+    @localStorage.saveChanges e.origin
 
   ###*
     @protected
