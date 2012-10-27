@@ -351,10 +351,10 @@ suite 'este.Collection', ->
         assert.deepEqual collection.toJson(), ['b', 'c']
 
     suite 'sort', ->
-      # test 'should fire change event', (done) ->
-      #   goog.events.listenOnce collection, 'change', (e) ->
-      #     done()
-      #   collection.sort()
+      test 'should fire sort event', (done) ->
+        goog.events.listenOnce collection, 'sort', (e) ->
+          done()
+        collection.sort()
 
       suite 'by', ->
         test 'before should work', ->

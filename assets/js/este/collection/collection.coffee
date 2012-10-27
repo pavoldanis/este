@@ -33,6 +33,7 @@ class este.Collection extends goog.events.EventTarget
   @EventType:
     ADD: 'add'
     REMOVE: 'remove'
+    SORT: 'sort'
 
   ###*
     @type {Object.<string, boolean>}
@@ -195,7 +196,7 @@ class este.Collection extends goog.events.EventTarget
     @sortCompare = options.compare if options?.compare != undefined
     @sortReversed = options.reversed if options?.reversed != undefined
     @sortInternal()
-    # @dispatchChangeEvent null
+    @dispatchSortEvent()
     return
 
   ###*
@@ -261,6 +262,13 @@ class este.Collection extends goog.events.EventTarget
     @dispatchEvent
       type: Collection.EventType.REMOVE
       removed: removed
+
+  ###*
+    @protected
+  ###
+  dispatchSortEvent: ->
+    @dispatchEvent
+      type: Collection.EventType.SORT
 
   ###*
     @protected
