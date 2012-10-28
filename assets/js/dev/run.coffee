@@ -541,7 +541,10 @@ runCommands = (commands, complete, errors = []) ->
                 ~stderr?.indexOf(': ERROR - ') ||
                 # for closurebuilder.py errors
                 ~stderr?.indexOf('JavaScript compilation failed.') ||
-                ~stderr?.indexOf('Traceback (most recent call last):')
+                ~stderr?.indexOf('Traceback (most recent call last):') ||
+                # dependencies errors:
+                # namespace xy provided more than once
+                ~stderr?.indexOf('depstree.MultipleProvideError: ')
 
     if isError
       output = stderr
