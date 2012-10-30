@@ -330,7 +330,7 @@ setOptions = (args) ->
         options.port = args.shift()
       when '--errorbeep', '-eb'
         options.errorbeep = true
-      when '--help', '-p'
+      when '--help', '-h'
         console.log """
 
           Options:
@@ -364,6 +364,9 @@ setOptions = (args) ->
             -ba, --buildall
               Build and statically check all namespaces in project. Useful for
               debugging, after closure update, etc.
+
+            -eb, --errorbeep
+              Friendly beep on error.
 
             -h, --help
               To show this help.
