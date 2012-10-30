@@ -15,8 +15,8 @@
     do not use splats with annotations (foo, bla...)
     do not use 'foo in someArray', foo in [a, ...] is ok
 
-  Todo
-    consider this http://marijnhaverbeke.nl/blog/acorn.html
+  Todo:
+    consider http://marijnhaverbeke.nl/blog/acorn.html or similar
     new compiler should be able to parse nested annotations, check it
 ###
 
@@ -260,13 +260,12 @@ class este.dev.CoffeeForClosure
     @source = @source.replace /\$/g, (match) =>
       "xn2fs07c6n7ldollar_sucks_for_regexps"
 
-    @source = @source.replace /\/\*[^*]*\*+([^\/][^*]*\*+)*\//g,
-      (match) => "#{CoffeeForClosure.random}#{@replaces.push match}#{CoffeeForClosure.random}"
-
     # http://blog.stevenlevithan.com/archives/match-quoted-string
     @source = @source.replace /(["'])(?:(?=(\\?))\2.)*?\1/g, (match) =>
       "#{CoffeeForClosure.random}#{@replaces.push match}#{CoffeeForClosure.random}"
 
+    @source = @source.replace /\/\*[^*]*\*+([^\/][^*]*\*+)*\//g,
+      (match) => "#{CoffeeForClosure.random}#{@replaces.push match}#{CoffeeForClosure.random}"
     # todo: add regex for regex
 
   ###*

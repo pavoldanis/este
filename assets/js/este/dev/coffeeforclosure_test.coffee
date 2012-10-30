@@ -374,18 +374,16 @@ suite 'este.dev.CoffeeForClosure', ->
     #   fixed = coffeeForClosure.fix()
     #   assert.equal fixed, b
 
+  suite 'comment in string', ->
+    test 'should work', ->
+      jsCode = """
+        document.body.appendChild(box);
+        var str = "/**
+          @desc Text shown in alert after click.
+        */"
 
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
+        app.MSG_THANKYOU = goog.getMsg('Thank you!');
+        return goog.events.listen(box, 'click', function() {
+      """
+      fixed = este.dev.coffeeForClosure jsCode
+      assert.equal jsCode, fixed
