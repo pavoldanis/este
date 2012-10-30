@@ -11,34 +11,41 @@
 
   Options
     -b, --build
-      build and statically check all required namespaces
-      [project].html will use one compiled script
-      goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
+      Compile everything, run tests, build project.
+      Update [project].html to use just one compiled script.
+      Set goog.DEBUG flag to false.
+      Start watching all source files, recompile it on change.
 
       Example how to set compiler_flags:
         node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
 
     -d, --debug
-      just for build
-      compiler flags: '--formatting=PRETTY_PRINT --debug=true'
-      goog.DEBUG == true
+      Same as build, but with these compiler flags:
+        '--formatting=PRETTY_PRINT --debug=true'
+      Set goog.DEBUG flag to false.
+      Compiler output will be much readable.
+
+      Example:
+        node run app -d -b
 
     -v, --verbose
-      if you are curious how much time each compilation task take
+      To show some time stats.
 
     -c, --ci
-      continuous integration mode
-      without http server and files watchers
-
-    -o, --only
-      compile just one namespace
+      Continuous integration mode. Without http server and files watchers.
 
     -p, --port
-      default is 8000
+      To override default http://localhost:8000/ port.
 
     -ba, --buildall
-      build and statically check all namespaces in project
-      useful for debugging, after closure update, etc.
+      Build and statically check all namespaces in project. Useful for
+      debugging, after closure update, etc.
+
+    -eb, --errorbeep
+      Friendly beep on error.
+
+    -h, --help
+      To show this help.
 
   Usage
     'node run app'
@@ -100,7 +107,8 @@ options = {
   verbose: false,
   ci: false,
   only: '',
-  port: 8000
+  port: 8000,
+  errorbeep: false
 };
 
 socket = null;
@@ -383,6 +391,14 @@ setOptions = function(args) {
       case '-p':
         options.port = args.shift();
         break;
+      case '--errorbeep':
+      case '-eb':
+        options.errorbeep = true;
+        break;
+      case '--help':
+      case '-p':
+        console.log("\nOptions:\n  -b, --build\n    Compile everything, run tests, build project.\n    Update [project].html to use just one compiled script.\n    Set goog.DEBUG flag to false.\n    Start watching all source files, recompile it on change.\n\n    Example how to set compiler_flags:\n      node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true\n\n  -d, --debug\n    Same as build, but with these compiler flags:\n      '--formatting=PRETTY_PRINT --debug=true'\n    Set goog.DEBUG flag to false.\n    Compiler output will be much readable.\n\n    Example:\n      node run app -d -b\n\n  -v, --verbose\n    To show some time stats.\n\n  -c, --ci\n    Continuous integration mode. Without http server and files watchers.\n\n  -p, --port\n    To override default http://localhost:8000/ port.\n\n  -ba, --buildall\n    Build and statically check all namespaces in project. Useful for\n    debugging, after closure update, etc.\n\n  -h, --help\n    To show this help.\n");
+        return false;
       default:
         options.project = arg;
     }
@@ -496,18 +512,17 @@ getPaths = function(directory, extensions, includeDirs, enforceClosure) {
 };
 
 getSoyCommand = function(paths) {
-  return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + (paths.join(' '));
+  return "java -jar assets/js/dev/SoyToJsSrcCompiler.jar    --shouldProvideRequireSoyNamespaces    --shouldGenerateGoogMsgDefs    --bidiGlobalDir 1    --shouldGenerateJsdoc    --codeStyle concat    --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js    " + (paths.join(' '));
 };
 
 watchPaths = function(callback) {
   var path, paths, _fn, _i, _len;
   paths = getPaths('assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true);
   paths.push("" + options.project + "-template.html");
-  paths.push('assets/js/dev/run.coffee');
-  paths.push('assets/js/dev/mocks.coffee');
-  paths.push('assets/js/dev/deploy.coffee');
-  paths.push('assets/js/dev/tests.coffee');
   paths.push('assets/js/dev/livereload.coffee');
+  paths.push('assets/js/dev/mocks.coffee');
+  paths.push('assets/js/dev/run.coffee');
+  paths.push('assets/js/dev/tests.coffee');
   _fn = function(path) {
     if (path.indexOf('.') > -1) {
       return fs.watchFile(path, watchOptions, function(curr, prev) {
@@ -648,7 +663,11 @@ runCommands = function(commands, complete, errors) {
           stderr: output
         });
       } else {
-        console.log(output);
+        if (options.errorbeep) {
+          console.log(output + '\x07');
+        } else {
+          console.log(output);
+        }
         nextCommands = {};
       }
     }

@@ -10,34 +10,41 @@
 
   Options
     -b, --build
-      build and statically check all required namespaces
-      [project].html will use one compiled script
-      goog.DEBUG == false (code after 'if goog.DEBUG' will be stripped)
+      Compile everything, run tests, build project.
+      Update [project].html to use just one compiled script.
+      Set goog.DEBUG flag to false.
+      Start watching all source files, recompile it on change.
 
       Example how to set compiler_flags:
         node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
 
     -d, --debug
-      just for build
-      compiler flags: '--formatting=PRETTY_PRINT --debug=true'
-      goog.DEBUG == true
+      Same as build, but with these compiler flags:
+        '--formatting=PRETTY_PRINT --debug=true'
+      Set goog.DEBUG flag to false.
+      Compiler output will be much readable.
+
+      Example:
+        node run app -d -b
 
     -v, --verbose
-      if you are curious how much time each compilation task take
+      To show some time stats.
 
     -c, --ci
-      continuous integration mode
-      without http server and files watchers
-
-    -o, --only
-      compile just one namespace
+      Continuous integration mode. Without http server and files watchers.
 
     -p, --port
-      default is 8000
+      To override default http://localhost:8000/ port.
 
     -ba, --buildall
-      build and statically check all namespaces in project
-      useful for debugging, after closure update, etc.
+      Build and statically check all namespaces in project. Useful for
+      debugging, after closure update, etc.
+
+    -eb, --errorbeep
+      Friendly beep on error.
+
+    -h, --help
+      To show this help.
 
   Usage
     'node run app'
@@ -87,6 +94,7 @@ options =
   ci: false
   only: ''
   port: 8000
+  errorbeep: false
 
 socket = null
 startTime = Date.now()
@@ -161,6 +169,7 @@ Commands =
       paths = (path for path in getPaths 'assets', ['.js'])
 
     for path in paths
+      # coffeeforclosure source files has to be ignored
       if  path.indexOf('coffeeforclosure_test.js') == -1 &&
           path.indexOf('coffeeforclosure.js') == -1 &&
           fs.existsSync path
@@ -319,6 +328,48 @@ setOptions = (args) ->
         options.only = args.shift()
       when '--port', '-p'
         options.port = args.shift()
+      when '--errorbeep', '-eb'
+        options.errorbeep = true
+      when '--help', '-p'
+        console.log """
+
+          Options:
+            -b, --build
+              Compile everything, run tests, build project.
+              Update [project].html to use just one compiled script.
+              Set goog.DEBUG flag to false.
+              Start watching all source files, recompile it on change.
+
+              Example how to set compiler_flags:
+                node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
+
+            -d, --debug
+              Same as build, but with these compiler flags:
+                '--formatting=PRETTY_PRINT --debug=true'
+              Set goog.DEBUG flag to false.
+              Compiler output will be much readable.
+
+              Example:
+                node run app -d -b
+
+            -v, --verbose
+              To show some time stats.
+
+            -c, --ci
+              Continuous integration mode. Without http server and files watchers.
+
+            -p, --port
+              To override default http://localhost:8000/ port.
+
+            -ba, --buildall
+              Build and statically check all namespaces in project. Useful for
+              debugging, after closure update, etc.
+
+            -h, --help
+              To show this help.
+
+        """
+        return false
       else
         options.project = arg
 
@@ -407,6 +458,8 @@ getPaths = (directory, extensions, includeDirs, enforceClosure) ->
 getSoyCommand = (paths) ->
   "java -jar assets/js/dev/SoyToJsSrcCompiler.jar
     --shouldProvideRequireSoyNamespaces
+    --shouldGenerateGoogMsgDefs
+    --bidiGlobalDir 1
     --shouldGenerateJsdoc
     --codeStyle concat
     --outputPathFormat {INPUT_DIRECTORY}/{INPUT_FILE_NAME_NO_EXT}.js
@@ -417,11 +470,10 @@ getSoyCommand = (paths) ->
 watchPaths = (callback) ->
   paths = getPaths 'assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true
   paths.push "#{options.project}-template.html"
-  paths.push 'assets/js/dev/run.coffee'
-  paths.push 'assets/js/dev/mocks.coffee'
-  paths.push 'assets/js/dev/deploy.coffee'
-  paths.push 'assets/js/dev/tests.coffee'
   paths.push 'assets/js/dev/livereload.coffee'
+  paths.push 'assets/js/dev/mocks.coffee'
+  paths.push 'assets/js/dev/run.coffee'
+  paths.push 'assets/js/dev/tests.coffee'
   for path in paths
     continue if watchPaths['$' + path]
     watchPaths['$' + path] = true
@@ -560,7 +612,10 @@ runCommands = (commands, complete, errors = []) ->
           command: command
           stderr: output
       else
-        console.log output
+        if options.errorbeep
+          console.log output + '\x07'
+        else
+          console.log output
         nextCommands = {}
 
     if booting || options.verbose
