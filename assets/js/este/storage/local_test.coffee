@@ -32,7 +32,7 @@ suite 'este.storage.Local', ->
     Model::toJson = ->
       # to remove methods
       este.json.parse este.json.stringify @
-    Model::fromJson = (json) ->
+    Model::set = (json) ->
       for k, v of json
         @[k] = json
       return
@@ -52,7 +52,7 @@ suite 'este.storage.Local', ->
 
   suite 'save', ->
     test 'should assign id for model without id', (done) ->
-      model.fromJson = (json, forceIds) ->
+      model.set = (json, forceIds) ->
         assert.deepEqual json, id: 'someUniqueId'
         assert.isTrue forceIds
         done()
@@ -62,7 +62,7 @@ suite 'este.storage.Local', ->
       called = false
       model.get = (key) ->
         return '123' if key == 'id'
-      model.fromJson = (json, forceIds) ->
+      model.set = (json, forceIds) ->
         called = true
       local.save model
       assert.isFalse called
@@ -122,7 +122,7 @@ suite 'este.storage.Local', ->
         assert.equal key, 'model'
         '{"123":{"foo":"bla"}}'
       model.id = '123'
-      model.fromJson = (json) ->
+      model.set = (json) ->
         assert.deepEqual json,
           foo: 'bla'
         done()

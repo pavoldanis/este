@@ -69,7 +69,7 @@ class este.storage.Local extends este.storage.Base
     return este.result.fail() if !models
     json = models[id]
     return este.result.fail() if !json
-    model.fromJson json
+    model.set json
     este.result.ok id
 
   ###*
@@ -106,7 +106,7 @@ class este.storage.Local extends este.storage.Base
     return id.toString() if id?
 
     id = @idFactory()
-    model.fromJson ('id': id), true
+    model.set ('id': id), true
     id
 
   ###*

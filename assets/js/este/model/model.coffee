@@ -43,14 +43,13 @@ class este.Model extends goog.events.EventTarget
     @constructor
     @extends {goog.events.EventTarget}
   ###
-  constructor: (json = {}, @idGenerator = null) ->
+  constructor: (json, idGenerator) ->
     super()
     @attributes = {}
     @schema ?= {}
-    @setId json
-    @setClientId json, idGenerator
-    @fromJson @defaults if @defaults
-    @fromJson json, true
+    @set @defaults if @defaults
+    @set json if json
+    @ensureClientId idGenerator
 
   ###*
     @enum {string}
@@ -113,11 +112,12 @@ class este.Model extends goog.events.EventTarget
     return null if !changes
 
     errors = @getErrors changes
+    # todo: ...
     if errors
       changes = goog.object.filter changes, (value, key) -> !errors[key]
 
     if !goog.object.isEmpty changes
-      @fromJson changes
+      @setInternal changes
       @dispatchChangeEvent changes
 
     errors
@@ -193,22 +193,6 @@ class este.Model extends goog.events.EventTarget
     json
 
   ###*
-    Accept shallow copy. It's used for deserialization.
-    @param {Object} json
-    @param {boolean=} forceIds for
-  ###
-  fromJson: (json, forceIds) ->
-    if !forceIds
-      goog.asserts.assert !json['id'], 'Model id is immutable'
-      goog.asserts.assert !json['clientId'], 'Model clientId is immutable'
-
-    for key, value of json
-      @attributes[@getKey key] = value
-      continue if !(value instanceof goog.events.EventTarget)
-      value.setParentEventTarget @
-    return
-
-  ###*
     @return {Object} errors object, ex. name: required: true if error
   ###
   validate: ->
@@ -227,24 +211,20 @@ class este.Model extends goog.events.EventTarget
 
   ###*
     @param {Object} json
-    @private
+    @protected
   ###
-  setId: (json) ->
-    @attributes[@getKey 'id'] = json['id'] if json['id']?
-
-  ###*
-    @param {Object} json
-    @param {function(): string=} idGenerator
-    @private
-  ###
-  setClientId: (json, idGenerator) ->
-    clientIdKey = @getKey 'clientId'
-    @attributes[clientIdKey] = if json['id']?
-      json['id']
-    else if @idGenerator
-      @idGenerator()
-    else
-      goog.ui.IdGenerator.getInstance().getNextUniqueId()
+  setInternal: (json) ->
+    for key, value of json
+      $key = @getKey key
+      currentValue = @attributes[$key]
+      if key == 'id' && currentValue?
+        goog.asserts.fail 'Model id is immutable'
+      if key == 'clientId' && currentValue?
+        goog.asserts.fail 'Model clientId is immutable'
+      @attributes[$key] = value
+      continue if !(value instanceof goog.events.EventTarget)
+      value.setParentEventTarget @
+    return
 
   ###*
     todo: optimize comparison
@@ -292,6 +272,17 @@ class este.Model extends goog.events.EventTarget
     updateEvent = new este.Model.Event Model.EventType.UPDATE, @
     updateEvent.origin = changeEvent
     @dispatchEvent updateEvent
+
+  ###*
+    @param {function(): string=} idGenerator
+    @protected
+  ###
+  ensureClientId: (idGenerator) ->
+    return if @get 'clientId'
+    @set 'clientId', if idGenerator
+      idGenerator()
+    else
+      goog.ui.IdGenerator.getInstance().getNextUniqueId()
 
 ###*
   @fileoverview este.Model.Event.

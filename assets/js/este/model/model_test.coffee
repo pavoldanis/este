@@ -3,8 +3,8 @@ requiredValidator = (value) -> value && goog.string.trim(value).length
 
 class Person extends este.Model
 
-  constructor: (attrs, randomStringGenerator) ->
-    super attrs, randomStringGenerator
+  constructor: (json, randomStringGenerator) ->
+    super json, randomStringGenerator
 
   defaults:
     'defaultFoo': 1
@@ -24,16 +24,16 @@ class Person extends este.Model
 
 suite 'este.Model', ->
 
-  attrs = null
+  json = null
   person = null
 
   setup ->
-    attrs =
+    json =
       'firstName': 'Joe'
       'lastName': 'Satriani'
       'age': 55
     idGenerator = -> 1
-    person = new Person attrs, idGenerator
+    person = new Person json, idGenerator
 
   suite 'constructor', ->
     test 'should work', ->
@@ -58,7 +58,7 @@ suite 'este.Model', ->
     test 'should set defaults', ->
       assert.equal person.get('defaultFoo'), 1
 
-    test 'should set defaults before attrs', ->
+    test 'should set defaults before json', ->
       person = new Person 'defaultFoo': 2
       assert.equal person.get('defaultFoo'), 2
 
@@ -92,7 +92,7 @@ suite 'este.Model', ->
       assert.equal person.get('lastName'), 'Satriani'
 
   suite 'toJson', ->
-    suite 'without attrs', ->
+    suite 'without json', ->
       test 'true should not return meta name nor clientId', ->
         person = new Person
         json = person.toJson true
@@ -107,7 +107,7 @@ suite 'este.Model', ->
           'name': 'undefined undefined'
           'defaultFoo': 1
 
-    suite 'with attrs', ->
+    suite 'with json', ->
       test 'false should return clientId and meta name', ->
         json = person.toJson()
         assert.deepEqual json,
@@ -119,13 +119,13 @@ suite 'este.Model', ->
           'defaultFoo': 1
 
       test 'true, true should not return id', ->
-        attrs =
+        json =
           'id': 123
           'firstName': 'Joe'
           'lastName': 'Satriani'
           'age': 55
         idGenerator = -> 1
-        person = new Person attrs, idGenerator
+        person = new Person json, idGenerator
         json = person.toJson true, true
         assert.deepEqual json,
           'firstName': 'Joe'
@@ -278,62 +278,3 @@ suite 'este.Model', ->
         errors = person.validate()
         assert.deepEqual errors,
           lastName: required: true
-
-  suite 'constructor json attr id', ->
-    test 'should set clientId', ->
-      person = new Person id: 123
-      assert.equal person.get('clientId'), 123
-
-  suite 'id and clientId should be readonly: ', ->
-
-    suite 'set id', ->
-      test 'should throw exception', (done) ->
-        person = new Person
-        try person.set 'id': 1
-        catch e
-          assert.instanceOf e, Error
-          done()
-
-    suite 'set clientId', ->
-      test 'should throw exception', (done) ->
-        person = new Person
-        try person.set 'clientId': 1
-        catch e
-          assert.instanceOf e, Error
-          done()
-
-    suite 'fromJson id', ->
-      test 'should throw exception', (done) ->
-        person = new Person
-        try person.fromJson 'id': 1
-        catch e
-          assert.instanceOf e, Error
-          done()
-
-    suite 'fromJson clientId', ->
-      test 'should throw exception', (done) ->
-        person = new Person
-        try person.fromJson 'clientId': 1
-        catch e
-          assert.instanceOf e, Error
-          done()
-
-    suite 'fromJson id with forceIds', ->
-      test 'should not throw exception', ->
-        called = false
-        person = new Person
-        try person.fromJson ('id': 1), true
-        catch e
-          assert.instanceOf e, Error
-          called = true
-        assert.isFalse called
-
-    suite 'fromJson clientId with forceIds', ->
-      test 'should not throw exception', ->
-        called = false
-        person = new Person
-        try person.fromJson ('clientId': 1), true
-        catch e
-          assert.instanceOf e, Error
-          called = true
-        assert.isFalse called
