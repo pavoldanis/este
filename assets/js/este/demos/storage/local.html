@@ -36,6 +36,7 @@
 
     var showSerializedLocalStorage = function() {
       var serializedStorage = JSON.stringify(window.localStorage)
+      serializedStorage = serializedStorage || 'not supported in IE<9'
       document.getElementById('code').value = serializedStorage
     }
 
@@ -82,7 +83,7 @@
       var models = collection.toArray()
       for (var i = 0, l = models.length; i < l; i++) {
         var model = models[i]
-        storage.delete(model)
+        storage['delete'](model)
       }
       location.reload()
     }
