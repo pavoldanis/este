@@ -1,0 +1,8 @@
+{
+    "Thank you!": {
+        "Text shown in alert after click.": "to translate: Thank you!"
+    },
+    "{$action} on me": {
+        "text in some div calling to action": "to translate: {$action} on me"
+    }
+}

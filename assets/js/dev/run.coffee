@@ -1,65 +1,8 @@
 ###*
-  @fileoverview github.com/Steida/este.
-
-  Features
-    compile and watch CoffeeScript, Stylus, Soy, [project]-template.html
-    update Google Closure deps.js
-    run and watch *_test.coffee unit tests
-    run simple NodeJS development server
-    experimental support for TypeScript (disabled now)
-
-  Options
-    -b, --build
-      Compile everything, run tests, build project.
-      Update [project].html to use just one compiled script.
-      Set goog.DEBUG flag to false.
-      Start watching all source files, recompile it on change.
-
-      Example how to set compiler_flags:
-        node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
-
-    -d, --debug
-      Same as build, but with these compiler flags:
-        '--formatting=PRETTY_PRINT --debug=true'
-      Set goog.DEBUG flag to false.
-      Compiler output will be much readable.
-
-      Example:
-        node run app -d -b
-
-    -v, --verbose
-      To show some time stats.
-
-    -c, --ci
-      Continuous integration mode. Without http server and files watchers.
-
-    -p, --port
-      To override default http://localhost:8000/ port.
-
-    -ba, --buildall
-      Build and statically check all namespaces in project. Useful for
-      debugging, after closure update, etc.
-
-    -eb, --errorbeep
-      Friendly beep on error.
-
-    -h, --help
-      To show this help.
-
-  Usage
-    'node run app'
-      to start app development
-
-    'node run app --build' or 'node run app -b'
-      to test compiled version
-
-    'node run app --build --debug'
-      to test compiled version with debug mode enabled
-
-    'node run este -b'
-      special build mode only for este
-      all provided namespaces are included into compilation
-
+  @fileoverview One script to automatically compile and watch CoffeeScript,
+  Stylus, and Soy templates. Run fast unit test on source files change. No need
+  to take care about ordered list of project files with Closure dependency
+  system. LiveReload supported.
 ###
 
 fs = require 'fs'
@@ -68,6 +11,7 @@ tests = require './tests'
 http = require 'http'
 pathModule = require 'path'
 ws = require 'websocket.io'
+esprima = require 'esprima'
 
 # load and fix google closure base.js for node
 do ->
@@ -87,14 +31,14 @@ lazyRequireCoffeeForClosure = ->
 options =
   project: null
   build: false
-  compilerFlags: ''
+  compilerFlags: []
   buildAll: false
   debug: false
   verbose: false
   ci: false
   only: ''
   port: 8000
-  errorbeep: false
+  errorBeep: false
 
 socket = null
 startTime = Date.now()
@@ -344,28 +288,36 @@ setOptions = (args) ->
         options.compilerFlags = args.splice 0, args.length
       when '--buildall', '-ba'
         options.buildAll = true
-      when '--ci', '-c'
+      when '--continuousintegration', '-ci'
         options.ci = true
       when '--only', '-o'
         options.only = args.shift()
       when '--port', '-p'
         options.port = args.shift()
       when '--errorbeep', '-eb'
-        options.errorbeep = true
+        options.errorBeep = true
+      when '--extractmessages', '-em'
+        languages = args.splice 0, args.length
+        extractMessages languages
+        return false
       when '--help', '-h'
         console.log """
 
           Options:
-            -b, --build
+            --build, -b
               Compile everything, run tests, build project.
               Update [project].html to use just one compiled script.
               Set goog.DEBUG flag to false.
               Start watching all source files, recompile it on change.
 
               Example how to set compiler_flags:
-                node run app -b --define=goog.LOCALE=\'cs\' --define=goog.DEBUG=true
+                node run app -b
+                  --define=goog.DEBUG=true
+                  --define=goog.LOCALE=\'cs\'
 
-            -d, --debug
+                goog.LOCALE value from goog.locale.defaultLocaleNameConstants
+
+            --debug, -d
               Same as build, but with these compiler flags:
                 '--formatting=PRETTY_PRINT --debug=true'
               Set goog.DEBUG flag to false.
@@ -374,23 +326,31 @@ setOptions = (args) ->
               Example:
                 node run app -d -b
 
-            -v, --verbose
+            --verbose, -v
               To show some time stats.
 
-            -c, --ci
+            --continuousintegration, -ci
               Continuous integration mode. Without http server and files watchers.
 
-            -p, --port
+            --port, -p
               To override default http://localhost:8000/ port.
 
-            -ba, --buildall
+            --buildall, -ba
               Build and statically check all namespaces in project. Useful for
               debugging, after closure update, etc.
 
-            -eb, --errorbeep
+            --errorbeep, -eb
               Friendly beep on error.
 
-            -h, --help
+            --extractmessages, -em
+              Extract messages from source code and generate dictionaries in
+              assets/messages/project directory. Messages are defined with
+              goog.getMsg method.
+
+              Example
+                node run app -em en de
+
+            --help, -h
               To show this help.
 
         """
@@ -637,7 +597,7 @@ runCommands = (commands, complete, errors = []) ->
           command: command
           stderr: output
       else
-        if options.errorbeep
+        if options.errorBeep
           console.log output + '\x07'
         else
           console.log output
@@ -657,5 +617,78 @@ runCommands = (commands, complete, errors = []) ->
 notifyClient = (message) ->
   return if !socket
   socket.send message
+
+extractMessages = (languages) ->
+  # ensure paths and files are created
+  messagesPath = 'assets/messages'
+  fs.mkdir messagesPath if !fs.existsSync messagesPath
+  projectPath = "#{messagesPath}/#{options.project}"
+  fs.mkdir projectPath if !fs.existsSync projectPath
+  for language in languages
+    languagePath = "#{projectPath}/#{language}.json"
+    fs.writeFileSync languagePath, '{}', 'utf8' if !fs.existsSync languagePath
+
+  # create dictionary from extracted messages
+  scripts = getPaths "assets/js/#{options.project}", ['.js'], false, true
+  dictionary = {}
+  for script in scripts
+    source = fs.readFileSync script, 'utf8'
+    continue if source.indexOf('goog.getMsg') == -1
+    syntax = esprima.parse source, comment: true, range: true, tokens: true
+    tokens = syntax.tokens.concat syntax.comments
+    sortTokens tokens
+    for token, i in tokens
+      continue if token.type != "Identifier" || token.value != 'getMsg'
+      message = getMessage tokens, i
+      continue if !message
+      description = getMessageDescription tokens, i
+      continue if !description
+      dictionary[message] ?= {}
+      dictionary[message][description] = 'to translate: ' + message
+
+  ###
+    Merge new dictionary into yet existing dictionaries. This is especially
+    usefull for as you go localization.
+  ###
+  for language in languages
+    languagePath = "#{projectPath}/#{language}.json"
+    source = fs.readFileSync languagePath, 'utf8'
+    json = JSON.parse source
+    for message, translations of dictionary
+      jsonMessage = json[message] ?= {}
+      for description, translation of translations
+        continue if jsonMessage[description]
+        jsonMessage[description] = translation
+    text = JSON.stringify json, null, 4
+    fs.writeFileSync languagePath, text, 'utf8'
+
+  return
+
+sortTokens = (tokens) ->
+  tokens.sort (a, b) ->
+    if a.range[0] > b.range[0]
+      1
+    else if a.range[0] < b.range[0]
+      -1
+    else
+      0
+
+getMessage = (tokens, i) ->
+  if  tokens[i + 1].type == 'Punctuator' &&
+      tokens[i + 1].value == '(' &&
+      tokens[i + 2].type == 'String'
+        return tokens[i + 2].value.slice 1, -1
+  ''
+
+getMessageDescription = (tokens, i) ->
+  loop
+    token = tokens[--i]
+    return '' if !token
+    break if !(token.type in ['Identifier', 'Punctuator'])
+  token = tokens[--i] if token.type == 'Keyword' && token.value == 'var'
+  return '' if token.type != 'Block'
+  description = token.value.split('@desc')[1]
+  return '' if !description
+  description.trim()
 
 exports.start = start
