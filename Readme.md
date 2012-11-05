@@ -3,26 +3,20 @@ Este.js - The evolutionary JavaScript Framework and Dev Stack
 
   - statically compiled CoffeeScript
   - Google Closure Tools
-  - Mocha tests (pretty fast)
+  - Mocha tests
   - Stylus styles
   - Node.js server for development
   - Este.js framework
     - MVC framework
     - quite a lot useful classes
   - settings and snippets for Sublime Text
-  - run.coffee
+  - `node run app` script
 
-Este.js is full-fledged development stack for creating server agnostic web
-applications. One command line script orchestrates all development tasks.
-Take a look at `node run app -h` help.
-
-Este.js encourages test driven development via super fast tests runner,
-restarted on source code change. Este.js checks syntax of CoffeeScript, Stylus, Soy files. Tested on and compatible for OSX, Linux, and Windows.
-
-It contains well-documented, thoroughly tested JavaScript framework, written in
-statically-typed CoffeeScript. This allows you to write powerful and efficient code for mobile devices and browsers.
+Este.js is full-fledged development stack for building robust web apps. It contains well-documented, thoroughly tested JavaScript framework, written in statically-typed CoffeeScript. This allows you to write powerful and efficient code for browsers and mobile devices.
 
 Ready for mobile first and an offline capable MVC web applications, streamlined for the developer user experience. Of course, Este.js works well for any type of JavaScript application.
+
+Tested on and compatible for OSX, Linux, and Windows.
 
 ### Quick Start Guide
 
