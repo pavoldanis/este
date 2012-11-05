@@ -3,24 +3,26 @@ Este.js - The evolutionary JavaScript Framework and Dev Stack
 
   - statically compiled CoffeeScript
   - Google Closure Tools
-  - Mocha tests
+  - Mocha tests (pretty fast)
   - Stylus styles
-  - Dev Node.js server
+  - Node.js server for development
   - Este.js framework
-    - a lot of classes
-    - MVC mobile first framework
+    - MVC framework
+    - quite a lot useful classes
   - settings and snippets for Sublime Text
   - run.coffee
 
-With Este.js, just run one script to automatically compile and watch CoffeeScript, Stylus, and Soy templates. Run fast unit test on source files change. No need to take care about ordered
-list of project files with Closure dependency system. LiveReload supported.
+Este.js is full-fledged development stack for creating server agnostic web
+applications. One command line script orchestrates all development tasks.
+Take a look at `node run app -h` help.
 
-Tested on and compatible for OSX, Linux, and Windows.
+Este.js encourages test driven development via super fast tests runner,
+restarted on source code change. Este.js checks syntax of CoffeeScript, Stylus, Soy files. Tested on and compatible for OSX, Linux, and Windows.
 
 It contains well-documented, thoroughly tested JavaScript framework, written in
 statically-typed CoffeeScript. This allows you to write powerful and efficient code for mobile devices and browsers.
 
-Ready for mobile first and an offline capable MVC web application, streamlined for the developer user experience. Of course, Este.js works well for any type of JavaScript application.
+Ready for mobile first and an offline capable MVC web applications, streamlined for the developer user experience. Of course, Este.js works well for any type of JavaScript application.
 
 ### Quick Start Guide
 
@@ -38,12 +40,11 @@ Ready for mobile first and an offline capable MVC web application, streamlined f
 
 ### More Information
 
-`node run app` options are described in `assets/js/dev/run.coffee`.
+Run `node run app -h` to see command line options.
 
 Take a look at TodoMVC app in `assets/js/este/demos/` demos. It defines structure, feature-based namespacing, soy templates, custom events, and much more.
 
-We're actively working on a mobile version for ShopMVC on this stack, which should give greater
-clarity by means of example.
+We're actively working on a mobile version for ShopMVC on this stack, which should give greater clarity by means of example.
 
 ### Blog
 
