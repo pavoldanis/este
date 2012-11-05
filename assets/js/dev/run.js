@@ -6,7 +6,7 @@
   system. LiveReload supported.
 */
 
-var Commands, booting, buildNamespaces, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, esprima, exec, extractMessages, fs, getMessage, getMessageDescription, getPaths, getSoyCommand, http, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, sortTokens, start, startServer, startTime, tests, watchOptions, watchPaths, ws,
+var Commands, booting, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, esprima, exec, extractMessages, fs, getMessage, getMessageDescription, getPaths, getSoyCommand, http, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, sortTokens, start, startServer, startTime, tests, watchOptions, watchPaths, wrench, ws,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -22,6 +22,8 @@ pathModule = require('path');
 ws = require('websocket.io');
 
 esprima = require('esprima');
+
+wrench = require('wrench');
 
 (function() {
   var googBasePath, googNodeBasePath, nodeBase;
@@ -97,20 +99,6 @@ depsNamespaces = (function() {
   return namespaces.join('');
 })();
 
-buildNamespaces = (function() {
-  var dir, namespaces;
-  namespaces = (function() {
-    var _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = jsSubdirs.length; _i < _len; _i++) {
-      dir = jsSubdirs[_i];
-      _results.push("--root=assets/js/" + dir + " ");
-    }
-    return _results;
-  })();
-  return namespaces.join('');
-})();
-
 Commands = {
   projectTemplate: function(callback) {
     var file, filePath, scripts, timestamp;
@@ -133,7 +121,7 @@ Commands = {
   },
   removeJavascripts: function(callback) {
     var jsPath, _i, _len, _ref;
-    _ref = getPaths('assets', ['.js']);
+    _ref = getPaths('assets/js', ['.js']);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       jsPath = _ref[_i];
       fs.unlinkSync(jsPath);
@@ -149,7 +137,7 @@ Commands = {
     } else {
       paths = (function() {
         var _i, _len, _ref, _results;
-        _ref = getPaths('assets', ['.js']);
+        _ref = getPaths('assets/js', ['.js']);
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           path = _ref[_i];
@@ -170,7 +158,7 @@ Commands = {
   },
   soyTemplates: function(callback) {
     var command, soyPaths;
-    soyPaths = getPaths('assets', ['.soy']);
+    soyPaths = getPaths('assets/js', ['.soy']);
     if (!soyPaths.length) {
       callback();
       return;
@@ -180,7 +168,11 @@ Commands = {
   },
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, preservedClosureScripts, source, startjs, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    var buildNamespaces, command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, source, startjs, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    if (fs.existsSync('assets/js-build')) {
+      wrench.rmdirSyncRecursive('assets/js-build');
+    }
+    wrench.copyDirSyncRecursive('assets/js', 'assets/js-build');
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
@@ -216,45 +208,43 @@ Commands = {
         startjs.push("goog.require('" + namespace + "');");
       }
       source = startjs.join('\n');
-      fs.writeFileSync("./assets/js/" + options.project + "/start.js", source, 'utf8');
+      fs.writeFileSync("./assets/js-build/" + options.project + "/start.js", source, 'utf8');
     }
-    preservedClosureScripts = [];
     if (!options.debug) {
-      _ref2 = getPaths('assets', ['.js'], false, false);
+      _ref2 = getPaths('assets/js-build', ['.js'], false, true);
       for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
         jsPath = _ref2[_l];
         source = fs.readFileSync(jsPath, 'utf8');
         if (source.indexOf('this.logger_.') === -1) {
           continue;
         }
-        if (jsPath.indexOf('google-closure/') !== -1) {
-          preservedClosureScripts.push({
-            jsPath: jsPath,
-            source: source
-          });
-        }
-        source = source.replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.');
-        source = source.replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.');
+        source = source.replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.');
         fs.writeFileSync(jsPath, source, 'utf8');
       }
     }
-    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--jscomp_warning=accessControls\"      --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"      --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"      --compiler_flags=\"--jscomp_warning=checkRegExp\"      --compiler_flags=\"--jscomp_warning=checkTypes\"      --compiler_flags=\"--jscomp_warning=checkVars\"      --compiler_flags=\"--jscomp_warning=const\"      --compiler_flags=\"--jscomp_warning=constantProperty\"      --compiler_flags=\"--jscomp_warning=deprecated\"      --compiler_flags=\"--jscomp_warning=duplicate\"      --compiler_flags=\"--jscomp_warning=externsValidation\"      --compiler_flags=\"--jscomp_warning=fileoverviewTags\"      --compiler_flags=\"--jscomp_warning=globalThis\"      --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"      --compiler_flags=\"--jscomp_warning=invalidCasts\"      --compiler_flags=\"--jscomp_warning=missingProperties\"      --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"      --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"      --compiler_flags=\"--jscomp_warning=undefinedNames\"      --compiler_flags=\"--jscomp_warning=undefinedVars\"      --compiler_flags=\"--jscomp_warning=unknownDefines\"      --compiler_flags=\"--jscomp_warning=uselessCode\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js/deps.js\"      " + flagsText + "      > " + options.outputFilename;
+    buildNamespaces = (function() {
+      var dir;
+      namespaces = (function() {
+        var _len4, _m, _results;
+        _results = [];
+        for (_m = 0, _len4 = jsSubdirs.length; _m < _len4; _m++) {
+          dir = jsSubdirs[_m];
+          _results.push("--root=assets/js-build/" + dir + " ");
+        }
+        return _results;
+      })();
+      return namespaces.join('');
+    })();
+    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--jscomp_warning=accessControls\"      --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"      --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"      --compiler_flags=\"--jscomp_warning=checkRegExp\"      --compiler_flags=\"--jscomp_warning=checkTypes\"      --compiler_flags=\"--jscomp_warning=checkVars\"      --compiler_flags=\"--jscomp_warning=const\"      --compiler_flags=\"--jscomp_warning=constantProperty\"      --compiler_flags=\"--jscomp_warning=deprecated\"      --compiler_flags=\"--jscomp_warning=duplicate\"      --compiler_flags=\"--jscomp_warning=externsValidation\"      --compiler_flags=\"--jscomp_warning=fileoverviewTags\"      --compiler_flags=\"--jscomp_warning=globalThis\"      --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"      --compiler_flags=\"--jscomp_warning=invalidCasts\"      --compiler_flags=\"--jscomp_warning=missingProperties\"      --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"      --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"      --compiler_flags=\"--jscomp_warning=undefinedNames\"      --compiler_flags=\"--jscomp_warning=undefinedVars\"      --compiler_flags=\"--jscomp_warning=unknownDefines\"      --compiler_flags=\"--jscomp_warning=uselessCode\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js-build/deps.js\"      " + flagsText + "      > " + options.outputFilename;
     return exec(command, function() {
-      var script, _len4, _m;
-      for (_m = 0, _len4 = preservedClosureScripts.length; _m < _len4; _m++) {
-        script = preservedClosureScripts[_m];
-        fs.writeFileSync(script.jsPath, script.source, 'utf8');
-      }
-      if (options.project === 'este') {
-        fs.unlinkSync('./assets/js/este/start.js');
-      }
+      wrench.rmdirSyncRecursive('assets/js-build');
       return callback.apply(null, arguments);
     });
   },
   mochaTests: tests.run,
   stylusStyles: function(callback) {
     var command, paths;
-    paths = getPaths('assets', ['.styl']);
+    paths = getPaths('assets/css', ['.styl']);
     command = "node assets/js/dev/node_modules/stylus/bin/stylus      --compress " + (paths.join(' '));
     return exec(command, callback);
   }

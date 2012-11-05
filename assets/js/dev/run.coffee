@@ -12,6 +12,7 @@ http = require 'http'
 pathModule = require 'path'
 ws = require 'websocket.io'
 esprima = require 'esprima'
+wrench = require 'wrench'
 
 # load and fix google closure base.js for node
 do ->
@@ -61,11 +62,6 @@ depsNamespaces = do ->
     "--root_with_prefix=\"assets/js/#{dir} ../../../#{dir}\" "
   namespaces.join ''
 
-buildNamespaces = do ->
-  namespaces = for dir in jsSubdirs
-    "--root=assets/js/#{dir} "
-  namespaces.join ''
-
 Commands =
   projectTemplate: (callback) ->
     timestamp = Date.now().toString 36
@@ -95,7 +91,7 @@ Commands =
     callback()
 
   removeJavascripts: (callback) ->
-    for jsPath in getPaths 'assets', ['.js']
+    for jsPath in getPaths 'assets/js', ['.js']
       fs.unlinkSync jsPath
     callback()
 
@@ -110,7 +106,7 @@ Commands =
     if path
       paths = [path]
     else
-      paths = (path for path in getPaths 'assets', ['.js'])
+      paths = (path for path in getPaths 'assets/js', ['.js'])
 
     for path in paths
       # coffeeforclosure source files has to be ignored
@@ -130,7 +126,7 @@ Commands =
   #   exec command, callback
 
   soyTemplates: (callback) ->
-    soyPaths = getPaths 'assets', ['.soy']
+    soyPaths = getPaths 'assets/js', ['.soy']
     if !soyPaths.length
       callback()
       return
@@ -142,6 +138,10 @@ Commands =
     > assets/js/deps.js"
 
   closureCompilation: (callback) ->
+    if fs.existsSync 'assets/js-build'
+      wrench.rmdirSyncRecursive 'assets/js-build'
+    wrench.copyDirSyncRecursive 'assets/js', 'assets/js-build'
+
     if options.debug
       flags = '--formatting=PRETTY_PRINT --debug=true'
     else
@@ -167,7 +167,7 @@ Commands =
       for namespace in namespaces
         startjs.push "goog.require('#{namespace}');"
       source = startjs.join '\n'
-      fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
+      fs.writeFileSync "./assets/js-build/#{options.project}/start.js", source, 'utf8'
 
     # if options.only
     #   startjs = ["goog.provide('#{options.project}.start');"]
@@ -175,27 +175,20 @@ Commands =
     #   source = startjs.join '\n'
     #   fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
 
-    preservedClosureScripts = []
-
     if !options.debug
-      for jsPath in getPaths 'assets', ['.js'], false, false
+      for jsPath in getPaths 'assets/js-build', ['.js'], false, true
         source = fs.readFileSync jsPath, 'utf8'
         continue if source.indexOf('this.logger_.') == -1
-
-        # preserve google closure scripts
-        # we dont want to modify submodule
-        if jsPath.indexOf('google-closure/') != -1
-          preservedClosureScripts.push
-            jsPath: jsPath
-            source: source
-
-        # replace all 'this.logger', but not '_this.logger'
-        # fix for coffee _this alias
-        source = source.replace /[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.'
-        # replace all '_this.logger'
-        source = source.replace /_this\.logger_\./g, 'goog.DEBUG && _this.logger_.'
-
+        # strip loggers
+        source = source.
+          replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').
+          replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.')
         fs.writeFileSync jsPath, source, 'utf8'
+
+    buildNamespaces = do ->
+      namespaces = for dir in jsSubdirs
+        "--root=assets/js-build/#{dir} "
+      namespaces.join ''
 
     command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
       #{buildNamespaces}
@@ -228,21 +221,18 @@ Commands =
       --compiler_flags=\"--jscomp_warning=uselessCode\"
       --compiler_flags=\"--jscomp_warning=visibility\"
       --compiler_flags=\"--output_wrapper=(function(){%output%})();\"
-      --compiler_flags=\"--js=assets/js/deps.js\"
+      --compiler_flags=\"--js=assets/js-build/deps.js\"
       #{flagsText}
       > #{options.outputFilename}"
 
     exec command, ->
-      for script in preservedClosureScripts
-        fs.writeFileSync script.jsPath, script.source, 'utf8'
-      if options.project == 'este'
-        fs.unlinkSync './assets/js/este/start.js'
+      wrench.rmdirSyncRecursive 'assets/js-build'
       callback.apply null, arguments
 
   mochaTests: tests.run
 
   stylusStyles: (callback) ->
-    paths = getPaths 'assets', ['.styl']
+    paths = getPaths 'assets/css', ['.styl']
     command = "node assets/js/dev/node_modules/stylus/bin/stylus
       --compress #{paths.join ' '}"
     exec command, callback

@@ -5,6 +5,7 @@ este.sublime-workspace
 
 *.js
 *.css
+assets/js-build
 
 !assets/js/dev/soyutils_usegoog.js
 !assets/js/dev/run.js

@@ -10,6 +10,7 @@ fs = require 'fs'
 ###
 getDeps = ->
   deps = {}
+  # todo: check, refactor, move to run.coffee?
   goog = addDependency: (src, namespaces, dependencies) ->
     for namespace in namespaces
       deps[namespace] =
