@@ -12,9 +12,7 @@ Este.js - The evolutionary JavaScript Framework and Dev Stack
   - settings and snippets for Sublime Text
   - `node run app` script
 
-Este.js is full-fledged development stack for building robust web apps. It contains well-documented, thoroughly tested JavaScript framework, written in statically-typed CoffeeScript. This allows you to write powerful and efficient code for browsers and mobile devices.
-
-Ready for mobile first and an offline capable MVC web applications, streamlined for the developer user experience. Of course, Este.js works well for any type of JavaScript application.
+Este.js is full-fledged development stack for building robust web apps, streamlined for the developer user experience. It contains well-documented, thoroughly tested JavaScript framework, written in statically-typed CoffeeScript. This allows you to write powerful and efficient code for browsers and mobile devices.
 
 Tested on and compatible for OSX, Linux, and Windows.
 
