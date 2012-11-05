@@ -34,9 +34,7 @@ Tested on and compatible for OSX, Linux, and Windows.
 
 Run `node run app -h` to see command line options.
 
-Take a look at TodoMVC app in `assets/js/este/demos/` demos. It defines structure, feature-based namespacing, soy templates, custom events, and much more.
-
-We're actively working on a mobile version for ShopMVC on this stack, which should give greater clarity by means of example.
+Take a look at TodoMVC app in `assets/js/este/demos/` demos. It defines structure, feature-based namespacing, soy templates, custom events, and much more. We're actively working on a mobile version for ShopMVC on this stack, which should give greater clarity by means of example.
 
 ### Blog
 
