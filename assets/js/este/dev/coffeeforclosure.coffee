@@ -16,7 +16,7 @@
     do not use 'foo in someArray', foo in [a, ...] is ok
 
   Todo:
-    consider http://marijnhaverbeke.nl/blog/acorn.html or similar
+    use Esprima for parsing
     new compiler should be able to parse nested annotations, check it
 ###
 
@@ -254,6 +254,7 @@ class este.dev.CoffeeForClosure
     @remove regex
 
   ###*
+    Ugly as sin workaround. todo: use esprima
     @protected
   ###
   storeReplaces: ->
@@ -272,8 +273,10 @@ class este.dev.CoffeeForClosure
     @protected
   ###
   restoreReplaces: ->
-    for replace, i in @replaces
-      @source = @source.replace "#{CoffeeForClosure.random}#{i + 1}#{CoffeeForClosure.random}", replace
+    l = @replaces.length
+    while l--
+      replace = @replaces[l]
+      @source = @source.replace "#{CoffeeForClosure.random}#{l + 1}#{CoffeeForClosure.random}", replace
     @source = @source.replace /xn2fs07c6n7ldollar_sucks_for_regexps/g,
       (match) => "$"
     return
