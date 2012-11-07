@@ -1,0 +1,17 @@
+{
+  "{$monthName} {$yearNum}": {
+    "Month/year format given the month name and the numeric year.": "{$monthName} {$yearNum}"
+  },
+  "am": {
+    "Suffix for morning times.": "ráno"
+  },
+  "pm": {
+    "Suffix for afternoon times.": "večer"
+  },
+  "{$action} on me": {
+    "text in some div calling to action": "{$action} na mě"
+  },
+  "Thank you!": {
+    "Text shown in alert after click.": "Díkes!"
+  }
+}

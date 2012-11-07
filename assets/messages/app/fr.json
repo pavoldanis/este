@@ -1,8 +1,17 @@
 {
-    "Thank you!": {
-        "Text shown in alert after click.": "to translate: Thank you!"
-    },
-    "{$action} on me": {
-        "text in some div calling to action": "to translate: {$action} on me"
-    }
+  "{$monthName} {$yearNum}": {
+    "Month/year format given the month name and the numeric year.": "to translate: {$monthName} {$yearNum}"
+  },
+  "am": {
+    "Suffix for morning times.": "to translate: am"
+  },
+  "pm": {
+    "Suffix for afternoon times.": "to translate: pm"
+  },
+  "{$action} on me": {
+    "text in some div calling to action": "to translate: {$action} on me"
+  },
+  "Thank you!": {
+    "Text shown in alert after click.": "to translate: Thank you!"
+  }
 }

@@ -4,9 +4,12 @@
   Stylus, and Soy templates. Run fast unit test on source files change. No need
   to take care about ordered list of project files with Closure dependency
   system. LiveReload supported.
+
+  Todo
+    rewrite this (legacy) mess into good code in Este style
 */
 
-var Commands, booting, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, esprima, exec, extractMessages, fs, getMessage, getMessageDescription, getPaths, getSoyCommand, http, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, sortTokens, start, startServer, startTime, tests, watchOptions, watchPaths, wrench, ws,
+var Commands, booting, clearScreen, coffeeForClosure, commandsRunning, depsNamespaces, esprima, exec, extractMessages, fs, getMessage, getMessageDescription, getPaths, getProjectPaths, getSoyCommand, http, insertMessages, isClosureCompilationError, jsSubdirs, lazyRequireCoffeeForClosure, notifyClient, onPathChange, options, pathModule, runCommands, setOptions, socket, sortTokens, start, startServer, startTime, tests, watchOptions, watchPaths, wrench, ws,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 fs = require('fs');
@@ -49,14 +52,15 @@ lazyRequireCoffeeForClosure = function() {
 options = {
   project: null,
   build: false,
-  compilerFlags: [],
+  buildOptions: [],
   buildAll: false,
   debug: false,
   verbose: false,
   ci: false,
   only: '',
   port: 8000,
-  errorBeep: false
+  errorBeep: false,
+  locale: ''
 };
 
 socket = null;
@@ -168,7 +172,7 @@ Commands = {
   },
   closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
-    var buildNamespaces, command, deps, flag, flags, flagsText, jsPath, k, namespace, namespaces, source, startjs, v, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+    var flag, flags, flagsText, innerFn, _i, _j, _len, _len1, _ref, _ref1;
     if (fs.existsSync('assets/js-build')) {
       wrench.rmdirSyncRecursive('assets/js-build');
     }
@@ -184,62 +188,76 @@ Commands = {
       flag = _ref[_i];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
-    _ref1 = options.compilerFlags;
+    _ref1 = options.buildOptions;
     for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
       flag = _ref1[_j];
       flagsText += "--compiler_flags=\"" + flag + "\" ";
     }
-    if (options.buildAll) {
-      deps = tests.getDeps();
-      namespaces = [];
-      for (k in deps) {
-        v = deps[k];
-        if (k.indexOf("" + options.project + ".") !== 0) {
-          continue;
+    innerFn = function() {
+      var buildNamespaces, command, deps, jsPath, k, namespace, namespaces, source, startjs, v, _k, _l, _len2, _len3, _ref2;
+      if (options.buildAll) {
+        deps = tests.getDeps();
+        namespaces = [];
+        for (k in deps) {
+          v = deps[k];
+          if (k.indexOf("" + options.project + ".") !== 0) {
+            continue;
+          }
+          if (k === ("" + options.project + ".start")) {
+            continue;
+          }
+          namespaces.push(k);
         }
-        if (k === ("" + options.project + ".start")) {
-          continue;
+        startjs = ["goog.provide('" + options.project + ".start');"];
+        for (_k = 0, _len2 = namespaces.length; _k < _len2; _k++) {
+          namespace = namespaces[_k];
+          startjs.push("goog.require('" + namespace + "');");
         }
-        namespaces.push(k);
+        source = startjs.join('\n');
+        fs.writeFileSync("./assets/js-build/" + options.project + "/start.js", source, 'utf8');
       }
-      startjs = ["goog.provide('" + options.project + ".start');"];
-      for (_k = 0, _len2 = namespaces.length; _k < _len2; _k++) {
-        namespace = namespaces[_k];
-        startjs.push("goog.require('" + namespace + "');");
+      if (options.only) {
+        startjs = ["goog.provide('" + options.project + ".start');"];
+        startjs.push("goog.require('" + options.only + "');");
+        source = startjs.join('\n');
+        fs.writeFileSync("./assets/js/" + options.project + "/start.js", source, 'utf8');
       }
-      source = startjs.join('\n');
-      fs.writeFileSync("./assets/js-build/" + options.project + "/start.js", source, 'utf8');
-    }
-    if (!options.debug) {
-      _ref2 = getPaths('assets/js-build', ['.js'], false, true);
-      for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-        jsPath = _ref2[_l];
-        source = fs.readFileSync(jsPath, 'utf8');
-        if (source.indexOf('this.logger_.') === -1) {
-          continue;
+      if (!options.debug) {
+        _ref2 = getPaths('assets/js-build', ['.js'], false, true);
+        for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+          jsPath = _ref2[_l];
+          source = fs.readFileSync(jsPath, 'utf8');
+          if (source.indexOf('this.logger_.') === -1) {
+            continue;
+          }
+          source = source.replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.');
+          fs.writeFileSync(jsPath, source, 'utf8');
         }
-        source = source.replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.');
-        fs.writeFileSync(jsPath, source, 'utf8');
       }
-    }
-    buildNamespaces = (function() {
-      var dir;
-      namespaces = (function() {
-        var _len4, _m, _results;
-        _results = [];
-        for (_m = 0, _len4 = jsSubdirs.length; _m < _len4; _m++) {
-          dir = jsSubdirs[_m];
-          _results.push("--root=assets/js-build/" + dir + " ");
-        }
-        return _results;
+      buildNamespaces = (function() {
+        var dir;
+        namespaces = (function() {
+          var _len4, _m, _results;
+          _results = [];
+          for (_m = 0, _len4 = jsSubdirs.length; _m < _len4; _m++) {
+            dir = jsSubdirs[_m];
+            _results.push("--root=assets/js-build/" + dir + " ");
+          }
+          return _results;
+        })();
+        return namespaces.join('');
       })();
-      return namespaces.join('');
-    })();
-    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py      " + buildNamespaces + "      --namespace=\"" + options.project + ".start\"      --output_mode=compiled      --compiler_jar=assets/js/dev/compiler.jar      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"      --compiler_flags=\"--warning_level=VERBOSE\"      --compiler_flags=\"--jscomp_warning=accessControls\"      --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"      --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"      --compiler_flags=\"--jscomp_warning=checkRegExp\"      --compiler_flags=\"--jscomp_warning=checkTypes\"      --compiler_flags=\"--jscomp_warning=checkVars\"      --compiler_flags=\"--jscomp_warning=const\"      --compiler_flags=\"--jscomp_warning=constantProperty\"      --compiler_flags=\"--jscomp_warning=deprecated\"      --compiler_flags=\"--jscomp_warning=duplicate\"      --compiler_flags=\"--jscomp_warning=externsValidation\"      --compiler_flags=\"--jscomp_warning=fileoverviewTags\"      --compiler_flags=\"--jscomp_warning=globalThis\"      --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"      --compiler_flags=\"--jscomp_warning=invalidCasts\"      --compiler_flags=\"--jscomp_warning=missingProperties\"      --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"      --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"      --compiler_flags=\"--jscomp_warning=undefinedNames\"      --compiler_flags=\"--jscomp_warning=undefinedVars\"      --compiler_flags=\"--jscomp_warning=unknownDefines\"      --compiler_flags=\"--jscomp_warning=uselessCode\"      --compiler_flags=\"--jscomp_warning=visibility\"      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"      --compiler_flags=\"--js=assets/js-build/deps.js\"      " + flagsText + "      > " + options.outputFilename;
-    return exec(command, function() {
-      wrench.rmdirSyncRecursive('assets/js-build');
-      return callback.apply(null, arguments);
-    });
+      command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py        " + buildNamespaces + "        --namespace=\"" + options.project + ".start\"        --output_mode=compiled        --compiler_jar=assets/js/dev/compiler.jar        --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"        --compiler_flags=\"--warning_level=VERBOSE\"        --compiler_flags=\"--jscomp_warning=accessControls\"        --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"        --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"        --compiler_flags=\"--jscomp_warning=checkRegExp\"        --compiler_flags=\"--jscomp_warning=checkTypes\"        --compiler_flags=\"--jscomp_warning=checkVars\"        --compiler_flags=\"--jscomp_warning=const\"        --compiler_flags=\"--jscomp_warning=constantProperty\"        --compiler_flags=\"--jscomp_warning=deprecated\"        --compiler_flags=\"--jscomp_warning=duplicate\"        --compiler_flags=\"--jscomp_warning=externsValidation\"        --compiler_flags=\"--jscomp_warning=fileoverviewTags\"        --compiler_flags=\"--jscomp_warning=globalThis\"        --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"        --compiler_flags=\"--jscomp_warning=invalidCasts\"        --compiler_flags=\"--jscomp_warning=missingProperties\"        --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"        --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"        --compiler_flags=\"--jscomp_warning=undefinedNames\"        --compiler_flags=\"--jscomp_warning=undefinedVars\"        --compiler_flags=\"--jscomp_warning=unknownDefines\"        --compiler_flags=\"--jscomp_warning=uselessCode\"        --compiler_flags=\"--jscomp_warning=visibility\"        --compiler_flags=\"--output_wrapper=(function(){%output%})();\"        --compiler_flags=\"--js=assets/js-build/deps.js\"        " + flagsText + "        > " + options.outputFilename;
+      return exec(command, function() {
+        return callback.apply(null, arguments);
+      });
+    };
+    if (options.locale) {
+      flagsText += "--compiler_flags=\"--define=goog.LOCALE='" + options.locale + "'\" ";
+      return insertMessages(innerFn);
+    } else {
+      return innerFn();
+    }
   },
   mochaTests: tests.run,
   stylusStyles: function(callback) {
@@ -272,7 +290,7 @@ start = function(args) {
         }
         return _results;
       })()).join(', ');
-      console.log("Something's wrong with: " + commands + "\nFixit, then press cmd-s.");
+      console.log("Something's wrong with: " + commands + "\nFix it, then press cmd/ctrl-s.");
       for (_i = 0, _len = errors.length; _i < _len; _i++) {
         error = errors[_i];
         console.log(error.stderr);
@@ -281,7 +299,7 @@ start = function(args) {
         process.exit(1);
       }
     } else {
-      console.log("Everything's fine, happy coding!", "" + ((Date.now() - startTime) / 1000) + "s");
+      console.log("Everything's fine, happy coding.", "" + ((Date.now() - startTime) / 1000) + "s");
       if (options.ci) {
         process.exit(0);
       }
@@ -294,7 +312,7 @@ start = function(args) {
 };
 
 setOptions = function(args) {
-  var arg, languages, path;
+  var arg, languages, outputFilename, path, _ref;
   while (args.length) {
     arg = args.shift();
     switch (arg) {
@@ -309,7 +327,7 @@ setOptions = function(args) {
       case '--build':
       case '-b':
         options.build = true;
-        options.compilerFlags = args.splice(0, args.length);
+        options.buildOptions = args.splice(0, args.length);
         break;
       case '--buildall':
       case '-ba':
@@ -338,7 +356,7 @@ setOptions = function(args) {
         return false;
       case '--help':
       case '-h':
-        console.log("\nOptions:\n  --build, -b\n    Compile everything, run tests, build project.\n    Update [project].html to use just one compiled script.\n    Set goog.DEBUG flag to false.\n    Start watching all source files, recompile it on change.\n\n    Example how to set compiler_flags:\n      node run app -b\n        --define=goog.DEBUG=true\n        --define=goog.LOCALE=\'cs\'\n\n      goog.LOCALE value from goog.locale.defaultLocaleNameConstants\n\n  --debug, -d\n    Same as build, but with these compiler flags:\n      '--formatting=PRETTY_PRINT --debug=true'\n    Set goog.DEBUG flag to false.\n    Compiler output will be much readable.\n\n    Example:\n      node run app -d -b\n\n  --verbose, -v\n    To show some time stats.\n\n  --continuousintegration, -ci\n    Continuous integration mode. Without http server and files watchers.\n\n  --port, -p\n    To override default http://localhost:8000/ port.\n\n  --buildall, -ba\n    Build and statically check all namespaces in project. Useful for\n    debugging, after closure update, etc.\n\n  --errorbeep, -eb\n    Friendly beep on error.\n\n  --extractmessages, -em\n    Extract messages from source code and generate dictionaries in\n    assets/messages/project directory. Messages are defined with\n    goog.getMsg method.\n\n    Example\n      node run app -em en de\n\n  --help, -h\n    To show this help.\n");
+        console.log("\nOptions:\n  --build, -b\n    Compile everything, run tests, build project.\n    Update [project].html to use just one compiled script.\n    Set goog.DEBUG flag to false.\n    Start watching all source files, recompile them on change.\n\n    Example how to set compiler_flags:\n      node run app -b\n        --define=goog.DEBUG=true\n        --define=goog.LOCALE=\'cs\'\n\n    Example how to use localization:\n      node run app -b en\n        set goog.LOCALE to 'en'\n        insert messages from assets/messages/[project]/[LOCALE].json\n        compile to assets/js/[project]_[en].js\n\n  --debug, -d\n    Same as build, but with these compiler flags:\n      '--formatting=PRETTY_PRINT --debug=true'\n    Set goog.DEBUG flag to false.\n    Compiler output will be much readable.\n\n    Example:\n      node run app -d -b (note that -d is before -b)\n\n  --verbose, -v\n    To show some time stats.\n\n  --continuousintegration, -ci\n    Continuous integration mode. Without http server and files watchers.\n\n  --port, -p\n    To override default http://localhost:8000/ port.\n\n  --buildall, -ba\n    Build and statically check all namespaces in project. Useful for\n    debugging, after closure update, etc.\n\n  --errorbeep, -eb\n    Friendly beep on error.\n\n  --extractmessages, -em\n    Extract messages from source code and generate dictionaries in\n    assets/messages/project directory. Messages are defined with\n    goog.getMsg method.\n\n    Example\n      node run app -em en de\n\n  --help, -h\n    To show this help.\n");
         return false;
       default:
         options.project = arg;
@@ -349,11 +367,20 @@ setOptions = function(args) {
     console.log("Project directory " + path + " does not exists.");
     return false;
   }
-  if (options.debug) {
-    options.outputFilename = "assets/js/" + options.project + "_dev.js";
-  } else {
-    options.outputFilename = "assets/js/" + options.project + ".js";
+  if (((_ref = options.buildOptions[0]) != null ? _ref.indexOf('--') : void 0) !== 0) {
+    options.locale = options.buildOptions[0];
+    options.buildOptions.shift();
   }
+  outputFilename = "assets/js/" + options.project;
+  if (options.locale) {
+    outputFilename += "_" + options.locale;
+  }
+  if (options.debug) {
+    outputFilename += '_dev.js';
+  } else {
+    outputFilename += '.js';
+  }
+  options.outputFilename = outputFilename;
   if (options.build) {
     console.log('Output filename: ' + options.outputFilename);
   }
@@ -585,7 +612,7 @@ runCommands = function(commands, complete, errors) {
     }
     isError = !!err || stderr;
     if (name === 'closureCompilation') {
-      isError = ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0) || ~(stderr != null ? stderr.indexOf('JavaScript compilation failed.') : void 0) || ~(stderr != null ? stderr.indexOf('Traceback (most recent call last):') : void 0);
+      isError = isClosureCompilationError(stderr);
     }
     if (isError) {
       output = stderr;
@@ -632,7 +659,7 @@ notifyClient = function(message) {
 };
 
 extractMessages = function(languages) {
-  var description, dictionary, i, json, jsonMessage, language, languagePath, message, messagesPath, projectPath, script, scripts, source, syntax, text, token, tokens, translation, translations, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+  var language, languagePath, messagesPath, projectPath, _i, _len;
   messagesPath = 'assets/messages';
   if (!fs.existsSync(messagesPath)) {
     fs.mkdir(messagesPath);
@@ -648,64 +675,66 @@ extractMessages = function(languages) {
       fs.writeFileSync(languagePath, '{}', 'utf8');
     }
   }
-  scripts = getPaths("assets/js/" + options.project, ['.js'], false, true);
-  dictionary = {};
-  for (_j = 0, _len1 = scripts.length; _j < _len1; _j++) {
-    script = scripts[_j];
-    source = fs.readFileSync(script, 'utf8');
-    if (source.indexOf('goog.getMsg') === -1) {
-      continue;
-    }
-    syntax = esprima.parse(source, {
-      comment: true,
-      range: true,
-      tokens: true
-    });
-    tokens = syntax.tokens.concat(syntax.comments);
-    sortTokens(tokens);
-    for (i = _k = 0, _len2 = tokens.length; _k < _len2; i = ++_k) {
-      token = tokens[i];
-      if (token.type !== "Identifier" || token.value !== 'getMsg') {
+  return getProjectPaths('js', function(scripts) {
+    var description, dictionary, i, json, jsonMessage, message, script, source, syntax, text, token, tokens, translation, translations, _j, _k, _l, _len1, _len2, _len3, _ref, _ref1;
+    dictionary = {};
+    for (_j = 0, _len1 = scripts.length; _j < _len1; _j++) {
+      script = scripts[_j];
+      source = fs.readFileSync(script, 'utf8');
+      if (source.indexOf('goog.getMsg') === -1) {
         continue;
       }
-      message = getMessage(tokens, i);
-      if (!message) {
-        continue;
-      }
-      description = getMessageDescription(tokens, i);
-      if (!description) {
-        continue;
-      }
-      if ((_ref = dictionary[message]) == null) {
-        dictionary[message] = {};
-      }
-      dictionary[message][description] = 'to translate: ' + message;
-    }
-  }
-  /*
-      Merge new dictionary into yet existing dictionaries. This is especially
-      usefull for as you go localization.
-  */
-
-  for (_l = 0, _len3 = languages.length; _l < _len3; _l++) {
-    language = languages[_l];
-    languagePath = "" + projectPath + "/" + language + ".json";
-    source = fs.readFileSync(languagePath, 'utf8');
-    json = JSON.parse(source);
-    for (message in dictionary) {
-      translations = dictionary[message];
-      jsonMessage = (_ref1 = json[message]) != null ? _ref1 : json[message] = {};
-      for (description in translations) {
-        translation = translations[description];
-        if (jsonMessage[description]) {
+      syntax = esprima.parse(source, {
+        comment: true,
+        range: true,
+        tokens: true
+      });
+      tokens = syntax.tokens.concat(syntax.comments);
+      sortTokens(tokens);
+      for (i = _k = 0, _len2 = tokens.length; _k < _len2; i = ++_k) {
+        token = tokens[i];
+        if (token.type !== "Identifier" || token.value !== 'getMsg') {
           continue;
         }
-        jsonMessage[description] = translation;
+        message = getMessage(tokens, i);
+        if (!message) {
+          continue;
+        }
+        description = getMessageDescription(tokens, i);
+        if (!description) {
+          continue;
+        }
+        if ((_ref = dictionary[message]) == null) {
+          dictionary[message] = {};
+        }
+        dictionary[message][description] = 'to translate: ' + message;
       }
     }
-    text = JSON.stringify(json, null, 4);
-    fs.writeFileSync(languagePath, text, 'utf8');
-  }
+    /*
+          Merge new dictionary into yet existing dictionaries. This is especially
+          usefull for as you go localization.
+    */
+
+    for (_l = 0, _len3 = languages.length; _l < _len3; _l++) {
+      language = languages[_l];
+      languagePath = "" + projectPath + "/" + language + ".json";
+      source = fs.readFileSync(languagePath, 'utf8');
+      json = JSON.parse(source);
+      for (message in dictionary) {
+        translations = dictionary[message];
+        jsonMessage = (_ref1 = json[message]) != null ? _ref1 : json[message] = {};
+        for (description in translations) {
+          translation = translations[description];
+          if (jsonMessage[description]) {
+            continue;
+          }
+          jsonMessage[description] = translation;
+        }
+      }
+      text = JSON.stringify(json, null, 2);
+      fs.writeFileSync(languagePath, text, 'utf8');
+    }
+  });
 };
 
 sortTokens = function(tokens) {
@@ -749,6 +778,118 @@ getMessageDescription = function(tokens, i) {
     return '';
   }
   return description.trim();
+};
+
+insertMessages = function(callback) {
+  var dictionaryPath;
+  dictionaryPath = "assets/messages/" + options.project + "/" + options.locale + ".json";
+  if (!fs.existsSync(dictionaryPath)) {
+    console.log("Missing dictionary: " + dictionaryPath);
+    callback();
+    return;
+  }
+  return getProjectPaths('js-build', function(scripts) {
+    var description, dictionary, i, localizedSource, message, next, range, replacement, replacements, script, source, syntax, token, tokens, translatedMsg, _i, _j, _k, _len, _len1, _len2, _ref;
+    source = fs.readFileSync(dictionaryPath, 'utf8');
+    dictionary = JSON.parse(source);
+    for (_i = 0, _len = scripts.length; _i < _len; _i++) {
+      script = scripts[_i];
+      source = fs.readFileSync(script, 'utf8');
+      if (source.indexOf('goog.getMsg') === -1) {
+        continue;
+      }
+      syntax = esprima.parse(source, {
+        comment: true,
+        range: true,
+        tokens: true
+      });
+      tokens = syntax.tokens.concat(syntax.comments);
+      sortTokens(tokens);
+      replacements = [];
+      for (i = _j = 0, _len1 = tokens.length; _j < _len1; i = ++_j) {
+        token = tokens[i];
+        if (token.type !== "Identifier" || token.value !== 'getMsg') {
+          continue;
+        }
+        message = getMessage(tokens, i);
+        if (!message) {
+          continue;
+        }
+        description = getMessageDescription(tokens, i);
+        if (!description) {
+          continue;
+        }
+        translatedMsg = (_ref = dictionary[message]) != null ? _ref[description] : void 0;
+        if (!translatedMsg) {
+          continue;
+        }
+        range = tokens[i + 2].range;
+        range[0]++;
+        range[1]--;
+        replacements.push({
+          start: range[0],
+          end: range[1],
+          msg: translatedMsg
+        });
+      }
+      localizedSource = '';
+      for (i = _k = 0, _len2 = replacements.length; _k < _len2; i = ++_k) {
+        replacement = replacements[i];
+        if (i === 0) {
+          localizedSource += source.slice(0, replacement.start);
+        }
+        localizedSource += replacement.msg;
+        next = replacements[i + 1];
+        if (next) {
+          localizedSource += source.slice(replacement.end, next.start);
+        } else {
+          localizedSource += source.slice(replacement.end);
+        }
+      }
+      localizedSource || (localizedSource = source);
+      fs.writeFileSync(script, localizedSource, 'utf8');
+    }
+    return callback();
+  });
+};
+
+getProjectPaths = function(jsDir, callback) {
+  var command, jsNamespaces;
+  jsNamespaces = (function() {
+    var dir, namespaces;
+    namespaces = (function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = jsSubdirs.length; _i < _len; _i++) {
+        dir = jsSubdirs[_i];
+        _results.push("--root=assets/" + jsDir + "/" + dir + " ");
+      }
+      return _results;
+    })();
+    return namespaces.join('');
+  })();
+  command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py    " + jsNamespaces + "    --namespace=\"" + options.project + ".start\"    --output_mode=list    --compiler_jar=assets/js/dev/compiler.jar    --compiler_flags=\"--js=assets/" + jsDir + "/deps.js\"";
+  return exec(command, function(err, stdout, stderr) {
+    var script, scripts, _i, _len, _ref;
+    if (isClosureCompilationError(stderr)) {
+      console.log(stderr);
+      return;
+    }
+    scripts = [];
+    _ref = stdout.split('\n');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      script = _ref[_i];
+      script = script.trim();
+      if (script) {
+        scripts.push(script);
+      }
+    }
+    return callback(scripts);
+  });
+};
+
+isClosureCompilationError = function(stderr) {
+  return ~(stderr != null ? stderr.indexOf(': WARNING - ') : void 0) || ~(stderr != null ? stderr.indexOf(': ERROR - ') : void 0) || ~(stderr != null ? stderr.indexOf('JavaScript compilation failed.') : void 0) || ~(stderr != null ? stderr.indexOf('Traceback (most recent call last):') : void 0);
 };
 
 exports.start = start;

@@ -3,6 +3,9 @@
   Stylus, and Soy templates. Run fast unit test on source files change. No need
   to take care about ordered list of project files with Closure dependency
   system. LiveReload supported.
+
+  Todo
+    rewrite this (legacy) mess into good code in Este style
 ###
 
 fs = require 'fs'
@@ -32,7 +35,7 @@ lazyRequireCoffeeForClosure = ->
 options =
   project: null
   build: false
-  compilerFlags: []
+  buildOptions: []
   buildAll: false
   debug: false
   verbose: false
@@ -40,6 +43,7 @@ options =
   only: ''
   port: 8000
   errorBeep: false
+  locale: ''
 
 socket = null
 startTime = Date.now()
@@ -148,86 +152,94 @@ Commands =
       flags = '--define=goog.DEBUG=false'
 
     flagsText = ''
+    for flag in flags.split ' '
+      flagsText += "--compiler_flags=\"#{flag}\" "
 
-    flagsText += "--compiler_flags=\"#{flag}\" " for flag in flags.split ' '
-    flagsText += "--compiler_flags=\"#{flag}\" " for flag in options.compilerFlags
+    for flag in options.buildOptions
+      flagsText += "--compiler_flags=\"#{flag}\" "
 
-    # buildAll override start.js to require all namespaces in project
-    # useful for debugging, or when we want to compile all namespaces,
-    # not just required.
-    if options.buildAll
-      deps = tests.getDeps()
-      namespaces = []
-      for k, v of deps
-        continue if k.indexOf("#{options.project}.") != 0
-        # prevents circular dependency issues
-        continue if k == "#{options.project}.start"
-        namespaces.push k
-      startjs = ["goog.provide('#{options.project}.start');"]
-      for namespace in namespaces
-        startjs.push "goog.require('#{namespace}');"
-      source = startjs.join '\n'
-      fs.writeFileSync "./assets/js-build/#{options.project}/start.js", source, 'utf8'
+    innerFn = ->
+      # buildAll override start.js to require all namespaces in project.
+      # Useful if we want to compile all namespaces, not just required.
+      if options.buildAll
+        deps = tests.getDeps()
+        namespaces = []
+        for k, v of deps
+          continue if k.indexOf("#{options.project}.") != 0
+          # prevents circular dependency issues
+          continue if k == "#{options.project}.start"
+          namespaces.push k
+        startjs = ["goog.provide('#{options.project}.start');"]
+        for namespace in namespaces
+          startjs.push "goog.require('#{namespace}');"
+        source = startjs.join '\n'
+        fs.writeFileSync "./assets/js-build/#{options.project}/start.js", source, 'utf8'
 
-    # if options.only
-    #   startjs = ["goog.provide('#{options.project}.start');"]
-    #   startjs.push "goog.require('#{options.only}');"
-    #   source = startjs.join '\n'
-    #   fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
+      if options.only
+        startjs = ["goog.provide('#{options.project}.start');"]
+        startjs.push "goog.require('#{options.only}');"
+        source = startjs.join '\n'
+        fs.writeFileSync "./assets/js/#{options.project}/start.js", source, 'utf8'
 
-    if !options.debug
-      for jsPath in getPaths 'assets/js-build', ['.js'], false, true
-        source = fs.readFileSync jsPath, 'utf8'
-        continue if source.indexOf('this.logger_.') == -1
-        # strip loggers
-        source = source.
-          replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').
-          replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.')
-        fs.writeFileSync jsPath, source, 'utf8'
+      # strip loggers from compiled code
+      if !options.debug
+        for jsPath in getPaths 'assets/js-build', ['.js'], false, true
+          source = fs.readFileSync jsPath, 'utf8'
+          continue if source.indexOf('this.logger_.') == -1
+          source = source.
+            replace(/[^_](this\.logger_\.)/g, 'goog.DEBUG && this.logger_.').
+            replace(/_this\.logger_\./g, 'goog.DEBUG && _this.logger_.')
+          fs.writeFileSync jsPath, source, 'utf8'
 
-    buildNamespaces = do ->
-      namespaces = for dir in jsSubdirs
-        "--root=assets/js-build/#{dir} "
-      namespaces.join ''
+      buildNamespaces = do ->
+        namespaces = for dir in jsSubdirs
+          "--root=assets/js-build/#{dir} "
+        namespaces.join ''
 
-    command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
-      #{buildNamespaces}
-      --namespace=\"#{options.project}.start\"
-      --output_mode=compiled
-      --compiler_jar=assets/js/dev/compiler.jar
-      --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"
-      --compiler_flags=\"--warning_level=VERBOSE\"
-      --compiler_flags=\"--jscomp_warning=accessControls\"
-      --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"
-      --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"
-      --compiler_flags=\"--jscomp_warning=checkRegExp\"
-      --compiler_flags=\"--jscomp_warning=checkTypes\"
-      --compiler_flags=\"--jscomp_warning=checkVars\"
-      --compiler_flags=\"--jscomp_warning=const\"
-      --compiler_flags=\"--jscomp_warning=constantProperty\"
-      --compiler_flags=\"--jscomp_warning=deprecated\"
-      --compiler_flags=\"--jscomp_warning=duplicate\"
-      --compiler_flags=\"--jscomp_warning=externsValidation\"
-      --compiler_flags=\"--jscomp_warning=fileoverviewTags\"
-      --compiler_flags=\"--jscomp_warning=globalThis\"
-      --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"
-      --compiler_flags=\"--jscomp_warning=invalidCasts\"
-      --compiler_flags=\"--jscomp_warning=missingProperties\"
-      --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"
-      --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"
-      --compiler_flags=\"--jscomp_warning=undefinedNames\"
-      --compiler_flags=\"--jscomp_warning=undefinedVars\"
-      --compiler_flags=\"--jscomp_warning=unknownDefines\"
-      --compiler_flags=\"--jscomp_warning=uselessCode\"
-      --compiler_flags=\"--jscomp_warning=visibility\"
-      --compiler_flags=\"--output_wrapper=(function(){%output%})();\"
-      --compiler_flags=\"--js=assets/js-build/deps.js\"
-      #{flagsText}
-      > #{options.outputFilename}"
+      command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
+        #{buildNamespaces}
+        --namespace=\"#{options.project}.start\"
+        --output_mode=compiled
+        --compiler_jar=assets/js/dev/compiler.jar
+        --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"
+        --compiler_flags=\"--warning_level=VERBOSE\"
+        --compiler_flags=\"--jscomp_warning=accessControls\"
+        --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"
+        --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"
+        --compiler_flags=\"--jscomp_warning=checkRegExp\"
+        --compiler_flags=\"--jscomp_warning=checkTypes\"
+        --compiler_flags=\"--jscomp_warning=checkVars\"
+        --compiler_flags=\"--jscomp_warning=const\"
+        --compiler_flags=\"--jscomp_warning=constantProperty\"
+        --compiler_flags=\"--jscomp_warning=deprecated\"
+        --compiler_flags=\"--jscomp_warning=duplicate\"
+        --compiler_flags=\"--jscomp_warning=externsValidation\"
+        --compiler_flags=\"--jscomp_warning=fileoverviewTags\"
+        --compiler_flags=\"--jscomp_warning=globalThis\"
+        --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"
+        --compiler_flags=\"--jscomp_warning=invalidCasts\"
+        --compiler_flags=\"--jscomp_warning=missingProperties\"
+        --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"
+        --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"
+        --compiler_flags=\"--jscomp_warning=undefinedNames\"
+        --compiler_flags=\"--jscomp_warning=undefinedVars\"
+        --compiler_flags=\"--jscomp_warning=unknownDefines\"
+        --compiler_flags=\"--jscomp_warning=uselessCode\"
+        --compiler_flags=\"--jscomp_warning=visibility\"
+        --compiler_flags=\"--output_wrapper=(function(){%output%})();\"
+        --compiler_flags=\"--js=assets/js-build/deps.js\"
+        #{flagsText}
+        > #{options.outputFilename}"
 
-    exec command, ->
-      wrench.rmdirSyncRecursive 'assets/js-build'
-      callback.apply null, arguments
+      exec command, ->
+        # wrench.rmdirSyncRecursive 'assets/js-build'
+        callback.apply null, arguments
+
+    if options.locale
+      flagsText += "--compiler_flags=\"--define=goog.LOCALE='#{options.locale}'\" "
+      insertMessages innerFn
+    else
+      innerFn()
 
   mochaTests: tests.run
 
@@ -249,13 +261,13 @@ start = (args) ->
       commands = (error.name for error in errors).join ', '
       console.log """
         Something's wrong with: #{commands}
-        Fixit, then press cmd-s."""
+        Fix it, then press cmd/ctrl-s."""
       console.log error.stderr for error in errors
       # Signal error and exit (only if deploy, otherwise keep server running)
       if options.ci
         process.exit 1
     else
-      console.log "Everything's fine, happy coding!",
+      console.log "Everything's fine, happy coding.",
         "#{(Date.now() - startTime) / 1000}s"
       # Signal ok and exit (only if deploy, otherwise keep server running)
       if options.ci
@@ -271,25 +283,34 @@ setOptions = (args) ->
     switch arg
       when '--debug', '-d'
         options.debug = true
+
       when '--verbose', '-v'
         options.verbose = true
+
       when '--build', '-b'
         options.build = true
-        options.compilerFlags = args.splice 0, args.length
+        options.buildOptions = args.splice 0, args.length
+
       when '--buildall', '-ba'
         options.buildAll = true
+
       when '--continuousintegration', '-ci'
         options.ci = true
+
       when '--only', '-o'
         options.only = args.shift()
+
       when '--port', '-p'
         options.port = args.shift()
+
       when '--errorbeep', '-eb'
         options.errorBeep = true
+
       when '--extractmessages', '-em'
         languages = args.splice 0, args.length
         extractMessages languages
         return false
+
       when '--help', '-h'
         console.log """
 
@@ -298,14 +319,18 @@ setOptions = (args) ->
               Compile everything, run tests, build project.
               Update [project].html to use just one compiled script.
               Set goog.DEBUG flag to false.
-              Start watching all source files, recompile it on change.
+              Start watching all source files, recompile them on change.
 
               Example how to set compiler_flags:
                 node run app -b
                   --define=goog.DEBUG=true
                   --define=goog.LOCALE=\'cs\'
 
-                goog.LOCALE value from goog.locale.defaultLocaleNameConstants
+              Example how to use localization:
+                node run app -b en
+                  set goog.LOCALE to 'en'
+                  insert messages from assets/messages/[project]/[LOCALE].json
+                  compile to assets/js/[project]_[en].js
 
             --debug, -d
               Same as build, but with these compiler flags:
@@ -314,7 +339,7 @@ setOptions = (args) ->
               Compiler output will be much readable.
 
               Example:
-                node run app -d -b
+                node run app -d -b (note that -d is before -b)
 
             --verbose, -v
               To show some time stats.
@@ -345,6 +370,7 @@ setOptions = (args) ->
 
         """
         return false
+
       else
         options.project = arg
 
@@ -354,10 +380,18 @@ setOptions = (args) ->
     console.log "Project directory #{path} does not exists."
     return false
 
+  if options.buildOptions[0]?.indexOf('--') != 0
+    options.locale = options.buildOptions[0]
+    options.buildOptions.shift()
+
+  outputFilename = "assets/js/#{options.project}"
+  if options.locale
+    outputFilename += "_#{options.locale}"
   if options.debug
-    options.outputFilename = "assets/js/#{options.project}_dev.js"
+    outputFilename += '_dev.js'
   else
-    options.outputFilename = "assets/js/#{options.project}.js"
+    outputFilename += '.js'
+  options.outputFilename = outputFilename
 
   if options.build
     console.log 'Output filename: ' + options.outputFilename
@@ -564,11 +598,7 @@ runCommands = (commands, complete, errors = []) ->
     # workaround for Google Closure Compiler, all output is returned as stderr
     # consider: 'JavaScript compilation succeeded' message
     if name == 'closureCompilation'
-      isError = ~stderr?.indexOf(': WARNING - ') ||
-                ~stderr?.indexOf(': ERROR - ') ||
-                # for closurebuilder.py errors
-                ~stderr?.indexOf('JavaScript compilation failed.') ||
-                ~stderr?.indexOf('Traceback (most recent call last):')
+      isError = isClosureCompilationError stderr
 
     if isError
       output = stderr
@@ -618,41 +648,40 @@ extractMessages = (languages) ->
     languagePath = "#{projectPath}/#{language}.json"
     fs.writeFileSync languagePath, '{}', 'utf8' if !fs.existsSync languagePath
 
-  # create dictionary from extracted messages
-  scripts = getPaths "assets/js/#{options.project}", ['.js'], false, true
-  dictionary = {}
-  for script in scripts
-    source = fs.readFileSync script, 'utf8'
-    continue if source.indexOf('goog.getMsg') == -1
-    syntax = esprima.parse source, comment: true, range: true, tokens: true
-    tokens = syntax.tokens.concat syntax.comments
-    sortTokens tokens
-    for token, i in tokens
-      continue if token.type != "Identifier" || token.value != 'getMsg'
-      message = getMessage tokens, i
-      continue if !message
-      description = getMessageDescription tokens, i
-      continue if !description
-      dictionary[message] ?= {}
-      dictionary[message][description] = 'to translate: ' + message
+  getProjectPaths 'js', (scripts) ->
+    # create dictionary from extracted messages
+    dictionary = {}
+    for script in scripts
+      source = fs.readFileSync script, 'utf8'
+      continue if source.indexOf('goog.getMsg') == -1
+      syntax = esprima.parse source, comment: true, range: true, tokens: true
+      tokens = syntax.tokens.concat syntax.comments
+      sortTokens tokens
+      for token, i in tokens
+        continue if token.type != "Identifier" || token.value != 'getMsg'
+        message = getMessage tokens, i
+        continue if !message
+        description = getMessageDescription tokens, i
+        continue if !description
+        dictionary[message] ?= {}
+        dictionary[message][description] = 'to translate: ' + message
 
-  ###
-    Merge new dictionary into yet existing dictionaries. This is especially
-    usefull for as you go localization.
-  ###
-  for language in languages
-    languagePath = "#{projectPath}/#{language}.json"
-    source = fs.readFileSync languagePath, 'utf8'
-    json = JSON.parse source
-    for message, translations of dictionary
-      jsonMessage = json[message] ?= {}
-      for description, translation of translations
-        continue if jsonMessage[description]
-        jsonMessage[description] = translation
-    text = JSON.stringify json, null, 4
-    fs.writeFileSync languagePath, text, 'utf8'
-
-  return
+    ###
+      Merge new dictionary into yet existing dictionaries. This is especially
+      usefull for as you go localization.
+    ###
+    for language in languages
+      languagePath = "#{projectPath}/#{language}.json"
+      source = fs.readFileSync languagePath, 'utf8'
+      json = JSON.parse source
+      for message, translations of dictionary
+        jsonMessage = json[message] ?= {}
+        for description, translation of translations
+          continue if jsonMessage[description]
+          jsonMessage[description] = translation
+      text = JSON.stringify json, null, 2
+      fs.writeFileSync languagePath, text, 'utf8'
+    return
 
 sortTokens = (tokens) ->
   tokens.sort (a, b) ->
@@ -680,5 +709,83 @@ getMessageDescription = (tokens, i) ->
   description = token.value.split('@desc')[1]
   return '' if !description
   description.trim()
+
+insertMessages = (callback) ->
+  dictionaryPath = "assets/messages/#{options.project}/#{options.locale}.json"
+  if !fs.existsSync dictionaryPath
+    console.log "Missing dictionary: #{dictionaryPath}"
+    callback()
+    return
+  getProjectPaths 'js-build', (scripts) ->
+    source = fs.readFileSync dictionaryPath, 'utf8'
+    dictionary = JSON.parse source
+
+    for script in scripts
+      source = fs.readFileSync script, 'utf8'
+      # todo: add @desc check
+      continue if source.indexOf('goog.getMsg') == -1
+
+      syntax = esprima.parse source, comment: true, range: true, tokens: true
+      tokens = syntax.tokens.concat syntax.comments
+      sortTokens tokens
+      replacements = []
+      for token, i in tokens
+        continue if token.type != "Identifier" || token.value != 'getMsg'
+        message = getMessage tokens, i
+        continue if !message
+        description = getMessageDescription tokens, i
+        continue if !description
+        translatedMsg = dictionary[message]?[description]
+        continue if !translatedMsg
+        range = tokens[i + 2].range
+        range[0]++
+        range[1]--
+        replacements.push
+          start: range[0]
+          end: range[1]
+          msg: translatedMsg
+
+      localizedSource = ''
+      for replacement, i in replacements
+        if i == 0
+          localizedSource += source.slice 0, replacement.start
+        localizedSource += replacement.msg
+        next = replacements[i + 1]
+        if next
+          localizedSource += source.slice replacement.end, next.start
+        else
+          localizedSource += source.slice replacement.end
+      localizedSource ||= source
+      fs.writeFileSync script, localizedSource, 'utf8'
+
+    callback()
+
+getProjectPaths = (jsDir, callback) ->
+  jsNamespaces = do ->
+    namespaces = for dir in jsSubdirs
+      "--root=assets/#{jsDir}/#{dir} "
+    namespaces.join ''
+  command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
+    #{jsNamespaces}
+    --namespace=\"#{options.project}.start\"
+    --output_mode=list
+    --compiler_jar=assets/js/dev/compiler.jar
+    --compiler_flags=\"--js=assets/#{jsDir}/deps.js\""
+  exec command, (err, stdout, stderr) ->
+    if isClosureCompilationError stderr
+      console.log stderr
+      return
+    scripts = []
+    for script in stdout.split '\n'
+      script = script.trim()
+      scripts.push script if script
+    callback scripts
+
+isClosureCompilationError = (stderr) ->
+  ~stderr?.indexOf(': WARNING - ') ||
+  ~stderr?.indexOf(': ERROR - ') ||
+  # for closurebuilder.py errors
+  ~stderr?.indexOf('JavaScript compilation failed.') ||
+  ~stderr?.indexOf('Traceback (most recent call last):')
 
 exports.start = start
