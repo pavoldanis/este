@@ -347,15 +347,15 @@ suite 'este.Collection', ->
 
   suite 'sorting', ->
     suite 'default compare', ->
-      test 'should work with numbers', ->
+      test 'should preserve order of numbers', ->
         collection.add [3, 2, 1]
-        assert.deepEqual collection.toJson(), [1, 2, 3]
+        assert.deepEqual collection.toJson(), [3, 2, 1]
 
-      test 'should work with strings', ->
+      test 'should preserve order of string', ->
         collection.add ['c', 'b', 'a']
-        assert.deepEqual collection.toJson(), ['a', 'b', 'c']
+        assert.deepEqual collection.toJson(), ['c', 'b', 'a']
         collection.remove 'a'
-        assert.deepEqual collection.toJson(), ['b', 'c']
+        assert.deepEqual collection.toJson(), ['c', 'b']
 
     suite 'sort', ->
       test 'should fire sort event', (done) ->
@@ -370,23 +370,18 @@ suite 'este.Collection', ->
 
       suite 'by', ->
         test 'before should work', ->
-          collection.sort by: (item) -> item.id
+          collection.sort
+            compare: goog.array.defaultCompare
+            by: (item) -> item.id
           collection.add id: 3
-          collection.add id: 1
           collection.add id: 2
+          collection.add id: 1
           assert.deepEqual collection.toJson(), [{id: 1}, {id: 2}, {id: 3}]
 
-        test 'before should not(!) work', ->
-          collection.sort by: null
-          collection.add id: 3
-          collection.add id: 2
-          collection.add id: 1
-          assert.deepEqual collection.toJson(), [{id: 3}, {id: 2}, {id: 1}]
-
         test 'after should work', ->
-          collection.add id: 3
           collection.add id: 1
           collection.add id: 2
+          collection.add id: 3
           collection.sort by: (item) -> item.id
           assert.deepEqual collection.toJson(), [{id: 1}, {id: 2}, {id: 3}]
 
@@ -396,6 +391,7 @@ suite 'este.Collection', ->
       suite 'reversed', ->
         test 'before should work', ->
           collection.sort
+            compare: goog.array.defaultCompare
             by: (item) -> item.id
             reversed: true
           collection.add id: 3
@@ -408,6 +404,7 @@ suite 'este.Collection', ->
           collection.add id: 'a'
           collection.add id: 'b'
           collection.sort
+            compare: goog.array.defaultCompare
             by: (item) -> item.id
             reversed: true
           assert.deepEqual collection.toJson(), [{id: 'c'}, {id: 'b'}, {id: 'a'}]

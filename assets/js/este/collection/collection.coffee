@@ -53,15 +53,14 @@ class este.Collection extends goog.events.EventTarget
     @type {Function}
     @protected
   ###
-  sortBy: (item) ->
-    item
+  sortBy: null
 
   ###*
-    todo: check date
+    Function like goog.array.defaultCompare.
     @type {Function}
     @protected
   ###
-  sortCompare: goog.array.defaultCompare
+  sortCompare: null
 
   ###*
     @type {boolean}
