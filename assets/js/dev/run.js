@@ -484,8 +484,10 @@ getSoyCommand = function(paths) {
 };
 
 watchPaths = function(callback) {
-  var path, paths, _fn, _i, _len;
-  paths = getPaths('assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true);
+  var path, paths, stylusStyles, _fn, _i, _len;
+  paths = getPaths('assets/js', ['.coffee', '.ts', '.styl', '.soy', '.html'], true);
+  stylusStyles = getPaths('assets/css', ['.styl'], true);
+  paths.push.apply(paths, stylusStyles);
   paths.push("" + options.project + "-template.html");
   paths.push('assets/js/dev/livereload.coffee');
   paths.push('assets/js/dev/mocks.coffee');

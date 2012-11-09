@@ -477,7 +477,9 @@ getSoyCommand = (paths) ->
 # slower watchFile, because http://nodejs.org/api/fs.html#fs_caveats
 # todo: wait for fix
 watchPaths = (callback) ->
-  paths = getPaths 'assets', ['.coffee', '.ts', '.styl', '.soy', '.html'], true
+  paths = getPaths 'assets/js', ['.coffee', '.ts', '.styl', '.soy', '.html'], true
+  stylusStyles = getPaths 'assets/css', ['.styl'], true
+  paths.push.apply paths, stylusStyles
   paths.push "#{options.project}-template.html"
   paths.push 'assets/js/dev/livereload.coffee'
   paths.push 'assets/js/dev/mocks.coffee'
