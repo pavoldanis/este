@@ -31,7 +31,7 @@ class este.demos.Grid extends este.ui.Component
   rows: null
 
   ###*
-    @type {este.Model}
+    @type {*}
     @protected
   ###
   editedRow: null
