@@ -232,7 +232,7 @@ Commands =
         > #{options.outputFilename}"
 
       exec command, ->
-        # wrench.rmdirSyncRecursive 'assets/js-build'
+        wrench.rmdirSyncRecursive 'assets/js-build'
         callback.apply null, arguments
 
     if options.locale
