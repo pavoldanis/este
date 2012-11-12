@@ -170,6 +170,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
 
   ###*
     @protected
+    @retrun {Object}
   ###
   getFilter: ->
     switch @filter
@@ -186,9 +187,16 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   getLocalizedItems: (remainingCount) ->
-    # see goog.i18n.pluralRules for other languages plural rules
     switch goog.i18n.pluralRules.select remainingCount
+      when goog.i18n.pluralRules.Keyword.ZERO
+        goog.getMsg 'items left'
       when goog.i18n.pluralRules.Keyword.ONE
-        'item left'
-      else
-        'items left'
+        goog.getMsg 'item left'
+      when goog.i18n.pluralRules.Keyword.TWO
+        goog.getMsg 'items left'
+      when goog.i18n.pluralRules.Keyword.FEW
+        goog.getMsg 'items left'
+      when goog.i18n.pluralRules.Keyword.MANY
+        goog.getMsg 'items left'
+      when goog.i18n.pluralRules.Keyword.OTHER
+        goog.getMsg 'items left'
