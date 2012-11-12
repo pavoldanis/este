@@ -71,7 +71,7 @@ suite 'este.Collection', ->
       ]
       collection = new Collection json, Child
       collectionJson = collection.toJson()
-      delete cJson.clientId for cJson in collectionJson
+      delete cJson._cid for cJson in collectionJson
       assert.deepEqual collectionJson, [
         id: 0
         a: 'aa'
@@ -275,49 +275,49 @@ suite 'este.Collection', ->
       collection = new Collection json, Child
       found = collection.findById 1
       json = found.toJson()
-      delete json.clientId
+      delete json._cid
       assert.deepEqual json, id: 1
 
       found = collection.findById 2
       json = found.toJson()
-      delete json.clientId
+      delete json._cid
       assert.deepEqual json, id: 2
 
       found = collection.findById 3
       assert.isUndefined found
 
   suite 'findByClientId', ->
-    test 'should find item by clientId', ->
+    test 'should find item by _cid', ->
       collection.add [
-        id: 1, clientId: ':1'
+        id: 1, _cid: ':1'
       ,
-        id: 2, clientId: ':2'
+        id: 2, _cid: ':2'
       ]
       found = collection.findByClientId ':1'
-      assert.deepEqual found, id: 1, clientId: ':1'
+      assert.deepEqual found, id: 1, _cid: ':1'
       found = collection.findByClientId ':2'
-      assert.deepEqual found, id: 2, clientId: ':2'
+      assert.deepEqual found, id: 2, _cid: ':2'
       found = collection.findByClientId ':3'
       assert.isUndefined found
 
-    test 'should find typed item by clientId', ->
+    test 'should find typed item by _cid', ->
       arrangeChildType()
       Child::schema = {}
       json = [
-        id: 1, clientId: ':1'
+        id: 1, _cid: ':1'
       ,
-        id: 2, clientId: ':2'
+        id: 2, _cid: ':2'
       ]
 
       collection = new Collection json, Child
       found = collection.findByClientId ':1'
       json = found.toJson()
-      delete json.clientId
+      delete json._cid
       assert.deepEqual json, id: 1
 
       found = collection.findByClientId ':2'
       json = found.toJson()
-      delete json.clientId
+      delete json._cid
       assert.deepEqual json, id: 2
 
       found = collection.findByClientId ':3'
@@ -465,7 +465,7 @@ suite 'este.Collection', ->
       test 'should filter by function', ->
         filtered = collection.filter (item) ->
           item['a'] == 1
-        delete filtered[0]['clientId']
+        delete filtered[0]['_cid']
         assert.deepEqual filtered, [
           'a': 1, 'aa': 1.5
         ]
@@ -476,8 +476,8 @@ suite 'este.Collection', ->
 
         filtered = collection.filter (item) ->
           item['a'] == 1 || item['bb'] == 2.5
-        delete filtered[0]['clientId']
-        delete filtered[1]['clientId']
+        delete filtered[0]['_cid']
+        delete filtered[1]['_cid']
         assert.deepEqual filtered, [
           'a': 1, 'aa': 1.5
         ,
@@ -486,7 +486,7 @@ suite 'este.Collection', ->
 
       test 'should filter by object', ->
         filtered = collection.filter 'a': 1
-        delete filtered[0]['clientId']
+        delete filtered[0]['_cid']
         assert.deepEqual filtered, [
           'a': 1, 'aa': 1.5
         ]
@@ -495,7 +495,7 @@ suite 'este.Collection', ->
         assert.deepEqual filtered, []
 
         filtered = collection.filter 'bb': 2.5
-        delete filtered[0]['clientId']
+        delete filtered[0]['_cid']
         assert.deepEqual filtered, [
           'b': 2, 'bb': 2.5
         ]
@@ -519,7 +519,7 @@ suite 'este.Collection', ->
       arrangeCollectionWithItems()
       items = []
       collection.each (item) ->
-        item.remove 'clientId'
+        item.remove '_cid'
         items.push item.toJson()
       assert.deepEqual JSON.stringify(items), JSON.stringify([
         'a': 1, 'aa': 1.5

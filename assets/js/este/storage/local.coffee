@@ -55,7 +55,7 @@ class este.storage.Local extends este.storage.Base
     id = @ensureModelId model
     serializedModels = @mechanism.get model.urn
     models = if serializedModels then este.json.parse serializedModels else {}
-    models[id] = model.toJson true, true
+    models[id] = model.toJson true
     @saveModels models, model.urn
     este.result.ok id
 

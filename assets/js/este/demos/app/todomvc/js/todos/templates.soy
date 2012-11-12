@@ -4,7 +4,7 @@
  *
  * Always render HTML with soy templates.
  *
- *  1) It's save, because auto escaping enabled by default.
+ *  1) It's save, because autoescaping is enabled by default.
  *  2) It's fast, because templates are precompiled.
  *  3) It's maintable, because each template is placed in own namespace.
  *
@@ -16,13 +16,13 @@
  * @param doneCount
  * @param filter
  * @param itemsLocalized
+ * @param length
  * @param remainingCount
  * @param todos
- * @param todosLength
  */
 {template .element}
   {call .header data="all" /}
-  {if $todosLength}
+  {if $length}
     {call .main data="all" /}
     {call .footer data="all" /}
   {/if}
@@ -59,7 +59,7 @@
 
 /**
  * Todo template
- * @param clientId
+ * @param _cid
  * @param completed
  * @param editing
  * @param title
@@ -67,7 +67,7 @@
 {template .todo}
   <li
     class="{if $completed}completed{/if} {if $editing}editing{/if}"
-    client-id="{$clientId}">
+    data-cid="{$_cid}">
     <div class="view">
       <input {if $completed}checked{/if} class="toggle" type="checkbox">
       <label>{$title}</label>

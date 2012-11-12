@@ -70,12 +70,12 @@ suite 'este.storage.Local', ->
     test 'should store json to mechanism', (done) ->
       mechanism.set = (key, value) ->
         assert.equal key, 'model'
-        assert.equal value, '{"someUniqueId":{"foo":"bla"}}'
+        assert.equal value, '{"someUniqueId":{"foo":"bla","id":"fok"}}'
         done()
-      model.toJson = (noMetas, noId) ->
-        assert.isTrue noMetas
-        assert.isTrue noId
+      model.toJson = (raw) ->
+        assert.isTrue raw
         foo: 'bla'
+        id: 'fok'
       local.save model
 
     test 'should return success result with id', (done) ->

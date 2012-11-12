@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.demos.app.todomvc.todos.Collection.
+  @fileoverview Collection representing list of items.
 ###
 goog.provide 'este.demos.app.todomvc.todos.Collection'
 

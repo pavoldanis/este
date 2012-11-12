@@ -7,6 +7,7 @@ class Person extends este.Model
     super json, randomStringGenerator
 
   defaults:
+    'title': ''
     'defaultFoo': 1
 
   schema:
@@ -31,7 +32,7 @@ suite 'este.Model', ->
     json =
       'firstName': 'Joe'
       'lastName': 'Satriani'
-      'age': 55
+      'age': '55'
     idGenerator = -> 1
     person = new Person json, idGenerator
 
@@ -39,8 +40,8 @@ suite 'este.Model', ->
     test 'should work', ->
       assert.instanceOf person, Person
 
-    test 'should assign clientId', ->
-      assert.equal person.get('clientId'), 1
+    test 'should assign _cid', ->
+      assert.equal person.get('_cid'), 1
 
     test 'should assign id', ->
       person = new Person id: 'foo'
@@ -57,6 +58,7 @@ suite 'este.Model', ->
 
     test 'should set defaults', ->
       assert.equal person.get('defaultFoo'), 1
+      assert.strictEqual person.get('title'), ''
 
     test 'should set defaults before json', ->
       person = new Person 'defaultFoo': 2
@@ -83,54 +85,50 @@ suite 'este.Model', ->
         'firstName': 'Joe'
 
   suite 'set', ->
-    test 'should set valid keys, ignore invalids', ->
+    test 'should no changes occur if the validation fails', ->
       assert.equal person.get('firstName'), 'Joe'
       person.set
         firstName: 'Pepa'
         lastName: ''
-      assert.equal person.get('firstName'), 'Pepa'
+      assert.equal person.get('firstName'), 'Joe'
       assert.equal person.get('lastName'), 'Satriani'
 
   suite 'toJson', ->
     suite 'without json', ->
-      test 'true should not return meta name nor clientId', ->
+      test 'true should not return meta name nor _cid', ->
         person = new Person
         json = person.toJson true
-        assert.isUndefined json.clientId
+        assert.isUndefined json._cid
         assert.isUndefined json.name
 
-      test 'false should return clientId and meta name', ->
+      test 'false should return _cid and meta name', ->
         person = new Person null, -> 1
         json = person.toJson()
         assert.deepEqual json,
-          'clientId': 1
+          '_cid': 1
+          'title': ''
           'name': 'undefined undefined'
           'defaultFoo': 1
 
     suite 'with json', ->
-      test 'false should return clientId and meta name', ->
+      test 'false should return _cid and meta name', ->
         json = person.toJson()
         assert.deepEqual json,
-          'clientId': 1
+          '_cid': 1
+          'title': ''
           'firstName': 'Joe'
           'lastName': 'Satriani'
           'name': 'Joe Satriani'
           'age': 55
           'defaultFoo': 1
 
-      test 'true, true should not return id', ->
-        json =
-          'id': 123
-          'firstName': 'Joe'
-          'lastName': 'Satriani'
-          'age': 55
-        idGenerator = -> 1
-        person = new Person json, idGenerator
-        json = person.toJson true, true
+      test 'true should not return _cid and meta name', ->
+        json = person.toJson true
         assert.deepEqual json,
+          'title': ''
           'firstName': 'Joe'
           'lastName': 'Satriani'
-          'age': 55
+          'age': '55'
           'defaultFoo': 1
 
     suite 'defined on model', ->

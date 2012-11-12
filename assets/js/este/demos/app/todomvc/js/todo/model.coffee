@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.demos.app.todomvc.todo.Model.
+  @fileoverview Model representing one todo item.
 ###
 goog.provide 'este.demos.app.todomvc.todo.Model'
 
@@ -33,5 +33,4 @@ class este.demos.app.todomvc.todo.Model extends este.Model
         'required': este.model.validators.required
 
   toggleCompleted: ->
-    completed = @get 'completed'
-    @set 'completed', !completed
+    @set 'completed', !@get 'completed'

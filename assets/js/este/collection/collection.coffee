@@ -136,13 +136,12 @@ class este.Collection extends goog.events.EventTarget
 
   ###*
     Serialize into JSON.
-    @param {boolean=} noMetas If true, metas and clientId are omitted. Works
-    only for models.
+    @param {boolean=} raw If true, _cid, metas, and getters are ignored.
     @return {Array.<Object>}
   ###
-  toJson: (noMetas) ->
+  toJson: (raw) ->
     if @model
-      item.toJson noMetas for item in @array
+      item.toJson raw for item in @array
     else
       @array.slice 0
 
@@ -180,7 +179,7 @@ class este.Collection extends goog.events.EventTarget
   ###
   findByClientId: (id) ->
     @find (item) =>
-      itemId = if @model then item.get('clientId') else item['clientId']
+      itemId = if @model then item.get('_cid') else item['_cid']
       itemId == id
 
   ###*
@@ -214,7 +213,6 @@ class este.Collection extends goog.events.EventTarget
     @return {Array}
   ###
   filter: (param) ->
-    # remainingCount = (todo for todo in @todos.toJson() when !todo['completed']).length
     array = @toJson()
     switch goog.typeOf param
       when 'function'
@@ -296,7 +294,7 @@ class este.Collection extends goog.events.EventTarget
   ###
   ensureUnique: (item) ->
     return if !(item instanceof este.Model)
-    id = item.get('id') || item.get('clientId')
+    id = item.get('id') || item.get('_cid')
     key = '$' + id
     if @ids[key]
       goog.asserts.fail "Not allowed to add two models with the same id: #{id}"
@@ -309,6 +307,6 @@ class este.Collection extends goog.events.EventTarget
   ###
   removeUnique: (item) ->
     return if !(item instanceof este.Model)
-    id = item.get('id') || item.get('clientId')
+    id = item.get('id') || item.get('_cid')
     key = '$' + id
     delete @ids[key]

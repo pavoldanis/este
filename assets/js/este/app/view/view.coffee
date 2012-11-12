@@ -128,7 +128,7 @@ class este.app.View extends este.ui.Component
       if goog.dom.isElement e.target
         clientIdElement = @getClientIdElement e
         if clientIdElement
-          clientId = clientIdElement.getAttribute 'client-id'
+          clientId = clientIdElement.getAttribute 'data-cid'
           model = @findModelByClientId clientId
           if model
             e.model = model
@@ -143,7 +143,7 @@ class este.app.View extends este.ui.Component
   ###
   getClientIdElement: (e) ->
     node = goog.dom.getAncestor e.target, (node) ->
-      goog.dom.isElement(node) && node.hasAttribute 'client-id'
+      goog.dom.isElement(node) && node.hasAttribute 'data-cid'
     , true
     `/** @type {Element} */ (node)`
 

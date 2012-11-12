@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.demos.app.todomvc.todos.View.
+  @fileoverview TodoMVC view.
 ###
 goog.provide 'este.demos.app.todomvc.todos.View'
 
@@ -17,6 +17,14 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     super()
 
   ###*
+    @enum {string}
+  ###
+  @Filter:
+    ACTIVE: 'active'
+    ALL: 'all'
+    COMPLETED: 'completed'
+
+  ###*
     undefined, active, completed
     @inheritDoc
   ###
@@ -29,23 +37,31 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   todos: null
 
   ###*
-    todo: consider enum
-    @type {string}
+    @type {este.demos.app.todomvc.todos.View.Filter}
     @protected
   ###
-  filter: ''
+  filter: View.Filter.ALL
 
   ###*
     Each view is async loaded by default. Load method has to return object
     implementing goog.result.Result interface. It's better than plain old
     callbacks. todo: link to article
+    todo: consider move load into presented toward better testability
     @inheritDoc
   ###
   load: (params) ->
-    @filter = params['filter']
+    @filter = switch params['filter']
+      when 'active'
+        View.Filter.ACTIVE
+      when 'completed'
+        View.Filter.COMPLETED
+      else
+        View.Filter.ALL
+
     if !@todos
       @todos = new este.demos.app.todomvc.todos.Collection
       return @localStorage.query @todos
+    # parent implementation returns success rusult immediately
     super()
 
   ###*
@@ -136,30 +152,33 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   update: ->
-    # todo: refactor
+    length = @todos.getLength()
     remainingCount = @todos.filter('completed': false).length
-    todosLength = @todos.getLength()
-    filterObject = {}
-    if @filter
-      isCompleted = @filter == 'completed'
-      filterObject['completed'] = isCompleted
-      filter = if isCompleted then 'completed' else 'active'
-    else
-      filter = 'all'
-    todos = @todos.filter filterObject
     json =
-      doneCount: todosLength - remainingCount
-      filter: filter
+      doneCount: length - remainingCount
+      filter: @filter
       itemsLocalized: @getLocalizedItems remainingCount
       remainingCount: remainingCount
-      todos: todos
-      todosLength: todosLength
+      todos: @todos.filter @getFilter()
+      length: length
     html = este.demos.app.todomvc.todos.templates.element json
 
     # See how we can merge HTML into element. Better than plain .innerHTML = ,
     # because it updates only changed nodes and attributes, therefore does not
     # destroy form fields states nor cause image flickering.
     @mergeHtml html
+
+  ###*
+    @protected
+  ###
+  getFilter: ->
+    switch @filter
+      when View.Filter.ACTIVE
+        {completed: false}
+      when View.Filter.COMPLETED
+        {completed: true}
+      else
+        {}
 
   ###*
     @param {number} remainingCount

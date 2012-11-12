@@ -30,9 +30,9 @@
 {template .body}
   <tbody>
     {foreach $row in $rows}
-      <tr data-clientid="{$row.id}">
+      <tr data-cid="{$row.id}">
         {foreach $column in keys($row)}
-          {if $column != 'clientId' and $column != 'edited'}
+          {if $column != '_cid' and $column != 'edited'}
             {if $row.edited}
               <td><input name="{$column}" value="{$row[$column]}"></td>
             {else}

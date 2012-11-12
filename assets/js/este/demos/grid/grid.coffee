@@ -71,7 +71,7 @@ class este.demos.Grid extends este.ui.Component
     @protected
   ###
   onTrDblclick: (e) ->
-    id = e.target.getAttribute 'data-clientid'
+    id = e.target.getAttribute 'data-cid'
     row = @rows.findById Number id
     row.set 'edited', true
     @editedRow.set 'edited', false if @editedRow

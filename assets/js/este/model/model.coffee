@@ -10,8 +10,8 @@
     - http://www.devthought.com/2012/01/18/an-object-is-not-a-hash
     - strings are better for uncompiled attributes from DOM or storage etc.
 
-  clientId
-    clientId is temporary session id. It's erased when you close your browser.
+  _cid
+    _cid is temporary session id. It's erased when you close your browser.
     It's used for HTML rendering, it starts with ':'.
     For local storage persistence is used este.storage.Local unique-enough ID.
 
@@ -47,8 +47,8 @@ class este.Model extends goog.events.EventTarget
     super()
     @attributes = {}
     @schema ?= {}
-    @set @defaults if @defaults
-    @set json if json
+    @setInternal @defaults, true if @defaults
+    @setInternal json, true if json
     @ensureClientId idGenerator
 
   ###*
@@ -108,19 +108,42 @@ class este.Model extends goog.events.EventTarget
       _json[json] = value
       json = _json
 
+    @setInternal json
+
+  ###*
+    @param {Object} json
+    @param {boolean=} silent
+    @protected
+  ###
+  setInternal: (json, silent) ->
     changes = @getChanges json
     return null if !changes
 
-    errors = @getErrors changes
-    # todo: ...
-    if errors
-      changes = goog.object.filter changes, (value, key) -> !errors[key]
+    if !silent
+      errors = @getErrors changes
+      return errors if errors
 
-    if !goog.object.isEmpty changes
-      @setInternal changes
+    @setAttributes changes
+    if !silent
       @dispatchChangeEvent changes
+    null
 
-    errors
+  ###*
+    @param {Object} json
+    @protected
+  ###
+  setAttributes: (json) ->
+    for key, value of json
+      $key = @getKey key
+      currentValue = @attributes[$key]
+      if key == 'id' && currentValue?
+        goog.asserts.fail 'Model id is immutable'
+      if key == '_cid' && currentValue?
+        goog.asserts.fail 'Model _cid is immutable'
+      @attributes[$key] = value
+      continue if !(value instanceof goog.events.EventTarget)
+      value.setParentEventTarget @
+    return
 
   ###*
     Returns model attribute(s).
@@ -167,29 +190,26 @@ class este.Model extends goog.events.EventTarget
     true
 
   ###*
-    Serialize model, childs included.
-    @param {boolean=} noMetas If true, metas and clientId are omitted.
-    @param {boolean=} noId If true, id is ommited (used in este.storage.*).
+    Return a model JSON representation, which can be used for persistence,
+    serialization, or model view rendering.
+    @param {boolean} raw If true, _cid, metas, and getters are ignored.
     @return {Object}
   ###
-  toJson: (noMetas, noId) ->
+  toJson: (raw) ->
     json = {}
-    for key, value of @attributes
-      origKey = key.substring 1
-      continue if noMetas && origKey == 'clientId'
-      continue if noId && origKey == 'id'
-      attr = @get origKey
+    for $key, value of @attributes
+      key = $key.substring 1
+      continue if raw && key == '_cid'
+      attr = if raw then value else @get key
       if attr.toJson
-        json[origKey] = attr.toJson()
+        json[key] = attr.toJson()
       else
-        json[origKey] = attr
-
-    if !noMetas
+        json[key] = attr
+    if !raw
       for key, value of @schema
         meta = value?['meta']
         continue if !meta
         json[key] = meta @
-
     json
 
   ###*
@@ -208,23 +228,6 @@ class este.Model extends goog.events.EventTarget
   ###
   getKey: (key) ->
     '$' + key
-
-  ###*
-    @param {Object} json
-    @protected
-  ###
-  setInternal: (json) ->
-    for key, value of json
-      $key = @getKey key
-      currentValue = @attributes[$key]
-      if key == 'id' && currentValue?
-        goog.asserts.fail 'Model id is immutable'
-      if key == 'clientId' && currentValue?
-        goog.asserts.fail 'Model clientId is immutable'
-      @attributes[$key] = value
-      continue if !(value instanceof goog.events.EventTarget)
-      value.setParentEventTarget @
-    return
 
   ###*
     todo: optimize comparison
@@ -278,8 +281,8 @@ class este.Model extends goog.events.EventTarget
     @protected
   ###
   ensureClientId: (idGenerator) ->
-    return if @get 'clientId'
-    @set 'clientId', if idGenerator
+    return if @get '_cid'
+    @set '_cid', if idGenerator
       idGenerator()
     else
       goog.ui.IdGenerator.getInstance().getNextUniqueId()
