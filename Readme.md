@@ -14,6 +14,8 @@ Este.js - The evolutionary JavaScript Framework and Dev Stack
 
 Este.js is full-fledged development stack for building robust web apps, streamlined for the developer user experience. It contains well-documented, thoroughly tested JavaScript framework, written in statically-typed CoffeeScript. This allows you to write powerful and efficient code for browsers and mobile devices.
 
+Try `node run app`, it's awesome. One console output for everything. Something like LiveReload handcrafted for Este.js dev stack.
+
 Tested on and compatible for OSX, Linux, and Windows.
 
 ### Quick Start Guide
