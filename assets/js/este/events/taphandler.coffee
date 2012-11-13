@@ -148,14 +148,16 @@ class este.events.TapHandler extends este.Base
   ###*
     @param {string} type
     @param {Node} target
+    @param {goog.events.BrowserEvent=} clickEvent
     @protected
   ###
-  dispatchTapEvent: (type, target) ->
+  dispatchTapEvent: (type, target, clickEvent) ->
     target = TapHandler.ensureTargetIsElement target
     return if !target
     @dispatchEvent
       type: type
       target: target
+      clickEvent: clickEvent
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -196,4 +198,4 @@ class este.events.TapHandler extends este.Base
   onClick: (e) ->
     @dispatchTapEvent TapHandler.EventType.START, e.target
     @dispatchTapEvent TapHandler.EventType.END, e.target
-    @dispatchTapEvent TapHandler.EventType.TAP, e.target
+    @dispatchTapEvent TapHandler.EventType.TAP, e.target, e

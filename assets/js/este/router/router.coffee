@@ -14,7 +14,7 @@ goog.require 'este.array'
 goog.require 'este.Base'
 goog.require 'este.router.Route'
 goog.require 'este.string'
-goog.require 'goog.dom'
+goog.require 'este.dom'
 
 class este.Router extends este.Base
 
@@ -130,8 +130,8 @@ class este.Router extends este.Base
   ###
   onTapHandlerElementClick: (e) ->
     token = @tryGetToken e.target
-    if token && e.isMouseActionButton() && !e.platformModifierKey
-      e.preventDefault()
+    return if !token || !este.dom.isRealMouseClick e
+    e.preventDefault()
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -140,10 +140,12 @@ class este.Router extends este.Base
   onTapHandlerTap: (e) ->
     token = @tryGetToken e.target
     return if !token
+    return if e.clickEvent && !este.dom.isRealMouseClick e.clickEvent
     if @silentTapHandler
       @processRoutes token, false
       return
-    @history.setToken token
+    strippedToken = este.string.stripSlashHashPrefixes token
+    @history.setToken strippedToken
 
   ###*
     @param {goog.history.Event} e
@@ -164,7 +166,8 @@ class este.Router extends este.Base
     token = ''
     goog.dom.getAncestor target, (node) ->
       return false if node.nodeType != 1
-      token = este.string.stripSlashHashPrefixes node.getAttribute 'href'
+      token = node.getAttribute 'href'
+      token = goog.string.trim token if token
       !!token
     , true
     token

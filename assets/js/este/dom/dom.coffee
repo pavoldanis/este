@@ -505,4 +505,11 @@ goog.scope ->
       document.body.removeChild input
     , 0
 
+  ###*
+    @param {goog.events.BrowserEvent} e
+    @return {boolean}
+  ###
+  _.isRealMouseClick = (e) ->
+    e.isMouseActionButton() && !e.platformModifierKey
+
   return
