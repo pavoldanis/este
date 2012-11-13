@@ -16,13 +16,13 @@
  * @param doneCount
  * @param filter
  * @param itemsLocalized
- * @param length
  * @param remainingCount
+ * @param showMainAndFooter
  * @param todos
  */
 {template .element}
   {call .header data="all" /}
-  {if $length}
+  {if $showMainAndFooter}
     {call .main data="all" /}
     {call .footer data="all" /}
   {/if}

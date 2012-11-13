@@ -110,8 +110,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onToggleAllTap: (e) ->
-    allCompleted = !@todos.filter('completed': false).length
-    @todos.toggleCompleted !allCompleted
+    completed = @todos.completed()
+    @todos.toggleCompleted !completed
 
   ###*
     @protected
@@ -154,14 +154,14 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   update: ->
     length = @todos.getLength()
-    remainingCount = @todos.filter('completed': false).length
+    remainingCount = @todos.remaining()
     json =
       doneCount: length - remainingCount
       filter: @filter
       itemsLocalized: @getLocalizedItems remainingCount
       remainingCount: remainingCount
       todos: @todos.filter @getFilter()
-      length: length
+      showMainAndFooter: !!length
     html = este.demos.app.todomvc.todos.templates.element json
 
     # See how we can merge HTML into element. Better than plain .innerHTML = ,
@@ -203,37 +203,37 @@ class este.demos.app.todomvc.todos.View extends este.app.View
         @MSG_OTHER_ITEMLEFT
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc One item left.
     @protected
   ###
   MSG_ONE_ITEMLEFT: goog.getMsg 'item left'
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc Zero items left.
     @protected
   ###
-  MSG_ZERO_ITEMLEFT: goog.getMsg 'item lefts'
+  MSG_ZERO_ITEMLEFT: goog.getMsg 'items left'
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc Two items left.
     @protected
   ###
-  MSG_TWO_ITEMLEFT: goog.getMsg 'item lefts'
+  MSG_TWO_ITEMLEFT: goog.getMsg 'items left'
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc Few items left.
     @protected
   ###
-  MSG_FEW_ITEMLEFT: goog.getMsg 'item lefts'
+  MSG_FEW_ITEMLEFT: goog.getMsg 'items left'
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc Many items left.
     @protected
   ###
-  MSG_MANY_ITEMLEFT: goog.getMsg 'item lefts'
+  MSG_MANY_ITEMLEFT: goog.getMsg 'items left'
 
   ###*
-    @desc Items left count in todos view footer.
+    @desc Other items left.
     @protected
   ###
-  MSG_OTHER_ITEMLEFT: goog.getMsg 'item lefts'
+  MSG_OTHER_ITEMLEFT: goog.getMsg 'items left'

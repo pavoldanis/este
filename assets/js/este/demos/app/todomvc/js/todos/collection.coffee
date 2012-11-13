@@ -29,3 +29,15 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
 
   clearCompleted: ->
     @removeIf (todo) -> todo.get 'completed'
+
+  ###*
+    @return {number}
+  ###
+  remaining: ->
+    @filter('completed': false).length
+
+  ###*
+    @return {boolean}
+  ###
+  completed: ->
+    @remaining() == 0

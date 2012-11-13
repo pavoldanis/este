@@ -34,3 +34,19 @@ suite 'este.demos.app.todomvc.todos.Collection', ->
       collection.clearCompleted()
       assert.equal 1, collection.getLength()
       assert.equal collection.at(0).get('completed'), false
+
+  suite 'remaining', ->
+    test 'should return number of incomplete items', ->
+      assert.equal 2, collection.remaining()
+      collection.at(0).set 'completed', true
+      assert.equal 1, collection.remaining()
+      collection.at(1).set 'completed', true
+      assert.equal 0, collection.remaining()
+
+  suite 'completed', ->
+    test 'should return number of incomplete items', ->
+      assert.isFalse collection.completed()
+      collection.at(0).set 'completed', true
+      assert.isFalse collection.completed()
+      collection.at(1).set 'completed', true
+      assert.isTrue collection.completed()
