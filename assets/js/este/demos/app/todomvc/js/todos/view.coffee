@@ -6,6 +6,7 @@ goog.provide 'este.demos.app.todomvc.todos.View'
 goog.require 'este.app.View'
 goog.require 'este.demos.app.todomvc.todos.Collection'
 goog.require 'este.demos.app.todomvc.todos.templates'
+goog.require 'goog.i18n.pluralRules'
 
 class este.demos.app.todomvc.todos.View extends este.app.View
 
@@ -170,7 +171,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
 
   ###*
     @protected
-    @retrun {Object}
+    @return {Object}
   ###
   getFilter: ->
     switch @filter
@@ -188,15 +189,51 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   getLocalizedItems: (remainingCount) ->
     switch goog.i18n.pluralRules.select remainingCount
-      when goog.i18n.pluralRules.Keyword.ZERO
-        goog.getMsg 'items left'
       when goog.i18n.pluralRules.Keyword.ONE
-        goog.getMsg 'item left'
+        @MSG_ONE_ITEMLEFT
+      when goog.i18n.pluralRules.Keyword.ZERO
+        @MSG_ZERO_ITEMLEFT
       when goog.i18n.pluralRules.Keyword.TWO
-        goog.getMsg 'items left'
+        @MSG_TWO_ITEMLEFT
       when goog.i18n.pluralRules.Keyword.FEW
-        goog.getMsg 'items left'
+        @MSG_FEW_ITEMLEFT
       when goog.i18n.pluralRules.Keyword.MANY
-        goog.getMsg 'items left'
-      when goog.i18n.pluralRules.Keyword.OTHER
-        goog.getMsg 'items left'
+        @MSG_MANY_ITEMLEFT
+      else
+        @MSG_OTHER_ITEMLEFT
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_ONE_ITEMLEFT: goog.getMsg 'item left'
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_ZERO_ITEMLEFT: goog.getMsg 'item lefts'
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_TWO_ITEMLEFT: goog.getMsg 'item lefts'
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_FEW_ITEMLEFT: goog.getMsg 'item lefts'
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_MANY_ITEMLEFT: goog.getMsg 'item lefts'
+
+  ###*
+    @desc Items left count in todos view footer.
+    @protected
+  ###
+  MSG_OTHER_ITEMLEFT: goog.getMsg 'item lefts'
