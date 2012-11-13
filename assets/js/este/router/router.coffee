@@ -125,14 +125,13 @@ class este.Router extends este.Base
     return
 
   ###*
-    todo: ignore unmatched tokens
     @param {goog.events.BrowserEvent} e
     @protected
   ###
   onTapHandlerElementClick: (e) ->
     token = @tryGetToken e.target
-    return if !token
-    e.preventDefault()
+    if token && e.isMouseActionButton() && !e.platformModifierKey
+      e.preventDefault()
 
   ###*
     @param {goog.events.BrowserEvent} e
