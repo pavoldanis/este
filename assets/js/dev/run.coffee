@@ -196,9 +196,12 @@ Commands =
           "--root=assets/js-build/#{dir} "
         namespaces.join ''
 
+      # to allow project name like este/demos/app/todomvc
+      namespace = options.project.replace /\//g, '.'
+
       command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
         #{buildNamespaces}
-        --namespace=\"#{options.project}.start\"
+        --namespace=\"#{namespace}.start\"
         --output_mode=compiled
         --compiler_jar=assets/js/dev/compiler.jar
         --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"
@@ -378,19 +381,22 @@ setOptions = (args) ->
 
   if !fs.existsSync path
     console.log "Project directory #{path} does not exists."
-    return false
 
   if options.buildOptions[0]?.indexOf('--') != 0
     options.locale = options.buildOptions[0]
     options.buildOptions.shift()
 
   outputFilename = "assets/js/#{options.project}"
+
   if options.locale
     outputFilename += "_#{options.locale}"
+
   if options.debug
+    # I remember some bizare bug related to _debug suffix.
     outputFilename += '_dev.js'
   else
     outputFilename += '.js'
+
   options.outputFilename = outputFilename
 
   if options.build
