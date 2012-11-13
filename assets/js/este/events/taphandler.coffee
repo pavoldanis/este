@@ -3,11 +3,6 @@
   For touch devices, touchstart is used, which fixes 300ms click delay.
   This approach is also known as FastButton, but TapHandler implementation
   is better, because works fine with native mobile scroll momentum.
-
-  todo
-    simulate native behavior on middle/right-click and when ctrl or command are
-    pressed (e.button != 1, e.ctrlKey, e.metaKey)
-
 ###
 goog.provide 'este.events.TapHandler'
 goog.provide 'este.events.TapHandler.EventType'
@@ -28,17 +23,8 @@ class este.events.TapHandler extends este.Base
   ###
   constructor: (@element, touchSupported) ->
     super
-    @registerEvents touchSupported
-
-  ###*
-    @type {number}
-  ###
-  touchMoveSnap: 10
-
-  ###*
-    @type {number}
-  ###
-  touchEndTimeout: 10
+    @touchSupported = touchSupported ? TapHandler.touchSupported()
+    @registerEvents()
 
   ###*
     @enum {string}
@@ -76,10 +62,26 @@ class este.events.TapHandler extends este.Base
     target
 
   ###*
+    @type {number}
+  ###
+  touchMoveSnap: 10
+
+  ###*
+    @type {number}
+  ###
+  touchEndTimeout: 10
+
+  ###*
     @type {Element}
     @protected
   ###
   element: null
+
+  ###*
+    @type {boolean}
+    @protected
+  ###
+  touchSupported: false
 
   ###*
     @type {goog.math.Coordinate}
@@ -100,21 +102,23 @@ class este.events.TapHandler extends este.Base
     @element
 
   ###*
-    @param {boolean=} touchSupported
     @protected
   ###
-  registerEvents: (touchSupported) ->
-    if touchSupported ? TapHandler.touchSupported()
-      scrollElement = if @element.tagName == 'BODY'
-        goog.dom.getWindow @element.ownerDocument
-      else
-        @element
-      @getHandler().
-        listen(@element, 'touchstart', @onTouchStart).
-        listen(scrollElement, 'scroll', @onScroll)
+  registerEvents: ->
+    if @touchSupported
+      @on @element, 'touchstart', @onTouchStart
+      @on @getScrollObject(), 'scroll', @onScroll
     else
-      @getHandler().
-        listen(@element, 'click', @onClick)
+      @on @element, 'click', @onClick
+
+  ###*
+    @protected
+  ###
+  getScrollObject: ->
+    if @element.tagName == 'BODY'
+      goog.dom.getWindow @element.ownerDocument
+    else
+      @element
 
   ###*
     @param {goog.events.BrowserEvent} e
