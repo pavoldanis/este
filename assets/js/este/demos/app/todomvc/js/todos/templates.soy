@@ -51,29 +51,30 @@
     <label for="toggle-all">Mark all as complete</label>
     <ul id="todo-list">
       {foreach $todo in $todos}
-        {call .todo data="$todo" /}
+        {call .todo}
+          {param todo: $todo /}
+        {/call}
       {/foreach}
     </ul>
   </section>
 {/template}
 
 /**
- * Todo template
- * @param _cid
- * @param completed
- * @param editing
- * @param title
+ * Todo template.
+ * Note that JSON properties needs [''] aka indexed access to work in advanced
+ * compilation mode.
+ * @param todo
  */
 {template .todo}
   <li
-    class="{if $completed}completed{/if} {if $editing}editing{/if}"
-    data-cid="{$_cid}">
+    class="{if $todo['completed']}completed{/if} {if $todo['editing']}editing{/if}"
+    data-cid="{$todo['_cid']}">
     <div class="view">
-      <input {if $completed}checked{/if} class="toggle" type="checkbox">
-      <label>{$title}</label>
+      <input {if $todo['completed']}checked{/if} class="toggle" type="checkbox">
+      <label>{$todo['title']}</label>
       <button class="destroy"></button>
     </div>
-    <input class="edit" value="{$title}">
+    <input class="edit" value="{$todo['title']}">
   </li>
 {/template}
 

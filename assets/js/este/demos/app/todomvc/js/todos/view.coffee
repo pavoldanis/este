@@ -174,13 +174,13 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @return {Object}
   ###
   getFilter: ->
+    filter = {}
     switch @filter
       when View.Filter.ACTIVE
-        {completed: false}
+        filter['completed'] = false
       when View.Filter.COMPLETED
-        {completed: true}
-      else
-        {}
+        filter['completed'] = true
+    filter
 
   ###*
     @param {number} remainingCount
