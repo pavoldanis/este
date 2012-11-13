@@ -16,7 +16,6 @@ goog.require 'app.templates'
 goog.require 'este.dev.Monitor.create'
 goog.require 'goog.dom'
 goog.require 'goog.events'
-goog.require 'goog.date'
 
 ###*
   @param {Object} data JSON from server
@@ -26,7 +25,7 @@ app.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
-  html = app.templates.callToAction 'action': 'click'
+  html = app.templates.callToAction action: 'click'
 
   box = goog.dom.createDom 'div',
     style: 'width: 250px; height: 80px; background-color: #ff8c55; padding: 1em'
