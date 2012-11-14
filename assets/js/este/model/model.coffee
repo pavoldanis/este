@@ -25,23 +25,23 @@ goog.provide 'este.Model'
 goog.provide 'este.Model.EventType'
 goog.provide 'este.Model.Event'
 
+goog.require 'este.Base'
 goog.require 'este.json'
 goog.require 'este.model.getters'
 goog.require 'este.model.setters'
 goog.require 'este.model.validators'
 goog.require 'goog.asserts'
 goog.require 'goog.events.Event'
-goog.require 'goog.events.EventTarget'
 goog.require 'goog.object'
 goog.require 'goog.ui.IdGenerator'
 
-class este.Model extends goog.events.EventTarget
+class este.Model extends este.Base
 
   ###*
     @param {Object=} json
     @param {function(): string=} idGenerator
     @constructor
-    @extends {goog.events.EventTarget}
+    @extends {este.Base}
   ###
   constructor: (json, idGenerator) ->
     super()
@@ -63,6 +63,11 @@ class este.Model extends goog.events.EventTarget
     SORT: 'sort'
     # dispatched always on any change
     UPDATE: 'update'
+
+  ###*
+    @type {Array.<string>}
+  ###
+  @eventTypes: (type for name, type of Model.EventType)
 
   ###*
     http://en.wikipedia.org/wiki/Uniform_resource_name
@@ -141,8 +146,7 @@ class este.Model extends goog.events.EventTarget
       if key == '_cid' && currentValue?
         goog.asserts.fail 'Model _cid is immutable'
       @attributes[$key] = value
-      continue if !(value instanceof goog.events.EventTarget)
-      value.setParentEventTarget @
+      @toggleEventPropagation true, Model.eventTypes, value
     return
 
   ###*
@@ -182,7 +186,7 @@ class este.Model extends goog.events.EventTarget
     _key = @getKey key
     return false if !(_key of @attributes)
     value = @attributes[_key]
-    value.setParentEventTarget null if value instanceof goog.events.EventTarget
+    @toggleEventPropagation false, Model.eventTypes, value
     delete @attributes[_key]
     changed = {}
     changed[key] = value
@@ -270,10 +274,16 @@ class este.Model extends goog.events.EventTarget
     changeEvent = new este.Model.Event Model.EventType.CHANGE, @
     changeEvent.model = @
     changeEvent.changed = changed
-    return false if !@dispatchEvent changeEvent
+    @dispatchModelEvent changeEvent
 
+  ###*
+    @param {este.Model.Event} e
+    @protected
+  ###
+  dispatchModelEvent: (e) ->
+    @dispatchEvent e
     updateEvent = new este.Model.Event Model.EventType.UPDATE, @
-    updateEvent.origin = changeEvent
+    updateEvent.origin = e
     @dispatchEvent updateEvent
 
   ###*

@@ -3,8 +3,9 @@
 ###
 goog.provide 'este.Base'
 
-goog.require 'goog.events.EventTarget'
+goog.require 'goog.asserts'
 goog.require 'goog.events.EventHandler'
+goog.require 'goog.events.EventTarget'
 
 class este.Base extends goog.events.EventTarget
 
@@ -54,6 +55,19 @@ class este.Base extends goog.events.EventTarget
   ###
   off: (src, type, fn, capture, handler) ->
     @getHandler().unlisten src, type, fn, capture, handler
+
+  ###*
+    @param {boolean} toggle
+    @param {Array.<string>} eventTypes
+    @param {*} object
+    @protected
+  ###
+  toggleEventPropagation: (toggle, eventTypes, object) ->
+    return if !(object instanceof goog.events.EventTarget)
+    if toggle
+      @on object, eventTypes, @dispatchEvent
+    else
+      @off object, eventTypes, @dispatchEvent
 
   ###*
     @inheritDoc

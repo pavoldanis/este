@@ -236,6 +236,19 @@ suite 'este.Model', ->
       innerModel.set 'name', 'foo'
       assert.equal called, 2
 
+    test 'from inner model (within other model) should work', ->
+      called = 0
+      innerModel = new Person
+      someOtherPerson = new Person
+      person.set 'inner', innerModel
+      someOtherPerson.set 'inner', innerModel
+      goog.events.listen person, 'change', (e) ->
+        called++
+      innerModel.set 'name', 'foo'
+      person.remove 'inner', innerModel
+      innerModel.set 'name', 'foo'
+      assert.equal called, 2
+
   suite 'errors', ->
     suite 'set', ->
       test 'should return correct errors', ->

@@ -235,6 +235,21 @@ suite 'este.Collection', ->
       innerModel.set '1', 2
       assert.equal called, 1
 
+    test 'from inner model (within other collection) should work', ->
+      called = 0
+      innerModel = new Model
+      collection.add innerModel
+      collection2 = new Collection
+      collection2.add innerModel
+      goog.events.listen collection, 'change', (e) ->
+        called++
+      innerModel.set '1', 1
+      assert.equal called, 1
+      collection.remove innerModel
+      assert.equal called, 1
+      innerModel.set '1', 2
+      assert.equal called, 1
+
   suite 'find', ->
     test 'should find item', ->
       collection.add [
@@ -528,3 +543,27 @@ suite 'este.Collection', ->
       ,
         'c': 3, 'cc': 3.5
       ])
+
+  suite 'multiple parent event propagation', ->
+    test 'should work', ->
+      collection1 = new Collection
+      collection2 = new Collection
+      model = new Model
+      collection1.add model
+      collection2.add model
+
+      calls = ''
+      goog.events.listen collection1, 'change', ->
+        calls += 'col1called'
+      goog.events.listen collection2, 'change', ->
+        calls += 'col2called'
+      model.set 'foo', 'bla'
+      assert.equal calls, 'col1calledcol2called'
+
+      calls = ''
+      goog.events.listen collection1, 'update', ->
+        calls += 'col1called'
+      goog.events.listen collection2, 'update', ->
+        calls += 'col2called'
+      model.set 'foo', 'fok'
+      assert.equal calls, 'col1calledcol2calledcol1calledcol2called'

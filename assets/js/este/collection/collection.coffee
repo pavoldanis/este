@@ -10,19 +10,18 @@
 
 goog.provide 'este.Collection'
 
+goog.require 'este.Base'
 goog.require 'este.Model'
 goog.require 'este.Model.Event'
 goog.require 'goog.array'
-goog.require 'goog.asserts'
-goog.require 'goog.events.EventTarget'
 
-class este.Collection extends goog.events.EventTarget
+class este.Collection extends este.Base
 
   ###*
     @param {Array.<Object>=} array
     @param {function(new:este.Model)=} model
     @constructor
-    @extends {goog.events.EventTarget}
+    @extends {este.Base}
   ###
   constructor: (array, @model = @model) ->
     super()
@@ -78,8 +77,7 @@ class este.Collection extends goog.events.EventTarget
       if @model && !(item instanceof @model)
         item = new @model item
       @ensureUnique item
-      if item instanceof goog.events.EventTarget
-        item.setParentEventTarget @
+      @toggleEventPropagation true, este.Model.eventTypes, item
       added.push item
     @array.push.apply @array, added
     @sortInternal()
@@ -94,7 +92,7 @@ class este.Collection extends goog.events.EventTarget
     array = [array] if !goog.isArray array
     removed = []
     for item in array
-      item.setParentEventTarget null if item instanceof goog.events.EventTarget
+      @toggleEventPropagation false, este.Model.eventTypes, item
       removed.push item if goog.array.remove @array, item
       @removeUnique item
     return false if !removed.length
@@ -231,7 +229,6 @@ class este.Collection extends goog.events.EventTarget
   ###*
     todo:
       add better annotation
-      consider suppress event dispatching during iteration
     @param {Function} fn
   ###
   each: (fn) ->
@@ -245,11 +242,7 @@ class este.Collection extends goog.events.EventTarget
   dispatchAddEvent: (added) ->
     addEvent = new este.Model.Event este.Model.EventType.ADD, @
     addEvent.added = added
-    return false if !@dispatchEvent addEvent
-
-    updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
-    updateEvent.origin = addEvent
-    @dispatchEvent updateEvent
+    @dispatchCollectionEvent addEvent
 
   ###*
     @param {Array} removed
@@ -258,21 +251,23 @@ class este.Collection extends goog.events.EventTarget
   dispatchRemoveEvent: (removed) ->
     removeEvent = new este.Model.Event este.Model.EventType.REMOVE, @
     removeEvent.removed = removed
-    return false if !@dispatchEvent removeEvent
-
-    updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
-    updateEvent.origin = removeEvent
-    @dispatchEvent updateEvent
+    @dispatchCollectionEvent removeEvent
 
   ###*
     @protected
   ###
   dispatchSortEvent: ->
     sortEvent = new este.Model.Event este.Model.EventType.SORT, @
-    return false if !@dispatchEvent sortEvent
+    @dispatchCollectionEvent sortEvent
 
+  ###*
+    @param {este.Model.Event} e
+    @protected
+  ###
+  dispatchCollectionEvent: (e) ->
+    @dispatchEvent e
     updateEvent = new este.Model.Event este.Model.EventType.UPDATE, @
-    updateEvent.origin = sortEvent
+    updateEvent.origin = e
     @dispatchEvent updateEvent
 
   ###*
