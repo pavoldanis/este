@@ -60,7 +60,8 @@ options = {
   only: '',
   port: 8000,
   errorBeep: false,
-  locale: ''
+  locale: '',
+  pythonBin: 'python'
 };
 
 socket = null;
@@ -170,7 +171,7 @@ Commands = {
     command = getSoyCommand(soyPaths);
     return exec(command, callback);
   },
-  closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
+  closureDeps: "" + options.pythonBin + " assets/js/google-closure/closure/bin/build/depswriter.py    " + depsNamespaces + "    > assets/js/deps.js",
   closureCompilation: function(callback) {
     var flag, flags, flagsText, innerFn, _i, _j, _len, _len1, _ref, _ref1;
     if (fs.existsSync('assets/js-build')) {
@@ -248,7 +249,7 @@ Commands = {
         return namespaces.join('');
       })();
       namespace = options.project.replace(/\//g, '.');
-      command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py        " + buildNamespaces + "        --namespace=\"" + namespace + ".start\"        --output_mode=compiled        --compiler_jar=assets/js/dev/compiler.jar        --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"        --compiler_flags=\"--warning_level=VERBOSE\"        --compiler_flags=\"--jscomp_warning=accessControls\"        --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"        --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"        --compiler_flags=\"--jscomp_warning=checkRegExp\"        --compiler_flags=\"--jscomp_warning=checkTypes\"        --compiler_flags=\"--jscomp_warning=checkVars\"        --compiler_flags=\"--jscomp_warning=const\"        --compiler_flags=\"--jscomp_warning=constantProperty\"        --compiler_flags=\"--jscomp_warning=deprecated\"        --compiler_flags=\"--jscomp_warning=duplicate\"        --compiler_flags=\"--jscomp_warning=externsValidation\"        --compiler_flags=\"--jscomp_warning=fileoverviewTags\"        --compiler_flags=\"--jscomp_warning=globalThis\"        --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"        --compiler_flags=\"--jscomp_warning=invalidCasts\"        --compiler_flags=\"--jscomp_warning=missingProperties\"        --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"        --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"        --compiler_flags=\"--jscomp_warning=undefinedNames\"        --compiler_flags=\"--jscomp_warning=undefinedVars\"        --compiler_flags=\"--jscomp_warning=unknownDefines\"        --compiler_flags=\"--jscomp_warning=uselessCode\"        --compiler_flags=\"--jscomp_warning=visibility\"        --compiler_flags=\"--output_wrapper=(function(){%output%})();\"        --compiler_flags=\"--js=assets/js-build/deps.js\"        " + flagsText + "        > " + options.outputFilename;
+      command = "" + options.pythonBin + " assets/js/google-closure/closure/bin/build/closurebuilder.py        " + buildNamespaces + "        --namespace=\"" + namespace + ".start\"        --output_mode=compiled        --compiler_jar=assets/js/dev/compiler.jar        --compiler_flags=\"--compilation_level=ADVANCED_OPTIMIZATIONS\"        --compiler_flags=\"--warning_level=VERBOSE\"        --compiler_flags=\"--jscomp_warning=accessControls\"        --compiler_flags=\"--jscomp_warning=ambiguousFunctionDecl\"        --compiler_flags=\"--jscomp_warning=checkDebuggerStatement\"        --compiler_flags=\"--jscomp_warning=checkRegExp\"        --compiler_flags=\"--jscomp_warning=checkTypes\"        --compiler_flags=\"--jscomp_warning=checkVars\"        --compiler_flags=\"--jscomp_warning=const\"        --compiler_flags=\"--jscomp_warning=constantProperty\"        --compiler_flags=\"--jscomp_warning=deprecated\"        --compiler_flags=\"--jscomp_warning=duplicate\"        --compiler_flags=\"--jscomp_warning=externsValidation\"        --compiler_flags=\"--jscomp_warning=fileoverviewTags\"        --compiler_flags=\"--jscomp_warning=globalThis\"        --compiler_flags=\"--jscomp_warning=internetExplorerChecks\"        --compiler_flags=\"--jscomp_warning=invalidCasts\"        --compiler_flags=\"--jscomp_warning=missingProperties\"        --compiler_flags=\"--jscomp_warning=nonStandardJsDocs\"        --compiler_flags=\"--jscomp_warning=strictModuleDepCheck\"        --compiler_flags=\"--jscomp_warning=undefinedNames\"        --compiler_flags=\"--jscomp_warning=undefinedVars\"        --compiler_flags=\"--jscomp_warning=unknownDefines\"        --compiler_flags=\"--jscomp_warning=uselessCode\"        --compiler_flags=\"--jscomp_warning=visibility\"        --compiler_flags=\"--output_wrapper=(function(){%output%})();\"        --compiler_flags=\"--js=assets/js-build/deps.js\"        " + flagsText + "        > " + options.outputFilename;
       return exec(command, function() {
         wrench.rmdirSyncRecursive('assets/js-build');
         return callback.apply(null, arguments);
@@ -351,6 +352,10 @@ setOptions = function(args) {
       case '-eb':
         options.errorBeep = true;
         break;
+      case '--python':
+      case '-pb':
+        options.pythonBin = args.shift();
+        break;
       case '--extractmessages':
       case '-em':
         languages = args.splice(0, args.length);
@@ -358,7 +363,7 @@ setOptions = function(args) {
         return false;
       case '--help':
       case '-h':
-        console.log("\nOptions:\n  --build, -b\n    Compile everything, run tests, build project.\n    Update [project].html to use just one compiled script.\n    Set goog.DEBUG flag to false.\n    Start watching all source files, recompile them on change.\n\n    Example how to set compiler_flags:\n      node run app -b\n        --define=goog.DEBUG=true\n        --define=goog.LOCALE=\'cs\'\n\n    Example how to use localization:\n      node run app -b en\n        set goog.LOCALE to 'en'\n        insert messages from assets/messages/[project]/[LOCALE].json\n        compile to assets/js/[project]_[en].js\n\n  --debug, -d\n    Same as build, but with these compiler flags:\n      '--formatting=PRETTY_PRINT --debug=true'\n    Set goog.DEBUG flag to false.\n    Compiler output will be much readable.\n\n    Example:\n      node run app -d -b (note that -d is before -b)\n\n  --verbose, -v\n    To show some time stats.\n\n  --continuousintegration, -ci\n    Continuous integration mode. Without http server and files watchers.\n\n  --port, -p\n    To override default http://localhost:8000/ port.\n\n  --buildall, -ba\n    Build and statically check all namespaces in project. Useful for\n    debugging, after closure update, etc.\n\n  --errorbeep, -eb\n    Friendly beep on error.\n\n  --extractmessages, -em\n    Extract messages from source code and generate dictionaries in\n    assets/messages/project directory. Messages are defined with\n    goog.getMsg method.\n\n    Example\n      node run app -em en de\n\n  --help, -h\n    To show this help.\n");
+        console.log("\nOptions:\n  --build, -b\n    Compile everything, run tests, build project.\n    Update [project].html to use just one compiled script.\n    Set goog.DEBUG flag to false.\n    Start watching all source files, recompile them on change.\n\n    Example how to set compiler_flags:\n      node run app -b\n        --define=goog.DEBUG=true\n        --define=goog.LOCALE=\'cs\'\n\n    Example how to use localization:\n      node run app -b en\n        set goog.LOCALE to 'en'\n        insert messages from assets/messages/[project]/[LOCALE].json\n        compile to assets/js/[project]_[en].js\n\n  --debug, -d\n    Same as build, but with these compiler flags:\n      '--formatting=PRETTY_PRINT --debug=true'\n    Set goog.DEBUG flag to false.\n    Compiler output will be much readable.\n\n    Example:\n      node run app -d -b (note that -d is before -b)\n\n  --verbose, -v\n    To show some time stats.\n\n  --continuousintegration, -ci\n    Continuous integration mode. Without http server and files watchers.\n\n  --port, -p\n    To override default http://localhost:8000/ port.\n\n  --buildall, -ba\n    Build and statically check all namespaces in project. Useful for\n    debugging, after closure update, etc.\n\n  --errorbeep, -eb\n    Friendly beep on error.\n\n  --extractmessages, -em\n    Extract messages from source code and generate dictionaries in\n    assets/messages/project directory. Messages are defined with\n    goog.getMsg method.\n\n    Example\n      node run app -em en de\n\n  --python, -pb\n    Setup python binary. To override default 'python'.\n\n  --help, -h\n    To show this help.\n");
         return false;
       default:
         options.project = arg;
@@ -871,7 +876,7 @@ getProjectPaths = function(jsDir, callback) {
     })();
     return namespaces.join('');
   })();
-  command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py    " + jsNamespaces + "    --namespace=\"" + options.project + ".start\"    --output_mode=list    --compiler_jar=assets/js/dev/compiler.jar    --compiler_flags=\"--js=assets/" + jsDir + "/deps.js\"";
+  command = "" + options.pythonBin + " assets/js/google-closure/closure/bin/build/closurebuilder.py    " + jsNamespaces + "    --namespace=\"" + options.project + ".start\"    --output_mode=list    --compiler_jar=assets/js/dev/compiler.jar    --compiler_flags=\"--js=assets/" + jsDir + "/deps.js\"";
   return exec(command, function(err, stdout, stderr) {
     var script, scripts, _i, _len, _ref;
     if (isClosureCompilationError(stderr)) {
