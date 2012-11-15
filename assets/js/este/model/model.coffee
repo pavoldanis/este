@@ -146,7 +146,8 @@ class este.Model extends este.Base
       if key == '_cid' && currentValue?
         goog.asserts.fail 'Model _cid is immutable'
       @attributes[$key] = value
-      @toggleEventPropagation true, Model.eventTypes, value
+      if value instanceof goog.events.EventTarget
+        @toggleEventPropagation true, Model.eventTypes, value
     return
 
   ###*
@@ -186,7 +187,8 @@ class este.Model extends este.Base
     _key = @getKey key
     return false if !(_key of @attributes)
     value = @attributes[_key]
-    @toggleEventPropagation false, Model.eventTypes, value
+    if value instanceof goog.events.EventTarget
+      @toggleEventPropagation false, Model.eventTypes, value
     delete @attributes[_key]
     changed = {}
     changed[key] = value

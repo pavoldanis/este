@@ -77,7 +77,8 @@ class este.Collection extends este.Base
       if @model && !(item instanceof @model)
         item = new @model item
       @ensureUnique item
-      @toggleEventPropagation true, este.Model.eventTypes, item
+      if item instanceof goog.events.EventTarget
+        @toggleEventPropagation true, este.Model.eventTypes, item
       added.push item
     @array.push.apply @array, added
     @sortInternal()
@@ -92,7 +93,8 @@ class este.Collection extends este.Base
     array = [array] if !goog.isArray array
     removed = []
     for item in array
-      @toggleEventPropagation false, este.Model.eventTypes, item
+      if item instanceof goog.events.EventTarget
+        @toggleEventPropagation false, este.Model.eventTypes, item
       removed.push item if goog.array.remove @array, item
       @removeUnique item
     return false if !removed.length
@@ -227,9 +229,8 @@ class este.Collection extends este.Base
         null
 
   ###*
-    todo:
-      add better annotation
-    @param {Function} fn
+    Calls a function for each element in an collection.
+    @param {function(*)} fn
   ###
   each: (fn) ->
     fn item for item in @array

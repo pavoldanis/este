@@ -9,6 +9,7 @@ goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'este.ui.Component'
+goog.require 'goog.string'
 
 class este.app.View extends este.ui.Component
 
@@ -18,7 +19,6 @@ class este.app.View extends este.ui.Component
   ###
   constructor: ->
     super()
-    @deferredTimers = {}
 
   ###*
     @enum {string}
@@ -41,15 +41,22 @@ class este.app.View extends este.ui.Component
   localStorage: null
 
   ###*
+    todo: refactor
     @type {boolean}
   ###
   html5historyEnabled: true
 
   ###*
-    @type {Object}
+    @type {function(): Object.<string, Function|Array>}
+    @protected
+  ###
+  events: -> {}
+
+  ###*
+    @type {Array.<este.Model.Event>} events
     @private
   ###
-  deferredTimers: null
+  unitOfWorkEvents: null
 
   ###*
     @param {function(new:este.app.View)} viewClass
@@ -76,9 +83,70 @@ class este.app.View extends este.ui.Component
     este.result.ok params
 
   ###*
-    This method should be overridden by inheriting objects.
-    Use this method for UI refresh. It can be called from enterDocument or on
-    model change.
+    @inheritDoc
+  ###
+  enterDocument: ->
+    super()
+    @update()
+    @registerModelUpdate()
+    @registerEvents()
+    return
+
+  ###*
+    @protected
+  ###
+  registerModelUpdate: ->
+    model = @getModel()
+    return if !model || !(model instanceof goog.events.EventTarget)
+    @on model, 'update', @onModelUpdateInternal
+
+  ###*
+    @param {este.Model.Event} e
+    @protected
+  ###
+  onModelUpdateInternal: (e) ->
+    @unitOfWorkEvents.push e
+
+  ###*
+    @param {Array.<este.Model.Event>} events
+    @protected
+  ###
+  onModelUpdate: (events) ->
+
+  ###*
+    @protected
+  ###
+  registerEvents: ->
+    return if !@events
+    for key, value of @events()
+      key = goog.string.trim goog.string.normalizeSpaces key
+      chunks = key.split ' '
+      src = chunks[0]
+      type = chunks[1] || value[0]
+      fn = if chunks[1] then value else value[1]
+      wrapper = @getEventWrapper fn
+      @on src, type, wrapper
+    return
+
+  ###*
+    @param {Function} fn
+    @return {Function}
+    @protected
+  ###
+  getEventWrapper: (fn) ->
+    (e) ->
+      if goog.dom.isElement e.target
+        el = @getClientIdElement e
+        if el
+          clientId = el.getAttribute 'data-cid'
+          model = @findModelByClientId clientId
+      @unitOfWorkEvents = []
+      fn.call @, model, el, e
+      @onModelUpdate @unitOfWorkEvents if @unitOfWorkEvents.length
+
+  ###*
+    This method should be overridden by inheriting objects. Use this method for
+    UI refresh. It's called from enterDocument or on model change.
     @protected
   ###
   update: goog.abstractMethod
@@ -93,22 +161,6 @@ class este.app.View extends este.ui.Component
     este.dom.merge @getElement(), html
 
   ###*
-    Defer passed method execution after current call stack.
-    ex.
-      defer -> alert 'second'
-      alert 'first'
-    todo: refactor into este.functions.defer
-    @param {Function} fn
-    @protected
-  ###
-  defer: (fn) ->
-    uid = goog.getUid fn
-    clearTimeout @deferredTimers[uid]
-    @deferredTimers[uid] = setTimeout =>
-      fn.call @
-    , 0
-
-  ###*
     @param {function(new:este.app.View)} viewClass
     @param {Object=} params
     @protected
@@ -116,24 +168,6 @@ class este.app.View extends este.ui.Component
   redirect: (viewClass, params) ->
     e = new este.app.view.Event View.EventType.REDIRECT, viewClass, params
     @dispatchEvent e
-
-  ###*
-    @inheritDoc
-  ###
-  on: (src, type, fn, capture, handler) ->
-    oldFn = fn
-    fn = (e) =>
-      model = null
-      if goog.dom.isElement e.target
-        clientIdElement = @getClientIdElement e
-        if clientIdElement
-          clientId = clientIdElement.getAttribute 'data-cid'
-          model = @findModelByClientId clientId
-          if model
-            e.model = model
-            e.modelElement = clientIdElement
-      oldFn.apply @, arguments
-    super src, type, fn, capture, handler
 
   ###*
     @param {goog.events.BrowserEvent} e
@@ -156,11 +190,3 @@ class este.app.View extends este.ui.Component
       model = value.findByClientId clientId
       return model if model
     null
-
-  ###*
-    @inheritDoc
-  ###
-  disposeInternal: ->
-    super()
-    clearTimeout value for key, value of @deferredTimers
-    return

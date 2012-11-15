@@ -34,16 +34,6 @@ suite 'este.app.View', ->
       url = view.getUrl viewClass, id: 123
       assert.equal url, 'detail/123'
 
-  suite 'defer', ->
-    test 'should defer passed method call', (done) ->
-      view.update = ->
-        done()
-      # useful for repeated events, for example bulk changes on collection
-      # only last view.update is executed (Mocha checks repeated done() calls)
-      view.defer view.update
-      view.defer view.update
-      view.defer view.update
-
   suite 'mergeHtml', ->
     test 'should call este.dom.merge', (done) ->
       _merge = este.dom.merge
@@ -54,15 +44,3 @@ suite 'este.app.View', ->
         assert.equal html, 'html'
         done()
       view.mergeHtml 'html'
-
-  suite 'dispose', ->
-    test 'should defer passed method call', (done) ->
-      called = false
-      view.update = ->
-        called = true
-      view.defer view.update
-      view.dispose()
-      setTimeout ->
-        assert.isFalse called
-        done()
-      , 0

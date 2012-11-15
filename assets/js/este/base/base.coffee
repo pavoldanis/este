@@ -57,17 +57,18 @@ class este.Base extends goog.events.EventTarget
     @getHandler().unlisten src, type, fn, capture, handler
 
   ###*
+    Something like setParentEventTarget, but this implementation allows more
+    parents.
     @param {boolean} toggle
     @param {Array.<string>} eventTypes
-    @param {*} object
+    @param {goog.events.EventTarget} eventTarget
     @protected
   ###
-  toggleEventPropagation: (toggle, eventTypes, object) ->
-    return if !(object instanceof goog.events.EventTarget)
+  toggleEventPropagation: (toggle, eventTypes, eventTarget) ->
     if toggle
-      @on object, eventTypes, @dispatchEvent
+      @on eventTarget, eventTypes, @dispatchEvent
     else
-      @off object, eventTypes, @dispatchEvent
+      @off eventTarget, eventTypes, @dispatchEvent
 
   ###*
     @inheritDoc

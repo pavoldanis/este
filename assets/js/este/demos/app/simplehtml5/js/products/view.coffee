@@ -46,14 +46,6 @@ class este.demos.app.simplehtml5.products.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  enterDocument: ->
-    super
-    @update()
-    return
-
-  ###*
-    @inheritDoc
-  ###
   update: ->
     window['console']['log'] "products rendered"
     links = []

@@ -44,6 +44,19 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   filter: View.Filter.ALL
 
   ###*
+    @inheritDoc
+  ###
+  events: ->
+    '#new-todo-form submit': @onNewTodoSubmit
+    '.toggle tap': @onToggleTap
+    '#toggle-all tap': @onToggleAllTap
+    '.destroy tap': @onDestroyTap
+    '#clear-completed tap': @onClearCompletedTap
+    'label dblclick': @onLabelDblclick
+    '.edit blur': @onEditEnd
+    '.edit': [goog.events.KeyCodes.ENTER, @onEditEnd]
+
+  ###*
     Each view is async loaded by default. Load method has to return object
     implementing goog.result.Result interface. It's better than plain old
     callbacks. todo: link to article
@@ -61,38 +74,27 @@ class este.demos.app.todomvc.todos.View extends este.app.View
 
     if !@todos
       @todos = new este.demos.app.todomvc.todos.Collection
+      # setModel @todos enabled autobinding @todos to @onModelUpdate
+      @setModel @todos
       return @localStorage.query @todos
+
     # parent implementation returns success rusult immediately
     super()
 
   ###*
-    @inheritDoc
+    @param {Array.<este.Model.Event>} events
+    @protected
   ###
-  enterDocument: ->
-    super()
+  onModelUpdate: (events) ->
+    for event in events
+      @localStorage.saveChanges event
     @update()
-    @on @todos, 'update', @onTodosUpdate
-    @on '#new-todo-form', 'submit', @onNewTodoSubmit
-    @on '.toggle', 'tap', @onToggleTap
-    @on '#toggle-all', 'tap', @onToggleAllTap
-    @on '.destroy', 'tap', @onDestroyTap
-    @on '#clear-completed', 'tap', @onClearCompletedTap
-    @on 'label', 'dblclick', @onLabelDblclick
-    @on '.edit', 'blur', @onEditEnd
-    @on '.edit', goog.events.KeyCodes.ENTER, @onEditEnd
 
   ###*
-    @param {este.Model.Event} e
+    todo: consider pass model from e.json
     @protected
   ###
-  onTodosUpdate: (e) ->
-    @defer @update
-    @localStorage.saveChanges e
-
-  ###*
-    @protected
-  ###
-  onNewTodoSubmit: (e) ->
+  onNewTodoSubmit: (model, el, e) ->
     todo = new este.demos.app.todomvc.todo.Model e.json
     errors = todo.validate()
     return if errors
@@ -101,73 +103,81 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @todos.add todo
 
   ###*
+    @param {este.demos.app.todomvc.todo.Model} model
     @protected
   ###
-  onToggleTap: (e) ->
-    e.model.toggleCompleted()
+  onToggleTap: (model) ->
+    model.toggleCompleted()
 
   ###*
     @protected
   ###
-  onToggleAllTap: (e) ->
+  onToggleAllTap: ->
     completed = @todos.completed()
     @todos.toggleCompleted !completed
 
   ###*
+    @param {este.demos.app.todomvc.todo.Model} model
     @protected
   ###
-  onDestroyTap: (e) ->
-    @todos.remove e.model
+  onDestroyTap: (model) ->
+    @todos.remove model
 
   ###*
     @protected
   ###
-  onClearCompletedTap: (e) ->
+  onClearCompletedTap: ->
     @todos.clearCompleted()
 
   ###*
+    @param {este.demos.app.todomvc.todo.Model} model
+    @param {Element} el
     @protected
   ###
-  onLabelDblclick: (e) ->
-    e.model.set 'editing', true
-    edit = e.modelElement.querySelector '.edit'
+  onLabelDblclick: (model, el) ->
+    model.set 'editing', true
+    edit = el.querySelector '.edit'
     este.dom.focus edit
 
   ###*
+    @param {este.demos.app.todomvc.todo.Model} model
+    @param {Element} el
     @protected
   ###
-  onEditEnd: (e) ->
-    # onEditEnd is registered both for blur and key enter, if key enter removes
-    # some todo, then blur e.modelElement is undefined.
-    return if !e.modelElement
-    title = goog.string.trim e.modelElement.querySelector('.edit').value
+  onEditEnd: (model, el) ->
+    edit = el.querySelector '.edit'
+    title = goog.string.trim edit.value
     if !title
-      @todos.remove e.model
+      @todos.remove model
       return
-    e.model.set
+
+    model.set
       'title': title
       'editing': false
-    return
 
   ###*
     @protected
   ###
   update: ->
+    json = @getJsonForTemplate()
+    html = este.demos.app.todomvc.todos.templates.element json
+    # mergeHtml calls 'este.dom.merge' for partial innerHTML updates
+    @mergeHtml html
+
+  ###*
+    @return {Object}
+    @protected
+  ###
+  getJsonForTemplate: ->
     length = @todos.getLength()
     remainingCount = @todos.remaining()
-    json =
-      doneCount: length - remainingCount
-      filter: @filter
-      itemsLocalized: @getLocalizedItems remainingCount
-      remainingCount: remainingCount
-      todos: @todos.filter @getFilter()
-      showMainAndFooter: !!length
-    html = este.demos.app.todomvc.todos.templates.element json
 
-    # See how we can merge HTML into element. Better than plain .innerHTML = ,
-    # because it updates only changed nodes and attributes, therefore does not
-    # destroy form fields states nor cause image flickering.
-    @mergeHtml html
+    doneCount: length - remainingCount
+    filter: @filter
+    itemsLocalized: @getLocalizedItems remainingCount
+    remainingCount: remainingCount
+    todos: @todos.filter @getFilter()
+    showMainAndFooter: !!length
 
   ###*
     @protected
