@@ -248,7 +248,7 @@ Commands =
   mochaTests: tests.run
 
   stylusStyles: (callback) ->
-    paths = getPaths 'assets/css', ['.styl']
+    paths = getPaths 'assets', ['.styl']
     command = "node assets/js/dev/node_modules/stylus/bin/stylus
       --compress #{paths.join ' '}"
     exec command, callback

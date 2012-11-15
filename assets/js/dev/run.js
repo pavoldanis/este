@@ -265,7 +265,7 @@ Commands = {
   mochaTests: tests.run,
   stylusStyles: function(callback) {
     var command, paths;
-    paths = getPaths('assets/css', ['.styl']);
+    paths = getPaths('assets', ['.styl']);
     command = "node assets/js/dev/node_modules/stylus/bin/stylus      --compress " + (paths.join(' '));
     return exec(command, callback);
   }
