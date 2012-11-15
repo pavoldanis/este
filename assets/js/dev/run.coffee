@@ -44,6 +44,7 @@ options =
   port: 8000
   errorBeep: false
   locale: ''
+  pythonBin: 'python'
 
 socket = null
 startTime = Date.now()
@@ -137,7 +138,7 @@ Commands =
     command = getSoyCommand soyPaths
     exec command, callback
 
-  closureDeps: "python assets/js/google-closure/closure/bin/build/depswriter.py
+  closureDeps: "#{options.pythonBin} assets/js/google-closure/closure/bin/build/depswriter.py
     #{depsNamespaces}
     > assets/js/deps.js"
 
@@ -199,7 +200,7 @@ Commands =
       # to allow project name like este/demos/app/todomvc
       namespace = options.project.replace /\//g, '.'
 
-      command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
+      command = "#{options.pythonBin} assets/js/google-closure/closure/bin/build/closurebuilder.py
         #{buildNamespaces}
         --namespace=\"#{namespace}.start\"
         --output_mode=compiled
@@ -309,6 +310,9 @@ setOptions = (args) ->
       when '--errorbeep', '-eb'
         options.errorBeep = true
 
+      when '--python', '-pb'
+        options.pythonBin = args.shift()
+
       when '--extractmessages', '-em'
         languages = args.splice 0, args.length
         extractMessages languages
@@ -367,6 +371,9 @@ setOptions = (args) ->
 
               Example
                 node run app -em en de
+
+            --python, -pb
+              Setup python binary. To override default 'python'.
 
             --help, -h
               To show this help.
@@ -773,7 +780,7 @@ getProjectPaths = (jsDir, callback) ->
     namespaces = for dir in jsSubdirs
       "--root=assets/#{jsDir}/#{dir} "
     namespaces.join ''
-  command = "python assets/js/google-closure/closure/bin/build/closurebuilder.py
+  command = "#{options.pythonBin} assets/js/google-closure/closure/bin/build/closurebuilder.py
     #{jsNamespaces}
     --namespace=\"#{options.project}.start\"
     --output_mode=list
