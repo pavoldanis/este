@@ -16,6 +16,7 @@
     tests (manually in IE and Gecko)
     better algorithm for temporally injected nodes via siblings checks
     consider outerHTML optimalization
+    uberconsider string2pseudoDom, then extract partial changes
 
   scenarios for end2end tests
     merge.html demo (form state is preserved)

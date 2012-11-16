@@ -177,7 +177,9 @@ Commands = {
     if (fs.existsSync('assets/js-build')) {
       wrench.rmdirSyncRecursive('assets/js-build');
     }
-    wrench.copyDirSyncRecursive('assets/js', 'assets/js-build');
+    wrench.copyDirSyncRecursive('assets/js', 'assets/js-build', {
+      preserveFiles: true
+    });
     if (options.debug) {
       flags = '--formatting=PRETTY_PRINT --debug=true';
     } else {
