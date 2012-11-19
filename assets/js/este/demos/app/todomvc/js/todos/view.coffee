@@ -29,7 +29,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     undefined, active, completed
     @inheritDoc
   ###
-  url: '/:filter?'
+  url: -> '/:filter?'
 
   ###*
     @type {este.demos.app.todomvc.todos.Collection}
@@ -47,39 +47,16 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @inheritDoc
   ###
   events: ->
-    '#new-todo-form submit': @onNewTodoSubmit
-    '.toggle tap': @onToggleTap
-    '#toggle-all tap': @onToggleAllTap
-    '.destroy tap': @onDestroyTap
-    '#clear-completed tap': @onClearCompletedTap
-    'label dblclick': @onLabelDblclick
-    '.edit blur': @onEditEnd
-    '.edit': [goog.events.KeyCodes.ENTER, @onEditEnd]
-
-  ###*
-    Each view is async loaded by default. Load method has to return object
-    implementing goog.result.Result interface. It's better than plain old
-    callbacks. todo: link to article
-    todo: consider move load into presented toward better testability
-    @inheritDoc
-  ###
-  load: (params) ->
-    @filter = switch params['filter']
-      when 'active'
-        View.Filter.ACTIVE
-      when 'completed'
-        View.Filter.COMPLETED
-      else
-        View.Filter.ALL
-
-    if !@todos
-      @todos = new este.demos.app.todomvc.todos.Collection
-      # setModel @todos enabled autobinding @todos to @onModelUpdate
-      @setModel @todos
-      return @localStorage.query @todos
-
-    # parent implementation returns success rusult immediately
     super()
+    @on
+      '#new-todo-form submit': @onNewTodoSubmit
+      '.toggle tap': @onToggleTap
+      '#toggle-all tap': @onToggleAllTap
+      '.destroy tap': @onDestroyTap
+      '#clear-completed tap': @onClearCompletedTap
+      'label dblclick': @onLabelDblclick
+      '.edit blur': @onEditEnd
+      '.edit': [goog.events.KeyCodes.ENTER, @onEditEnd]
 
   ###*
     @param {Array.<este.Model.Event>} events
@@ -91,10 +68,9 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @update()
 
   ###*
-    todo: consider pass model from e.json
     @protected
   ###
-  onNewTodoSubmit: (model, el, e) ->
+  onNewTodoSubmit: (e) ->
     todo = new este.demos.app.todomvc.todo.Model e.json
     errors = todo.validate()
     return if errors
@@ -156,6 +132,31 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       'editing': false
 
   ###*
+    Each view is async loaded by default. Load method has to return object
+    implementing goog.result.Result interface. It's better than plain old
+    callbacks. todo: link to article
+    todo: consider move load into presented toward better testability
+    @inheritDoc
+  ###
+  load: (params) ->
+    @filter = switch params['filter']
+      when 'active'
+        View.Filter.ACTIVE
+      when 'completed'
+        View.Filter.COMPLETED
+      else
+        View.Filter.ALL
+
+    if !@todos
+      @todos = new este.demos.app.todomvc.todos.Collection
+      # setModel enables autobinding @todos to @onModelUpdate
+      @setModel @todos
+      return @localStorage.query @todos
+
+    # parent implementation returns success rusult immediately
+    super()
+
+  ###*
     @protected
   ###
   update: ->
@@ -193,6 +194,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     filter
 
   ###*
+    estejs.tumblr.com/post/35639619128/este-js-localization-cheat-sheet
     @param {number} remainingCount
     @return {string}
     @protected

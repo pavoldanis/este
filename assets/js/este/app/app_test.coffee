@@ -48,7 +48,7 @@ suite 'este.App', ->
       result
     # view.udpate = ->
     view.dispose = ->
-    view.url = '/'
+    view.url = -> '/'
     view
 
   suite 'constructor', ->
@@ -179,7 +179,7 @@ suite 'este.App', ->
         router.pathNavigate = (url, params, silent) ->
           called = true
         app.urlEnabled = true
-        view1.url = null
+        view1.url = -> ''
         app.load view1, id: 1, false
         assert.isFalse called
 

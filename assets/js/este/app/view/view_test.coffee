@@ -30,7 +30,7 @@ suite 'este.app.View', ->
       assert.isNull view.getUrl prototype: {}
 
     test 'should return url for view with url and params', ->
-      viewClass = prototype: url: 'detail/:id'
+      viewClass = prototype: url: -> 'detail/:id'
       url = view.getUrl viewClass, id: 123
       assert.equal url, 'detail/123'
 

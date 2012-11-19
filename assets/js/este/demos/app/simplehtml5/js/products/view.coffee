@@ -18,7 +18,7 @@ class este.demos.app.simplehtml5.products.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  url: '/'
+  url: -> '/'
 
   ###*
     @type {este.demos.app.simplehtml5.products.Collection} products

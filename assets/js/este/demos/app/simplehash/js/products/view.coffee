@@ -18,7 +18,7 @@ class este.demos.app.simplehash.products.View extends este.app.View
   ###*
     @inheritDoc
   ###
-  url: '/'
+  url: -> '/'
 
   ###*
     @type {este.demos.app.simplehash.products.Collection} products

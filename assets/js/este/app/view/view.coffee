@@ -9,7 +9,6 @@ goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
 goog.require 'este.ui.Component'
-goog.require 'goog.string'
 
 class este.app.View extends este.ui.Component
 
@@ -31,9 +30,9 @@ class este.app.View extends este.ui.Component
     urls will be converted to '#/' prefix. If url == '', then view is not url
     projected.
     Various url definitions: este/assets/js/este/router/route_test.coffee
-    @type {string}
+    @type {function(): string}
   ###
-  url: ''
+  url: -> ''
 
   ###*
     @type {este.storage.Local}
@@ -47,12 +46,6 @@ class este.app.View extends este.ui.Component
   html5historyEnabled: true
 
   ###*
-    @type {function(): Object.<string, Function|Array>}
-    @protected
-  ###
-  events: -> {}
-
-  ###*
     @type {Array.<este.Model.Event>} events
     @private
   ###
@@ -64,7 +57,7 @@ class este.app.View extends este.ui.Component
     @return {?string}
   ###
   getUrl: (viewClass, params) ->
-    url = viewClass::url
+    url = viewClass::url?()
     return null if !url?
     url = este.router.Route.getUrl url, params
     if !@html5historyEnabled
@@ -72,10 +65,10 @@ class este.app.View extends este.ui.Component
     url
 
   ###*
-    This method should be overridden by inheriting objects.
     este.storage.Local or este.storage.Rest can be used, or any other object
     implementing goog.result.Result interface. If you don't want to load
-    anything, just call default super implementation.
+    anything, just call default super implementation. This method should be
+    overridden.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
@@ -89,8 +82,15 @@ class este.app.View extends este.ui.Component
     super()
     @update()
     @registerModelUpdate()
-    @registerEvents()
+    @events()
     return
+
+  ###*
+    Use this method for UI refresh. It's called from enterDocument or on model
+    change. This method should be overridden.
+    @protected
+  ###
+  update: ->
 
   ###*
     @protected
@@ -101,32 +101,18 @@ class este.app.View extends este.ui.Component
     @on model, 'update', @onModelUpdateInternal
 
   ###*
-    @param {este.Model.Event} e
+    Use this method for event registration. This method should be overridden.
     @protected
   ###
-  onModelUpdateInternal: (e) ->
-    @unitOfWorkEvents.push e
+  events: ->
 
   ###*
-    @param {Array.<este.Model.Event>} events
-    @protected
+    todo: link article about UI unit of work event delegation handling
+    @inheritDoc
   ###
-  onModelUpdate: (events) ->
-
-  ###*
-    @protected
-  ###
-  registerEvents: ->
-    return if !@events
-    for key, value of @events()
-      key = goog.string.trim goog.string.normalizeSpaces key
-      chunks = key.split ' '
-      src = chunks[0]
-      type = chunks[1] || value[0]
-      fn = if chunks[1] then value else value[1]
-      wrapper = @getEventWrapper fn
-      @on src, type, wrapper
-    return
+  delegateType: (selector, type, fn, el) ->
+    fn = @getEventWrapper fn
+    super selector, type, fn, el
 
   ###*
     @param {Function} fn
@@ -141,15 +127,30 @@ class este.app.View extends este.ui.Component
           clientId = el.getAttribute 'data-cid'
           model = @findModelByClientId clientId
       @unitOfWorkEvents = []
-      fn.call @, model, el, e
+      if model
+        fn.call @, model, el, e
+      else
+        fn.call @, e
       @onModelUpdate @unitOfWorkEvents if @unitOfWorkEvents.length
 
   ###*
-    This method should be overridden by inheriting objects. Use this method for
-    UI refresh. It's called from enterDocument or on model change.
+    @param {este.Model.Event} e
     @protected
   ###
-  update: goog.abstractMethod
+  onModelUpdateInternal: (e) ->
+    if @unitOfWorkEvents
+      @unitOfWorkEvents.push e
+    else
+      @onModelUpdate [e]
+
+  ###*
+    It is called after user action (defined in events: -> ..). It prevents
+    consequent dispatches.
+    @param {Array.<este.Model.Event>} events
+    @protected
+  ###
+  onModelUpdate: (events) ->
+    @update()
 
   ###*
     Save innerHTML update.

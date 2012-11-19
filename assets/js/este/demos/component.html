@@ -77,19 +77,19 @@
       this.on(document.querySelector('h1'), 'click', function() {
         alert('h1 clicked')
       })
-      this.delegate('.box', ['mouseover', 'mouseout'], function(e) {
+      this.on('.box', ['mouseover', 'mouseout'], function(e) {
         console.log(e.type, e.target.tagName)
       })
-      this.delegate('#someInput', goog.events.KeyCodes.ENTER, function(e) {
+      this.on('#someInput', goog.events.KeyCodes.ENTER, function(e) {
         console.log(e.type, e.target.tagName, e.keyCode)
       })
-      this.delegate('#someInput', ['focus', 'blur'], function(e) {
+      this.on('#someInput', ['focus', 'blur'], function(e) {
         console.log(e.type, e.target.tagName)
       })
-      this.delegate('#tap', 'tap', function(e) {
+      this.on('#tap', 'tap', function(e) {
         console.log(e.type, e.target.tagName)
       })
-      this.delegate('.some-form', 'submit', function(e) {
+      this.on('.some-form', 'submit', function(e) {
         e.preventDefault()
         console.log(e.type, e.target.tagName, e.json)
       })

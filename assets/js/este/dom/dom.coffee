@@ -350,6 +350,7 @@ goog.scope ->
   ###*
     ex. <a class='foo'></a>, 'a.foo'
     todo: add pseudos and attrs, make tag case insensitive, tests
+          take a look at new jQuery selector engine code for matching
     @param {Node} node
     @param {string} selector
     @return {boolean}

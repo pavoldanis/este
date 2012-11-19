@@ -1,0 +1,38 @@
+// useful mixin from assets/este/este/styl
+inline-block-container()
+  letter-spacing -0.31em
+  word-spacing -0.43em
+
+  > *
+    display inline-block
+    letter-spacing normal
+    word-spacing normal
+    vertical-align top
+
+#app
+  .este-links
+    inline-block-container()
+    display inline-block
+    background-color #eee
+    border solid 1px #ccc
+    padding .3em
+    border-radius 6px
+    margin-bottom 3px
+
+    a
+      padding .2em 1em
+      margin .3em
+      border solid 1px #ccc
+      border-radius 6px
+      color #333
+      text-decoration none
+      background-color #eee
+      &:hover
+        background-color #fff
+
+  .este-content
+    background-color #eee
+    border solid 1px #ccc
+    padding 1.2em
+    margin-top .2em
+    border-radius 6px
