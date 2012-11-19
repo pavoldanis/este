@@ -55,8 +55,9 @@ suite 'este.ui.Component', ->
     suite 'dom events', ->
       test 'should delegate to element by selector', (done) ->
         component.render()
-        component.delegate '#foo', 'click', ->
-          done()
+        component.delegate
+          '#foo click': ->
+            done()
         goog.events.fireListeners component.getElement(), 'click', false,
           type: 'click'
           target:
@@ -64,8 +65,9 @@ suite 'este.ui.Component', ->
 
       test 'should delegate to element by selector via parent', (done) ->
         component.render()
-        component.delegate '#foo', 'click', ->
-          done()
+        component.delegate
+          '#foo click': ->
+            done()
         goog.events.fireListeners component.getElement(), 'click', false,
           type: 'click'
           target:
@@ -76,7 +78,8 @@ suite 'este.ui.Component', ->
         calls = 0
         component.render()
         fn = -> calls++
-        component.delegate '#foo', ['mousedown', 'mouseup'], fn
+        component.delegate
+          '#foo mousedown,mouseup': fn
         goog.events.fireListeners component.getElement(), 'mousedown', false,
           type: 'mousedown'
           target:
@@ -91,8 +94,9 @@ suite 'este.ui.Component', ->
         called = false
         listenerCount = goog.events.getTotalListenerCount()
         component.render()
-        component.delegate '#foo', 'click', ->
-          called = true
+        component.delegate
+          '#foo click': ->
+            called = true
         component.exitDocument()
         goog.events.fireListeners component.getElement(), 'click', false,
           type: 'click'
@@ -104,8 +108,9 @@ suite 'este.ui.Component', ->
     suite 'key events', ->
       test 'should delegate to element by selector', (done) ->
         component.render()
-        component.delegate '.foo', 13, ->
-          done()
+        component.delegate
+          '.foo 13': ->
+            done()
         goog.events.fireListeners component.keyHandler, 'key', false,
           type: 'key'
           keyCode: 13
@@ -114,8 +119,9 @@ suite 'este.ui.Component', ->
 
       test 'should delegate to element by selector via parent', (done) ->
         component.render()
-        component.delegate '.foo', 13, ->
-          done()
+        component.delegate
+          '.foo 13': ->
+            done()
         goog.events.fireListeners component.keyHandler, 'key', false,
           type: 'key'
           keyCode: 13
@@ -126,7 +132,8 @@ suite 'este.ui.Component', ->
       test 'should be disposed after exitDocument', ->
         listenerCount = goog.events.getTotalListenerCount()
         component.render()
-        component.delegate '.foo', 13, ->
+        component.delegate
+          '.foo 13': ->
         disposeCalled = false
         component.keyHandler.dispose = ->
           disposeCalled = true
@@ -138,8 +145,9 @@ suite 'este.ui.Component', ->
     suite 'tap events', ->
       test 'should delegate to element by selector', (done) ->
         component.render()
-        component.delegate '.foo', 'tap', ->
-          done()
+        component.delegate
+          '.foo tap': ->
+            done()
         goog.events.fireListeners component.tapHandler, 'tap', false,
           type: 'tap'
           target:
@@ -147,8 +155,9 @@ suite 'este.ui.Component', ->
 
       test 'should delegate to element by selector via parent', (done) ->
         component.render()
-        component.delegate '.foo', 'tap', ->
-          done()
+        component.delegate
+          '.foo tap': ->
+            done()
         goog.events.fireListeners component.tapHandler, 'tap', false,
           type: 'key'
           keyCode: 'tap'
@@ -159,7 +168,8 @@ suite 'este.ui.Component', ->
       test 'should be disposed after exitDocument', ->
         listenerCount = goog.events.getTotalListenerCount()
         component.render()
-        component.delegate '.foo', 'tap', ->
+        component.delegate
+          '.foo tap': ->
         disposeCalled = false
         component.tapHandler.dispose = ->
           disposeCalled = true
@@ -171,8 +181,9 @@ suite 'este.ui.Component', ->
     suite 'submit events', ->
       test 'should delegate to element by selector', (done) ->
         component.render()
-        component.delegate '.foo', 'submit', ->
-          done()
+        component.delegate
+          '.foo submit': ->
+            done()
         goog.events.fireListeners component.submitHandler, 'submit', false,
           type: 'submit'
           target:
@@ -180,8 +191,9 @@ suite 'este.ui.Component', ->
 
       test 'should delegate to element by selector via parent', (done) ->
         component.render()
-        component.delegate '.foo', 'submit', ->
-          done()
+        component.delegate
+          '.foo submit': ->
+            done()
         goog.events.fireListeners component.submitHandler, 'submit', false,
           type: 'key'
           keyCode: 'submit'
@@ -192,7 +204,8 @@ suite 'este.ui.Component', ->
       test 'should be disposed after exitDocument', ->
         listenerCount = goog.events.getTotalListenerCount()
         component.render()
-        component.delegate '.foo', 'submit', ->
+        component.delegate
+          '.foo submit': ->
         disposeCalled = false
         component.submitHandler.dispose = ->
           disposeCalled = true
