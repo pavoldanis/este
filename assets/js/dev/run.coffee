@@ -339,6 +339,9 @@ setOptions = (args) ->
                   insert messages from assets/messages/[project]/[LOCALE].json
                   compile to assets/js/[project]_[en].js
 
+              Example how to compile one namespace
+                node run este/demos/app/todomvc -b
+
             --debug, -d
               Same as build, but with these compiler flags:
                 '--formatting=PRETTY_PRINT --debug=true'
