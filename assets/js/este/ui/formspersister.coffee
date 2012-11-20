@@ -15,19 +15,19 @@
 goog.provide 'este.ui.FormsPersister'
 goog.provide 'este.ui.FormsPersister.create'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 goog.require 'goog.dom.forms'
 goog.require 'este.dom'
 goog.require 'goog.events.FocusHandler'
 goog.require 'goog.events.InputHandler'
 goog.require 'este.storage.create'
 
-class este.ui.FormsPersister extends goog.ui.Component
+class este.ui.FormsPersister extends este.ui.Component
 
   ###*
     @param {boolean=} session
     @constructor
-    @extends {goog.ui.Component}
+    @extends {este.ui.Component}
   ###
   constructor: (session = false) ->
     super()
@@ -108,9 +108,8 @@ class este.ui.FormsPersister extends goog.ui.Component
   enterDocument: ->
     super()
     @focusHandler = new goog.events.FocusHandler @getElement()
-    @getHandler().
-      listen(@focusHandler, 'focusin', @onFocusin).
-      listen(@getElement(), 'change', @onChange)
+    @on @focusHandler, 'focusin', @onFocusin
+    @on @getElement(), 'change', @onChange
     return
 
   ###*
@@ -136,7 +135,7 @@ class este.ui.FormsPersister extends goog.ui.Component
   ###
   registerInputHander: (field) ->
     handler = new goog.events.InputHandler field
-    @getHandler().listen handler, 'input', @onFieldInput
+    @on handler, 'input', @onFieldInput
     @getHandler().listenOnce field, 'blur', (e) ->
       handler.dispose()
 

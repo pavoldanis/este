@@ -7,14 +7,14 @@ goog.require 'este.mobile'
 goog.require 'goog.dom.classes'
 goog.require 'goog.events.InputHandler'
 goog.require 'goog.string'
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 
-class este.ui.FieldReset extends goog.ui.Component
+class este.ui.FieldReset extends este.ui.Component
 
   ###*
     @param {Element} element
     @constructor
-    @extends {goog.ui.Component}
+    @extends {este.ui.Component}
   ###
   constructor: (element) ->
     @inputHandler = new goog.events.InputHandler element
@@ -49,9 +49,8 @@ class este.ui.FieldReset extends goog.ui.Component
   ###
   enterDocument: ->
     super()
-    @getHandler().
-      listen(@inputHandler, 'input', @onInputHandlerInput).
-      listen(@resetBtn, este.mobile.tapEvent, @onResetBtnTap)
+    @on @inputHandler, 'input', @onInputHandlerInput
+    @on @resetBtn, este.mobile.tapEvent, @onResetBtnTap
     @update()
     return
 

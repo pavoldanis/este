@@ -8,13 +8,13 @@
 goog.provide 'este.dev.Monitor'
 goog.provide 'este.dev.Monitor.create'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 
-class este.dev.Monitor extends goog.ui.Component
+class este.dev.Monitor extends este.ui.Component
 
   ###*
     @constructor
-    @extends {goog.ui.Component}
+    @extends {este.ui.Component}
   ###
   constructor: ->
     super
@@ -73,8 +73,7 @@ class este.dev.Monitor extends goog.ui.Component
   ###
   enterDocument: ->
     super()
-    @getHandler().
-      listen(window, 'scroll', @onWindowScroll)
+    @on window, 'scroll', @onWindowScroll
     return
 
   ###*

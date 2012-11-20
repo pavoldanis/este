@@ -4,18 +4,18 @@
 goog.provide 'este.ui.resizer.Handles'
 goog.provide 'este.ui.resizer.Handles.create'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 goog.require 'goog.fx.Dragger'
 goog.require 'goog.math.Coordinate'
 goog.require 'este.ui.InvisibleOverlay.create'
 
-class este.ui.resizer.Handles extends goog.ui.Component
+class este.ui.resizer.Handles extends este.ui.Component
 
 	###*
 		@param {Function} draggerFactory
 		@param {Function} invisibleOverlayFactory
 		@constructor
-		@extends {goog.ui.Component}
+		@extends {este.ui.Component}
 	###
 	constructor: (@draggerFactory, @invisibleOverlayFactory) ->
 
@@ -116,11 +116,10 @@ class este.ui.resizer.Handles extends goog.ui.Component
 	###
 	enterDocument: ->
 		super()
-		@getHandler().
-			listen(@horizontal, 'mousedown', @onHorizontalMouseDown).
-			listen(@vertical, 'mousedown', @onVerticalMouseDown).
-			listen(@horizontal, 'mouseout', @onMouseOut).
-			listen(@vertical, 'mouseout', @onMouseOut)
+		@on @horizontal, 'mousedown', @onHorizontalMouseDown
+		@on @vertical, 'mousedown', @onVerticalMouseDown
+		@on @horizontal, 'mouseout', @onMouseOut
+		@on @vertical, 'mouseout', @onMouseOut
 		return
 
 	###*
@@ -152,10 +151,9 @@ class este.ui.resizer.Handles extends goog.ui.Component
 	###
 	startDrag: (e) ->
 		@dragger = @draggerFactory()
-		@getHandler().
-			listen(@dragger, 'start', @onDragStart).
-			listen(@dragger, 'drag', @onDrag).
-			listen(@dragger, 'end', @onDragEnd)
+		@on @dragger, 'start', @onDragStart
+		@on @dragger, 'drag', @onDrag
+		@on @dragger, 'end', @onDragEnd
 		@dragger.startDrag e
 
 	###*

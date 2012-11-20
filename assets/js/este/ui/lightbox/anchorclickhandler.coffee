@@ -4,13 +4,13 @@
 
 goog.provide 'este.ui.lightbox.AnchorClickHandler'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 
-class este.ui.lightbox.AnchorClickHandler extends goog.ui.Component
+class este.ui.lightbox.AnchorClickHandler extends este.ui.Component
 
   ###*
     @constructor
-    @extends {goog.ui.Component}
+    @extends {este.ui.Component}
   ###
   constructor: ->
 
@@ -19,8 +19,7 @@ class este.ui.lightbox.AnchorClickHandler extends goog.ui.Component
   ###
   enterDocument: ->
     super()
-    @getHandler().
-      listen(@getElement(), 'click', @onClick)
+    @on @getElement(), 'click', @onClick
     return
 
   ###*

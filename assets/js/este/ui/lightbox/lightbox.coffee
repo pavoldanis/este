@@ -1,22 +1,23 @@
 ###*
 	@fileoverview Canonical lightbox.
 	todo
+		refactor and use templates
 		add mobile support
 	@see ../demos/lightbox.html
 ###
 goog.provide 'este.ui.Lightbox'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 goog.require 'este.ui.lightbox.AnchorClickHandler'
 goog.require 'este.ui.lightbox.View.create'
 
-class este.ui.Lightbox extends goog.ui.Component
+class este.ui.Lightbox extends este.ui.Component
 
 	###*
 		@param {este.ui.lightbox.AnchorClickHandler} anchorClickHandler
 		@param {Function} viewFactory
 		@constructor
-		@extends {goog.ui.Component}
+		@extends {este.ui.Component}
 	###
 	constructor: (@anchorClickHandler, @viewFactory) ->
 
@@ -64,8 +65,7 @@ class este.ui.Lightbox extends goog.ui.Component
 	###
 	enterDocument: ->
 		super()
-		@getHandler().
-			listen(@anchorClickHandler, 'click', @onAnchorClickHandlerClick)
+		@on @anchorClickHandler, 'click', @onAnchorClickHandlerClick
 		return
 
 	###*
@@ -75,4 +75,4 @@ class este.ui.Lightbox extends goog.ui.Component
 	onAnchorClickHandlerClick: (e) ->
 		@view = @viewFactory e.currentAnchor, e.anchors
 		@addChild @view, true
-		@getHandler().listen @view, 'close', @close
+		@on @view, 'close', @close

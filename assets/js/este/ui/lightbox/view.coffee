@@ -5,16 +5,16 @@
 goog.provide 'este.ui.lightbox.View'
 goog.provide 'este.ui.lightbox.View.create'
 
-goog.require 'goog.ui.Component'
+goog.require 'este.ui.Component'
 goog.require 'goog.events.KeyCodes'
 
-class este.ui.lightbox.View extends goog.ui.Component
+class este.ui.lightbox.View extends este.ui.Component
 
 	###*
 		@param {Element} currentAnchor
 		@param {Array.<Element>} anchors
 		@constructor
-		@extends {goog.ui.Component}
+		@extends {este.ui.Component}
 	###
 	constructor: (@currentAnchor, @anchors) ->
 		super()
@@ -82,9 +82,8 @@ class este.ui.lightbox.View extends goog.ui.Component
 	###
 	enterDocument: ->
 		super()
-		@getHandler().
-			listen(@getElement(), 'click', @onClick).
-			listen(@dom_.getDocument(), 'keydown', @onDocumentKeydown)
+		@on @getElement(), 'click', @onClick
+		@on @dom_.getDocument(), 'keydown', @onDocumentKeydown
 		return
 
 	###*

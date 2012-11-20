@@ -4,18 +4,17 @@
 ###
 goog.provide 'este.ui.Resizer'
 
-goog.require 'goog.ui.Component'
-
 goog.require 'este.events.Delegation.create'
+goog.require 'este.ui.Component'
 goog.require 'este.ui.resizer.Handles.create'
 
-class este.ui.Resizer extends goog.ui.Component
+class este.ui.Resizer extends este.ui.Component
 
 	###*
 		@param {Function}	delegationFactory
 		@param {Function}	handlesFactory
 		@constructor
-		@extends {goog.ui.Component}
+		@extends {este.ui.Component}
 	###
 	constructor: (@delegationFactory, @handlesFactory) ->
 		super()
@@ -104,10 +103,10 @@ class este.ui.Resizer extends goog.ui.Component
 	enterDocument: ->
 		super()
 		events = ['mouseover', 'mouseout']
-		@delegation = @delegationFactory @getElement(), events, @targetFilter, @targetParentFilter
-		@getHandler().
-			listen(@delegation, 'mouseover', @onDelegationMouseOver).
-			listen(@delegation, 'mouseout', @onDelegationMouseOut)
+		@delegation = @delegationFactory @getElement(), events, @targetFilter,
+			@targetParentFilter
+		@on @delegation, 'mouseover', @onDelegationMouseOver
+		@on @delegation, 'mouseout', @onDelegationMouseOut
 		return
 
 	###*
@@ -128,11 +127,10 @@ class este.ui.Resizer extends goog.ui.Component
 		@handles.dispose() if @handles
 		@handles = @handlesFactory()
 		@handles.decorate e.target
-		@getHandler().
-			listen(@handles, 'mouseout', @onDelegationMouseOut).
-			listen(@handles, 'start', @onDragStart).
-			listen(@handles, 'drag', @onDrag).
-			listen(@handles, 'end', @onDragEnd)
+		@on @handles, 'mouseout', @onDelegationMouseOut
+		@on @handles, 'start', @onDragStart
+		@on @handles, 'drag', @onDrag
+		@on @handles, 'end', @onDragEnd
 
 	###*
 		@param {goog.events.BrowserEvent} e

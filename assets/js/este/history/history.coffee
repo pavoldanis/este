@@ -103,9 +103,9 @@ class este.History extends este.Base
   ###
   setEnabled: (enabled = true) ->
     if enabled
-      @getHandler().listen @history, 'navigate', @onNavigate
+      @on @history, 'navigate', @onNavigate
     else
-      @getHandler().unlisten @history, 'navigate', @onNavigate
+      @on @history, 'navigate', @onNavigate
     @history.setEnabled enabled
 
   ###*

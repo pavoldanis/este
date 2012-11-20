@@ -137,13 +137,11 @@ class este.events.TapHandler extends este.Base
   enableTouchMoveEndEvents: (enable) ->
     html = @element.ownerDocument.documentElement
     if enable
-      @getHandler().
-        listen(html, 'touchmove', @onTouchMove).
-        listen(@element, 'touchend', @onTouchEnd)
+      @on html, 'touchmove', @onTouchMove
+      @on @element, 'touchend', @onTouchEnd
     else
-      @getHandler().
-        unlisten(html, 'touchmove', @onTouchMove).
-        unlisten(@element, 'touchend', @onTouchEnd)
+      @off html, 'touchmove', @onTouchMove
+      @off @element, 'touchend', @onTouchEnd
 
   ###*
     @param {string} type
