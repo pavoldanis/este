@@ -33,22 +33,34 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
   elementRendered_: false
 
   ###*
+    @type {boolean}
+    @protected
+  ###
+  contentRendered: false
+
+  ###*
     @inheritDoc
   ###
   update: ->
     @renderElement()
-    @content = @getElementByClass 'este-content'
+    @content ?= @getElementByClass 'este-content'
     @renderContent()
     return
 
   ###*
+    Renders whole layout with one content region.
     @protected
   ###
   renderElement: ->
     return if @elementRendered_
     @elementRendered_ = true
+    links =
+      'Home': este.demos.app.layout.index.View
+      'Bla': este.demos.app.layout.bla.View
+      'Foo': este.demos.app.layout.foo.View
+    linksHtml = @getLinksHtml links
     html = este.demos.app.layout.layouts.master.templates.element
-      links: @getLinks()
+      linksHtml: linksHtml
     @getElement().innerHTML = html
 
   ###*
@@ -60,13 +72,14 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
     este.dom.merge @content, html
 
   ###*
-    todo: add selected.
-    @return {Object.<string, string>}
+    @param {Object.<string, function(new:este.app.View)>} links
+    @return {string}
     @protected
   ###
-  getLinks: ->
-    links = {}
-    # can be localized
-    links['Bla'] = @getUrl este.demos.app.layout.bla.View
-    links['Foo'] = @getUrl este.demos.app.layout.foo.View
-    links
+  getLinksHtml: (links) ->
+    linksArray = for title, view of links
+      title: title
+      href: @getUrl view
+      selected: @ instanceof view
+    este.demos.app.layout.layouts.master.templates.links
+      links: linksArray

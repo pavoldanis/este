@@ -5,7 +5,9 @@
 goog.provide 'este.demos.app.layout.start'
 
 goog.require 'este.app.create'
+goog.require 'este.demos.app.layout.about.View'
 goog.require 'este.demos.app.layout.bla.View'
+goog.require 'este.demos.app.layout.contacts.View'
 goog.require 'este.demos.app.layout.foo.View'
 goog.require 'este.demos.app.layout.index.View'
 goog.require 'este.dev.Monitor.create'
@@ -21,7 +23,9 @@ este.demos.app.layout.start = (data) ->
   appEl = document.getElementById 'app'
 
   myApp = este.app.create appEl, [
+    este.demos.app.layout.about.View
     este.demos.app.layout.bla.View
+    este.demos.app.layout.contacts.View
     este.demos.app.layout.foo.View
     este.demos.app.layout.index.View
   ], true

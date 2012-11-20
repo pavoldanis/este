@@ -1,7 +1,7 @@
 {namespace este.demos.app.layout.layouts.master.templates autoescape="contextual"}
 
 /**
- * @param links
+ * @param linksHtml
  */
 {template .element}
   <h1>este.demos.app.layout</h1>
@@ -9,15 +9,26 @@
     Layout demo. Take a look at source code to see how it works.
   </p>
   <div class="este-links">
-    {foreach $link in keys($links)}
-      <a href="{$links[$link]}">{$link}</a>{sp}
-    {/foreach}
+    {$linksHtml |noAutoescape}
   </div>
-  <div class="este-content"></div>
+  <div class="este-container">
+    <div class="este-content"></div>
+  </div>
+{/template}
+
+/**
+ * @param links
+ */
+{template .links}
+  {foreach $link in $links}
+    <a {if $link.selected}class="este-selected"{/if} href="{$link.href}">{$link.title}</a>{sp}
+  {/foreach}
 {/template}
 
 /**
  */
 {template .content}
-  Default index content. Can be overriden from subclassed views.
+  <p>
+    Default index content. Can be overriden in subclassed views.
+  </p>
 {/template}

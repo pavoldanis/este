@@ -5,6 +5,7 @@ goog.provide 'este.app.View'
 goog.provide 'este.app.View.EventType'
 
 goog.require 'este.app.view.Event'
+goog.require 'este.Collection'
 goog.require 'este.dom.merge'
 goog.require 'este.result'
 goog.require 'este.router.Route'
@@ -49,7 +50,7 @@ class este.app.View extends este.ui.Component
     @type {Array.<este.Model.Event>} events
     @private
   ###
-  unitOfWorkEvents: null
+  unitOfUiWorkEvents: null
 
   ###*
     @param {function(new:este.app.View)} viewClass
@@ -126,26 +127,24 @@ class este.app.View extends este.ui.Component
         if el
           clientId = el.getAttribute 'data-cid'
           model = @findModelByClientId clientId
-      @unitOfWorkEvents = []
+      @unitOfUiWorkEvents = []
       if model
         fn.call @, model, el, e
       else
         fn.call @, e
-      @onModelUpdate @unitOfWorkEvents if @unitOfWorkEvents.length
+      @onModelUpdate @unitOfUiWorkEvents if @unitOfUiWorkEvents.length
 
   ###*
     @param {este.Model.Event} e
     @protected
   ###
   onModelUpdateInternal: (e) ->
-    if @unitOfWorkEvents
-      @unitOfWorkEvents.push e
+    if @unitOfUiWorkEvents
+      @unitOfUiWorkEvents.push e
     else
       @onModelUpdate [e]
 
   ###*
-    It is called after user action (defined in events: -> ..). It prevents
-    consequent dispatches.
     @param {Array.<este.Model.Event>} events
     @protected
   ###

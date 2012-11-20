@@ -1,5 +1,5 @@
 ###*
-  @fileoverview este.demos.app.layout.bla.View.
+  @fileoverview Bla view.
 ###
 goog.provide 'este.demos.app.layout.bla.View'
 
@@ -39,4 +39,6 @@ class este.demos.app.layout.bla.View extends este.demos.app.layout.layouts.maste
     @inheritDoc
   ###
   renderContent: ->
+    return if @contentRendered
+    @contentRendered = true
     @content.innerHTML = este.demos.app.layout.bla.templates.element()
