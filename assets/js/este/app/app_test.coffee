@@ -75,11 +75,12 @@ suite 'este.App', ->
         done()
       app.start()
 
-    test 'should set view localStorage', ->
+    test 'should set view storage', ->
+      app.storage = {}
       app.start()
-      assert.instanceOf view1.localStorage, este.storage.Local
-      assert.instanceOf view2.localStorage, este.storage.Local
-      assert.instanceOf view3.localStorage, este.storage.Local
+      assert.equal view1.storage, app.storage
+      assert.equal view2.storage, app.storage
+      assert.equal view3.storage, app.storage
 
     test 'should call view1.load then layout.show method if urlEnabled == false',
       (done) ->
@@ -232,8 +233,3 @@ suite 'este.App', ->
       app.dispose()
       assert.equal app.pendingRequests.length, 0
       assert.equal calls, '01234'
-
-  suite 'localStorageNamespace', ->
-    test 'should be non empty string', ->
-      assert.isString app.localStorageNamespace
-      assert.ok app.localStorageNamespace

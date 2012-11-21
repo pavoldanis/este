@@ -9,7 +9,7 @@ goog.require 'este.app.Layout'
 goog.require 'este.app.Request'
 goog.require 'este.app.View'
 goog.require 'este.Base'
-goog.require 'este.storage.Local'
+goog.require 'este.storage.Base'
 goog.require 'goog.events.Event'
 goog.require 'goog.result'
 goog.require 'goog.result.SimpleResult'
@@ -43,9 +43,9 @@ class este.App extends este.Base
   data: null
 
   ###*
-    @type {string}
+    @type {este.storage.Base}
   ###
-  localStorageNamespace: 'este-storage'
+  storage: null
 
   ###*
     @type {boolean}
@@ -77,17 +77,10 @@ class este.App extends este.Base
   pendingRequests: null
 
   ###*
-    @type {este.storage.Local}
-    @protected
-  ###
-  localStorage: null
-
-  ###*
     Start app.
   ###
   start: ->
     @on @, este.app.View.EventType.REDIRECT, @onRedirect
-    @localStorage = new este.storage.Local @localStorageNamespace
     @prepareViews()
     if @urlEnabled
       @startRouter()
@@ -100,7 +93,7 @@ class este.App extends este.Base
   prepareViews: ->
     for view in @views
       view.setParentEventTarget @
-      view.localStorage = @localStorage
+      view.storage ?= @storage
       view.html5historyEnabled = @router.isHtml5historyEnabled()
     return
 

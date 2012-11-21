@@ -21,6 +21,14 @@ class este.storage.Base
   namespace: ''
 
   ###*
+    POST
+    @param {este.Model} model
+    @return {!goog.result.Result}
+  ###
+  create: goog.abstractMethod
+
+  ###*
+    GET
     @param {este.Model} model
     @param {string} id
     @return {!goog.result.Result}
@@ -28,12 +36,14 @@ class este.storage.Base
   load: goog.abstractMethod
 
   ###*
+    PUT
     @param {este.Model} model
     @return {!goog.result.Result}
   ###
   save: goog.abstractMethod
 
   ###*
+    DELETE
     @param {este.Model} model
     @return {!goog.result.Result}
   ###

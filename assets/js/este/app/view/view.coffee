@@ -36,9 +36,9 @@ class este.app.View extends este.ui.Component
   url: -> ''
 
   ###*
-    @type {este.storage.Local}
+    @type {este.storage.Base}
   ###
-  localStorage: null
+  storage: null
 
   ###*
     todo: refactor

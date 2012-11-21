@@ -64,7 +64,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onModelUpdate: (events) ->
     for event in events
-      @localStorage.saveChanges event
+      @storage.saveChanges event
     @update()
 
   ###*
@@ -151,7 +151,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       @todos = new este.demos.app.todomvc.todos.Collection
       # setModel enables autobinding @todos to @onModelUpdate
       @setModel @todos
-      return @localStorage.query @todos
+      return @storage.query @todos
 
     # parent implementation returns success rusult immediately
     super()
