@@ -16,12 +16,6 @@ este.demos.app.todomvc.start = (data) ->
   if goog.DEBUG
     este.dev.Monitor.create()
 
-  # element = goog.dom.getElement element
-  # views = (new viewClass for viewClass in viewsClasses)
-  # layout = new este.app.Layout element
-  # router = este.router.create element, undefined, forceHash
-  # new este.App views, layout, router
-
   app = este.app.create 'todoapp', [
     este.demos.app.todomvc.todos.View
   ], true
