@@ -23,7 +23,6 @@
   <script src='/assets/js/deps.js'></script>
   <script>
     goog.require('este.dev.Monitor.create')
-    goog.require('goog.Uri')
     goog.require('este.History')
   </script>
 </head>
@@ -50,8 +49,7 @@
   <script>
     este.dev.Monitor.create()
 
-    var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var esteHistory = new este.History(pathPrefix)
+    var esteHistory = new este.History
     var cur = 'kittens'
 
     console.log('HTML5 enabled: ' + esteHistory.html5historyEnabled)

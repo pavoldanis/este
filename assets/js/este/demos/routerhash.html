@@ -50,8 +50,7 @@
   <script>
     este.dev.Monitor.create()
 
-    var pathPrefix = new goog.Uri(document.location.href).getPath() + '/'
-    var router = este.router.create(document.body, pathPrefix, true)
+    var router = este.router.create(document.body, true)
     var cur = 'kittens'
 
     var updateUI = function(token) {

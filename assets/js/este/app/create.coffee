@@ -17,5 +17,5 @@ este.app.create = (element, viewsClasses, forceHash) ->
   element = goog.dom.getElement element
   views = (new viewClass for viewClass in viewsClasses)
   layout = new este.app.Layout element
-  router = este.router.create element, undefined, forceHash
+  router = este.router.create element, forceHash
   new este.App views, layout, router

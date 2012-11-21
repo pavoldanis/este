@@ -20,20 +20,26 @@ goog.require 'goog.dom'
 goog.require 'goog.History'
 goog.require 'goog.history.Event'
 goog.require 'goog.history.Html5History'
+goog.require 'goog.Uri'
 goog.require 'goog.userAgent.product.isVersion'
 
 class este.History extends este.Base
 
   ###*
-    @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
-    The path prefix should start and end with slash.
     @param {boolean=} forceHash If true, este.History will degrade to hash even
     if html5history is supported.
+    @param {string=} pathPrefix Path prefix to use if storing tokens in the path.
+    The path prefix should start and end with slash.
     @constructor
     @extends {este.Base}
   ###
-  constructor: (@pathPrefix, forceHash) ->
+  constructor: (forceHash, pathPrefix) ->
     super
+
+    if !pathPrefix
+      pathPrefix = new goog.Uri(document.location.href).getPath()
+      pathPrefix += '/' if !goog.string.endsWith pathPrefix, '/'
+
     html5historySupported = goog.history.Html5History.isSupported()
 
     # iOS < 5 does not support pushState correctly
