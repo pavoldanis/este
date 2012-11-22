@@ -2,19 +2,15 @@
   @fileoverview Local storage for este.Model's via HTML5 or IE user data.
 
   todo:
-    consider Este <templates>
-    check if value was stored
-      fire goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED if not
-    scheme
-      version
-      updaters
+    check goog.storage.mechanism.ErrorCode.QUOTA_EXCEEDED
+    versions
+    change scripts
 ###
 goog.provide 'este.storage.Local'
 
 goog.require 'este.json'
 goog.require 'este.result'
 goog.require 'este.storage.Base'
-goog.require 'goog.asserts'
 goog.require 'goog.object'
 goog.require 'goog.storage.mechanism.mechanismfactory'
 goog.require 'goog.string'
@@ -90,8 +86,8 @@ class este.storage.Local extends este.storage.Base
     @inheritDoc
   ###
   query: (collection, params) ->
-    urn = @checkCollectionUrn collection
-    models = @loadModels urn
+    @checkCollectionUrn collection
+    models = @loadModels collection.getUrn()
     array = @modelsToArray models
     collection.add array
     este.result.ok params
@@ -106,7 +102,7 @@ class este.storage.Local extends este.storage.Base
     return id.toString() if id?
 
     id = @idFactory()
-    model.set ('id': id), true
+    model.set 'id': id
     id
 
   ###*

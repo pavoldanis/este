@@ -95,10 +95,8 @@ class este.storage.Base
 
   ###*
     @param {este.Collection} collection
-    @return {string}
     @protected
   ###
   checkCollectionUrn: (collection) ->
-    urn = collection.getUrn()
-    goog.asserts.assertString urn, 'collection.getUrn() has to be string'
-    urn
+    goog.asserts.assertString collection.getUrn(),
+      'collection.getUrn() has to be string'

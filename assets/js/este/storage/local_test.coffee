@@ -52,9 +52,8 @@ suite 'este.storage.Local', ->
 
   suite 'save', ->
     test 'should assign id for model without id', (done) ->
-      model.set = (json, forceIds) ->
+      model.set = (json) ->
         assert.deepEqual json, id: 'someUniqueId'
-        assert.isTrue forceIds
         done()
       local.save model
 

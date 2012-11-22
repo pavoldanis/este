@@ -201,10 +201,10 @@ class este.Collection extends este.Base
 
   ###*
     http://en.wikipedia.org/wiki/Uniform_resource_name
-    @return {?string}
+    @return {string}
   ###
   getUrn: ->
-    @model?.prototype?.urn ? null
+    @model?.prototype?.urn ? ''
 
   ###*
     Filter collection by object or function and returns array of jsons.

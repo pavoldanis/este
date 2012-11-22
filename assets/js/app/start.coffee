@@ -22,6 +22,9 @@ goog.require 'goog.events'
 ###
 app.start = (data) ->
 
+  # use [] access for not compiled json
+  # data['someDataFromServer']
+
   if goog.DEBUG
     este.dev.Monitor.create()
 
