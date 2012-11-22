@@ -10,6 +10,7 @@ goog.require 'goog.result'
 class este.storage.Base
 
   ###*
+    todo: rename namespace param
     @param {string} namespace
     @constructor
   ###
@@ -98,5 +99,5 @@ class este.storage.Base
     @protected
   ###
   checkCollectionUrn: (collection) ->
-    goog.asserts.assertString collection.getUrn(),
-      'collection.getUrn() has to be string'
+    goog.asserts.assertString collection.urn,
+      'collection.urn has to be string'

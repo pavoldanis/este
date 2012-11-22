@@ -25,10 +25,19 @@ class este.Collection extends este.Base
   ###
   constructor: (array, @model = @model) ->
     super()
+    # todo: pluralize it
+    # @urn ?= @model?.prototype?.urn ? @urn
     @ids = {}
     @array = []
     @add array if array
     return
+
+  ###*
+    http://en.wikipedia.org/wiki/Uniform_resource_name
+    It's used by este.storage.Local and este.storage.Local.
+    @type {string}
+  ###
+  urn: 'models'
 
   ###*
     @type {Object.<string, boolean>}
@@ -198,13 +207,6 @@ class este.Collection extends este.Base
   ###
   getModel: ->
     @model
-
-  ###*
-    http://en.wikipedia.org/wiki/Uniform_resource_name
-    @return {string}
-  ###
-  getUrn: ->
-    @model?.prototype?.urn ? ''
 
   ###*
     Filter collection by object or function and returns array of jsons.

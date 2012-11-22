@@ -46,18 +46,6 @@ class este.storage.Local extends este.storage.Base
   ###*
     @inheritDoc
   ###
-  save: (model) ->
-    @checkModelUrn model
-    id = @ensureModelId model
-    serializedModels = @mechanism.get model.urn
-    models = if serializedModels then este.json.parse serializedModels else {}
-    models[id] = model.toJson true
-    @saveModels models, model.urn
-    este.result.ok id
-
-  ###*
-    @inheritDoc
-  ###
   load: (model) ->
     @checkModelUrn model
     id = @checkModelId model
@@ -66,6 +54,18 @@ class este.storage.Local extends este.storage.Base
     json = models[id]
     return este.result.fail() if !json
     model.set json
+    este.result.ok id
+
+  ###*
+    @inheritDoc
+  ###
+  save: (model) ->
+    @checkModelUrn model
+    id = @ensureModelId model
+    serializedModels = @mechanism.get model.urn
+    models = if serializedModels then este.json.parse serializedModels else {}
+    models[id] = model.toJson true
+    @saveModels models, model.urn
     este.result.ok id
 
   ###*
@@ -87,7 +87,7 @@ class este.storage.Local extends este.storage.Base
   ###
   query: (collection, params) ->
     @checkCollectionUrn collection
-    models = @loadModels collection.getUrn()
+    models = @loadModels collection.urn
     array = @modelsToArray models
     collection.add array
     este.result.ok params

@@ -18,6 +18,11 @@ class este.demos.app.todomvc.todo.Model extends este.Model
   ###*
     @inheritDoc
   ###
+  urn: 'todo'
+
+  ###*
+    @inheritDoc
+  ###
   defaults:
     'title': ''
     'completed': false

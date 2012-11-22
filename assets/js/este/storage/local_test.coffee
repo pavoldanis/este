@@ -41,7 +41,7 @@ suite 'este.storage.Local', ->
 
     collection =
       getModel: -> Model
-      getUrn: -> Model::urn
+      urn: Model::urn
       add: ->
 
     local = new Local root, mechanism, idFactory
@@ -208,8 +208,8 @@ suite 'este.storage.Local', ->
         done()
 
   suite 'query', ->
-    test 'should throw exception for getUrn() != string', (done) ->
-      collection.getUrn = ->
+    test 'should throw exception for .urn != string', (done) ->
+      collection.urn = null
       try local.query collection
       catch e
         done()
