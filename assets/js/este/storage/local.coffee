@@ -87,7 +87,7 @@ class este.storage.Local extends este.storage.Base
   ###
   query: (collection, params) ->
     @checkCollectionUrn collection
-    models = @loadModels collection.urn
+    models = @loadModels collection.getUrn()
     array = @modelsToArray models
     collection.add array
     este.result.ok params

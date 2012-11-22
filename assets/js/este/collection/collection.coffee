@@ -33,13 +33,6 @@ class este.Collection extends este.Base
     return
 
   ###*
-    http://en.wikipedia.org/wiki/Uniform_resource_name
-    It's used by este.storage.Local and este.storage.Local.
-    @type {string}
-  ###
-  urn: 'models'
-
-  ###*
     @type {Object.<string, boolean>}
     @protected
   ###
@@ -75,6 +68,13 @@ class este.Collection extends este.Base
     @protected
   ###
   sortReversed: false
+
+  ###*
+    Returns model's urn.
+    @return {string}
+  ###
+  getUrn: ->
+    @model::urn
 
   ###*
     @param {Array.<Object>|Object} arg

@@ -19,11 +19,6 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
   ###*
     @inheritDoc
   ###
-  urn: 'todo'
-
-  ###*
-    @inheritDoc
-  ###
   model: este.demos.app.todomvc.todo.Model
 
   ###*
