@@ -89,8 +89,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @protected
   ###
   onToggleAllTap: ->
-    completed = @todos.completed()
-    @todos.toggleCompleted !completed
+    allCompleted = @todos.allCompleted()
+    @todos.toggleCompleted !allCompleted
 
   ###*
     @param {este.demos.app.todomvc.todo.Model} model
@@ -171,7 +171,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   getJsonForTemplate: ->
     length = @todos.getLength()
-    remainingCount = @todos.remaining()
+    remainingCount = @todos.getRemainingCount()
 
     doneCount: length - remainingCount
     filter: @filter

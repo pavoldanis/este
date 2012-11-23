@@ -65,8 +65,8 @@ suite 'este.Model', ->
       assert.equal person.get('defaultFoo'), 2
 
   suite 'instance', ->
-    test 'should have string urn property', ->
-      assert.isString person.urn
+    test 'should have string url property', ->
+      assert.isString person.url
 
   suite 'set and get', ->
     test 'should work for one attribute', ->

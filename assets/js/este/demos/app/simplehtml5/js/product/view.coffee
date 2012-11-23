@@ -35,11 +35,13 @@ class este.demos.app.simplehtml5.product.View extends este.app.View
     , 1000
     result
 
-  # ###*
-  #   @inheritDoc
-  # ###
-  # events: ->
-  #   'button click': @onButtonClick
+  ###*
+    @inheritDoc
+  ###
+  events: ->
+    super()
+    @on
+      'button click': @onButtonClick
 
   ###*
     @inheritDoc

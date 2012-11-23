@@ -70,11 +70,9 @@ class este.Model extends este.Base
   @eventTypes: (type for name, type of Model.EventType)
 
   ###*
-    http://en.wikipedia.org/wiki/Uniform_resource_name
-    It's used by este.storage.Local and este.storage.Local.
     @type {string}
   ###
-  urn: 'model'
+  url: 'model'
 
   ###*
     @type {Object}
@@ -298,6 +296,16 @@ class este.Model extends este.Base
       idGenerator()
     else
       goog.ui.IdGenerator.getInstance().getNextUniqueId()
+
+  ###*
+    @inheritDoc
+  ###
+  disposeInternal: ->
+    for key, value of @attributes
+      continue if !(value instanceof goog.events.EventTarget)
+      @toggleEventPropagation false, Model.eventTypes, value
+    super
+    return
 
 ###*
   @fileoverview este.Model.Event.

@@ -17,7 +17,7 @@
 </head>
 <body>
   <h1>este.Collection</h1>
-  <textarea id="output"></textarea>
+  <textarea style="width: 140px; height: 70px" id="output"></textarea>
   <script>
     este.dev.Monitor.create()
 
@@ -25,11 +25,12 @@
     var count = 0
 
     goog.events.listen(collection, 'update', function(e) {
-      document.getElementById('output').value = collection.toJson()
+      value = JSON.stringify(collection.toJson())
+      document.getElementById('output').value = value
     })
 
     timer = setInterval(function() {
-      collection.add(++count)
+      collection.add({count: ++count})
       if (count == 3)
         clearInterval(timer)
     }, 1000)

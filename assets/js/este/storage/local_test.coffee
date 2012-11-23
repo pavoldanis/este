@@ -24,7 +24,7 @@ suite 'este.storage.Local', ->
     idFactory = -> 'someUniqueId'
 
     Model = ->
-    Model::urn = 'model'
+    Model::url = 'model'
     Model::set = (key, value) ->
       @[key] = value
     Model::get = (key) ->
@@ -41,7 +41,7 @@ suite 'este.storage.Local', ->
 
     collection =
       getModel: -> Model
-      getUrn: -> Model::urn
+      getUrl: -> Model::url
       add: ->
 
     local = new Local root, mechanism, idFactory
@@ -83,8 +83,8 @@ suite 'este.storage.Local', ->
         assert.equal value, 'someUniqueId'
         done()
 
-    test 'should throw exception for model without urn', (done) ->
-      model.urn = null
+    test 'should throw exception for model without url', (done) ->
+      model.url = null
       try
         local.save model
       catch e
@@ -149,8 +149,8 @@ suite 'este.storage.Local', ->
       goog.result.waitOnError result, ->
         done()
 
-    test 'should throw exception for model without urn', (done) ->
-      model.urn = null
+    test 'should throw exception for model without url', (done) ->
+      model.url = null
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '123'
       try
@@ -197,8 +197,8 @@ suite 'este.storage.Local', ->
       goog.result.waitOnError result, ->
         done()
 
-    test 'should throw exception for model without urn', (done) ->
-      model.urn = null
+    test 'should throw exception for model without url', (done) ->
+      model.url = null
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       model.id = '123'
       try
@@ -208,8 +208,8 @@ suite 'este.storage.Local', ->
         done()
 
   suite 'query', ->
-    test 'should throw exception for .getUrn() != string', (done) ->
-      collection.getUrn = ->
+    test 'should throw exception for .getUrl() != string', (done) ->
+      collection.getUrl = ->
       try local.query collection
       catch e
         done()

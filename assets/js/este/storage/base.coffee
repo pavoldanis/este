@@ -91,13 +91,13 @@ class este.storage.Base
     @param {este.Model} model
     @protected
   ###
-  checkModelUrn: (model) ->
-    goog.asserts.assertString model.urn, 'model urn has to be string'
+  checkModelUrl: (model) ->
+    goog.asserts.assertString model.url, 'model url has to be string'
 
   ###*
     @param {este.Collection} collection
     @protected
   ###
-  checkCollectionUrn: (collection) ->
-    goog.asserts.assertString collection.getUrn(),
-      'collection.urn has to be string'
+  checkCollectionUrl: (collection) ->
+    goog.asserts.assertString collection.getUrl(),
+      'collection.url has to be string'

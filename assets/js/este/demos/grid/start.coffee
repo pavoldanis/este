@@ -28,7 +28,6 @@ este.demos.grid.start = ->
     finish: '01/05/2009'
     effortDriven: i % 5 == 0
 
-  rows = new este.Collection rowsData, este.Model
-
+  rows = new este.Collection rowsData
   grid = new este.demos.Grid columns, rows
   grid.render document.body

@@ -181,7 +181,7 @@ class este.app.View extends este.ui.Component
     `/** @type {Element} */ (node)`
 
   ###*
-    @param {*} clientId
+    @param {string} clientId
     @protected
   ###
   findModelByClientId: (clientId) ->

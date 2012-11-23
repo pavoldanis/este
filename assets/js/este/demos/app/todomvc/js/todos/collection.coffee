@@ -35,11 +35,11 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
   ###*
     @return {number}
   ###
-  remaining: ->
+  getRemainingCount: ->
     @filter('completed': false).length
 
   ###*
     @return {boolean}
   ###
-  completed: ->
-    @remaining() == 0
+  allCompleted: ->
+    @getRemainingCount() == 0

@@ -1,11 +1,9 @@
 ###*
-  @fileoverview Collection. Use it for storing various items. JSON, este.Model,
-  EventTarget instance, whatever. Sorting & Filtering included. If item is
-  instanceof este.Model, two models with the same id will throw an exception.
+  @fileoverview Collection. Sorting & Filtering included.
   @see ../demos/collection.html
 
   todo
-    consider resort after bubbled change event
+    resort after bubbled change event
 ###
 
 goog.provide 'este.Collection'
@@ -19,14 +17,11 @@ class este.Collection extends este.Base
 
   ###*
     @param {Array.<Object>=} array
-    @param {function(new:este.Model)=} model
     @constructor
     @extends {este.Base}
   ###
-  constructor: (array, @model = @model) ->
+  constructor: (array) ->
     super()
-    # todo: pluralize it
-    # @urn ?= @model?.prototype?.urn ? @urn
     @ids = {}
     @array = []
     @add array if array
@@ -45,10 +40,10 @@ class este.Collection extends este.Base
   array: null
 
   ###*
-    @type {function(new:este.Model, Object=, Function=)|null}
+    @type {function(new:este.Model, Object=)}
     @protected
   ###
-  model: null
+  model: este.Model
 
   ###*
     @type {Function}
@@ -57,11 +52,10 @@ class este.Collection extends este.Base
   sortBy: null
 
   ###*
-    Function like goog.array.defaultCompare.
     @type {Function}
     @protected
   ###
-  sortCompare: null
+  sortCompare: goog.array.defaultCompare
 
   ###*
     @type {boolean}
@@ -70,42 +64,41 @@ class este.Collection extends este.Base
   sortReversed: false
 
   ###*
-    Returns model's urn.
+    Returns model's url.
     @return {string}
   ###
-  getUrn: ->
-    @model::urn
+  getUrl: ->
+    @model::url
 
   ###*
-    @param {Array.<Object>|Object} arg
+    @param {Array.<Object|este.Model>|Object|este.Model} arg
+    @return {boolean} True if any element were added.
   ###
   add: (arg) ->
     array = if goog.isArray arg then arg else [arg]
     added = []
     for item in array
-      if @model && !(item instanceof @model)
-        item = new @model item
+      item = new @model item if !(item instanceof @model)
       @ensureUnique item
-      if item instanceof goog.events.EventTarget
-        @toggleEventPropagation true, este.Model.eventTypes, item
+      @toggleEventPropagation true, este.Model.eventTypes, item
       added.push item
+    return false if !added.length
     @array.push.apply @array, added
     @sortInternal()
     @dispatchAddEvent added
-    return
+    true
 
   ###*
-    @param {Array|Object} array
-    @return {boolean} True if an element was removed.
+    @param {Array.<este.Model>|este.Model} arg
+    @return {boolean} True if any element were removed.
   ###
-  remove: (array) ->
-    array = [array] if !goog.isArray array
+  remove: (arg) ->
+    array = if goog.isArray arg then arg else [arg]
     removed = []
     for item in array
-      if item instanceof goog.events.EventTarget
-        @toggleEventPropagation false, este.Model.eventTypes, item
-      removed.push item if goog.array.remove @array, item
       @removeUnique item
+      @toggleEventPropagation false, este.Model.eventTypes, item
+      removed.push item if goog.array.remove @array, item
     return false if !removed.length
     @dispatchRemoveEvent removed
     true
@@ -118,18 +111,19 @@ class este.Collection extends este.Base
     @remove toRemove
 
   ###*
-    @param {*} object The object for which to test.
-    @return {boolean} true if obj is present.
+    @param {este.Model} model
+    @return {boolean}
   ###
-  contains: (object) ->
-    goog.array.contains @array, object
+  contains: (model) ->
+    goog.array.contains @array, model
 
   ###*
     @param {number} index
-    @return {*}
+    @return {este.Model}
   ###
   at: (index) ->
-    @array[index]
+    model = @array[index]
+    `/** @type {este.Model} */ (model)`
 
   ###*
     @return {number}
@@ -138,7 +132,7 @@ class este.Collection extends este.Base
     @array.length
 
   ###*
-    @return {Array.<Object>}
+    @return {Array.<este.Model>}
   ###
   toArray: ->
     @array
@@ -149,10 +143,7 @@ class este.Collection extends este.Base
     @return {Array.<Object>}
   ###
   toJson: (raw) ->
-    if @model
-      item.toJson raw for item in @array
-    else
-      @array.slice 0
+    item.toJson raw for item in @array
 
   ###*
     Clear collection.
@@ -161,81 +152,74 @@ class este.Collection extends este.Base
     @remove @array.slice 0
 
   ###*
-    Find item
+    Find item.
     @param {Function} fn
-    @return {*}
+    @return {este.Model}
   ###
   find: (fn) ->
-    for item in @array
-      return item if fn item
-    return
+    model = goog.array.find @array, fn
+    `/** @type {este.Model} */ (model)`
 
   ###*
-    Find item by Id
-    @param {*} id
-    @return {*}
+    Find item by Id.
+    @param {string|number} id
+    @return {este.Model}
   ###
   findById: (id) ->
     @find (item) =>
-      itemId = if @model then item.get('id') else item['id']
-      itemId == id
+      id == item.get 'id'
 
   ###*
-    todo: test
-    Find item by Id
-    @param {*} id
-    @return {*}
+    Find item by client id.
+    @param {string|number} id
+    @return {este.Model}
   ###
   findByClientId: (id) ->
     @find (item) =>
-      itemId = if @model then item.get('_cid') else item['_cid']
-      itemId == id
+      id == item.get '_cid'
 
   ###*
     @param {{by: Function, compare: Function, reversed: boolean}=} options
   ###
   sort: (options) ->
-    @sortBy = options.by if options?.by != undefined
-    @sortCompare = options.compare if options?.compare != undefined
-    @sortReversed = options.reversed if options?.reversed != undefined
+    @sortBy = options.by if options?.by?
+    @sortCompare = options.compare if options?.compare?
+    @sortReversed = options.reversed if options?.reversed?
     @sortInternal()
     @dispatchSortEvent()
     return
 
   ###*
-    @return {function(new:este.Model)|null}
+    @return {function(new:este.Model)}
   ###
   getModel: ->
     @model
 
   ###*
-    Filter collection by object or function and returns array of jsons.
-    todo: consider return collection if model is defined
-    @param {Object|Function} param
-    @return {Array}
+    Returns array of serialized models. Why array and not este.Collection?
+    Because it would be costly. Every collection registers child model events.
+    @param {Function|Object} filter
+    @param {boolean=} raw
+    @return {Array.<Object>}
   ###
-  filter: (param) ->
-    array = @toJson()
-    switch goog.typeOf param
-      when 'function'
-        # Enforce tighter type assertion. The compiler can infer the type from
-        # the assert and removes it during compilation. http://goo.gl/Bxb5h
-        goog.asserts.assertInstanceof param, Function
-        item for item in array when param item
-      when 'object'
-        @filter (item) =>
-          for key, value of param
-            return false if item[key] != value
-          true
-      else
-        null
+  filter: (filter, raw = false) ->
+    if typeof filter == 'function'
+      filtered = []
+      filtered.push item.toJson(raw) for item in @array when filter item
+      return filtered
+
+    @filter (item) ->
+      for key, value of filter
+        return false if item.get(key) != value
+      true
+    , raw
 
   ###*
     Calls a function for each element in an collection.
-    @param {function(*)} fn
+    @param {Function} fn
   ###
   each: (fn) ->
-    fn item for item in @array
+    goog.array.forEach @array, fn
     return
 
   ###*
@@ -286,25 +270,29 @@ class este.Collection extends este.Base
     return
 
   ###*
-    Ensure unique item in collection if item is instanceof este.Model.
-    @param {*} item
+    Ensure only just one model in collection.
+    @param {este.Model} model
     @protected
   ###
-  ensureUnique: (item) ->
-    return if !(item instanceof este.Model)
-    id = item.get('id') || item.get('_cid')
-    key = '$' + id
-    if @ids[key]
+  ensureUnique: (model) ->
+    id = model.get('id') || model.get('_cid')
+    if @ids['$' + id]
       goog.asserts.fail "Not allowed to add two models with the same id: #{id}"
-    @ids[key] = true
+    @ids['$' + id] = true
 
   ###*
     Remove unique id.
-    @param {*} item
+    @param {este.Model} model
     @protected
   ###
-  removeUnique: (item) ->
-    return if !(item instanceof este.Model)
-    id = item.get('id') || item.get('_cid')
-    key = '$' + id
-    delete @ids[key]
+  removeUnique: (model) ->
+    id = model.get('id') || model.get('_cid')
+    delete @ids['$' + id]
+
+  ###*
+    @inheritDoc
+  ###
+  disposeInternal: ->
+    @clear()
+    super()
+    return
