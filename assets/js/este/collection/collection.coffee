@@ -167,7 +167,7 @@ class este.Collection extends este.Base
   ###
   findById: (id) ->
     @find (item) =>
-      id == item.get 'id'
+      id == item.getId()
 
   ###*
     Find item by client id.
@@ -275,7 +275,7 @@ class este.Collection extends este.Base
     @protected
   ###
   ensureUnique: (model) ->
-    id = model.get('id') || model.get('_cid')
+    id = model.getId() || model.get('_cid')
     if @ids['$' + id]
       goog.asserts.fail "Not allowed to add two models with the same id: #{id}"
     @ids['$' + id] = true
@@ -286,7 +286,7 @@ class este.Collection extends este.Base
     @protected
   ###
   removeUnique: (model) ->
-    id = model.get('id') || model.get('_cid')
+    id = model.getId() || model.get('_cid')
     delete @ids['$' + id]
 
   ###*

@@ -44,8 +44,9 @@ suite 'este.Model', ->
       assert.equal person.get('_cid'), 1
 
     test 'should assign id', ->
-      person = new Person id: 'foo'
+      person = new Person 'id': 'foo'
       assert.equal person.get('id'), 'foo'
+      assert.equal person.getId(), 'foo'
 
     test 'should create attributes', ->
       person = new Person
@@ -289,3 +290,27 @@ suite 'este.Model', ->
         errors = person.validate()
         assert.deepEqual errors,
           lastName: required: true
+
+  suite 'model id defined in constructor', ->
+    test 'should be immutable', (done) ->
+      person = new Person 'id': 'foo'
+      try
+        person.setId 'bla'
+      catch e
+        done()
+
+  suite 'model id defined after construction', ->
+    test 'should be immutable', (done) ->
+      person = new Person
+      person.setId 'foo'
+      try
+        person.setId 'bla'
+      catch e
+        done()
+
+  suite 'idAttribute', ->
+    test 'should allow to define alternate id', ->
+      person = new Person
+      person.idAttribute = '_id'
+      person.setId '123'
+      assert.equal person.getId(), '123'

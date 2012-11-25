@@ -263,9 +263,9 @@ suite 'este.Collection', ->
         id: 2
       ]
       found = collection.findById 1
-      assert.equal found.get('id'), 1
+      assert.equal found.getId(), 1
       found = collection.findById 2
-      assert.equal found.get('id'), 2
+      assert.equal found.getId(), 2
       found = collection.findById 3
       assert.isNull found
 
@@ -277,9 +277,9 @@ suite 'este.Collection', ->
         id: 2, _cid: ':2'
       ]
       found = collection.findByClientId ':1'
-      assert.equal found.get('id'), 1
+      assert.equal found.getId(), 1
       found = collection.findByClientId ':2'
-      assert.equal found.get('id'), 2
+      assert.equal found.getId(), 2
       found = collection.findByClientId ':3'
       assert.isNull found
 
@@ -326,7 +326,7 @@ suite 'este.Collection', ->
       ]
 
     test 'should sort added items', ->
-      collection.sort by: (item) -> item.get('id')
+      collection.sort by: (item) -> item.getId()
       collection.add id: 3
       collection.add id: 2
       collection.add id: 1
@@ -341,7 +341,7 @@ suite 'este.Collection', ->
       collection.add id: 1
       collection.add id: 2
       collection.add id: 3
-      collection.sort reversed: true, by: (item) -> item.get('id')
+      collection.sort reversed: true, by: (item) -> item.getId()
       assert.deepEqual collection.toJson(true), [
         {id: 3},
         {id: 2},
@@ -349,7 +349,7 @@ suite 'este.Collection', ->
       ]
 
     test 'should sort added items', ->
-      collection.sort reversed: true, by: (item) -> item.get('id')
+      collection.sort reversed: true, by: (item) -> item.getId()
       collection.add id: 3
       collection.add id: 2
       collection.add id: 1

@@ -30,7 +30,6 @@ goog.require 'este.json'
 goog.require 'este.model.getters'
 goog.require 'este.model.setters'
 goog.require 'este.model.validators'
-goog.require 'goog.asserts'
 goog.require 'goog.events.Event'
 goog.require 'goog.object'
 goog.require 'goog.ui.IdGenerator'
@@ -78,12 +77,6 @@ class este.Model extends este.Base
     @type {Object}
     @protected
   ###
-  attributes: null
-
-  ###*
-    @type {Object}
-    @protected
-  ###
   defaults: null
 
   ###*
@@ -91,6 +84,36 @@ class este.Model extends este.Base
     @protected
   ###
   schema: null
+
+  ###*
+    @type {string}
+    @protected
+  ###
+  idAttribute: 'id'
+
+  ###*
+    @type {string}
+    @protected
+  ###
+  id: ''
+
+  ###*
+    @type {Object}
+    @protected
+  ###
+  attributes: null
+
+  ###*
+    @param {string} id
+  ###
+  setId: (id) ->
+    @set @idAttribute, id
+
+  ###*
+    @return {string}
+  ###
+  getId: ->
+    @id
 
   ###*
     Set model attribute(s).
@@ -139,10 +162,13 @@ class este.Model extends este.Base
     for key, value of json
       $key = @getKey key
       currentValue = @attributes[$key]
-      if key == 'id' && currentValue?
-        goog.asserts.fail 'Model id is immutable'
+      if key == @idAttribute
+        if currentValue?
+          goog.asserts.fail 'Model id is immutable.'
+        else
+          @id = value
       if key == '_cid' && currentValue?
-        goog.asserts.fail 'Model _cid is immutable'
+        goog.asserts.fail 'Model _cid is immutable.'
       @attributes[$key] = value
       if value instanceof goog.events.EventTarget
         @toggleEventPropagation true, Model.eventTypes, value

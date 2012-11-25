@@ -76,28 +76,3 @@ class este.storage.Base
       else
         goog.asserts.fail "Only add, remove, change, and update events are supported, not: #{e.type}."
     goog.result.combineOnSuccess.apply null, results
-
-  ###*
-    @param {este.Model} model
-    @return {string} model id
-    @protected
-  ###
-  checkModelId: (model) ->
-    id = model.get 'id'
-    goog.asserts.assertString id, 'model id has to be string'
-    id
-
-  ###*
-    @param {este.Model} model
-    @protected
-  ###
-  checkModelUrl: (model) ->
-    goog.asserts.assertString model.url, 'model url has to be string'
-
-  ###*
-    @param {este.Collection} collection
-    @protected
-  ###
-  checkCollectionUrl: (collection) ->
-    goog.asserts.assertString collection.getUrl(),
-      'collection.url has to be string'

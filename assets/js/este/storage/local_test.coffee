@@ -25,6 +25,8 @@ suite 'este.storage.Local', ->
 
     Model = ->
     Model::url = 'model'
+    Model::setId = (value) -> @set 'id', value
+    Model::getId = -> @get 'id'
     Model::set = (key, value) ->
       @[key] = value
     Model::get = (key) ->
@@ -52,8 +54,9 @@ suite 'este.storage.Local', ->
 
   suite 'save', ->
     test 'should assign id for model without id', (done) ->
-      model.set = (json) ->
-        assert.deepEqual json, id: 'someUniqueId'
+      model.set = (key, value) ->
+        assert.equal key, 'id'
+        assert.equal value, 'someUniqueId'
         done()
       local.save model
 
@@ -83,31 +86,7 @@ suite 'este.storage.Local', ->
         assert.equal value, 'someUniqueId'
         done()
 
-    test 'should throw exception for model without url', (done) ->
-      model.url = null
-      try
-        local.save model
-      catch e
-        assert.instanceOf e, Error
-        done()
-
   suite 'load', ->
-    test 'should throw exception for model without id', (done) ->
-      try
-        local.load model
-      catch e
-        assert.instanceOf e, Error
-        done()
-
-    test 'should not throw exception for model with id', ->
-      called = false
-      model.id = '123'
-      try
-        local.load model
-      catch e
-        called = true
-      assert.isFalse called
-
     test 'should mechanism.get model', (done) ->
       getKey = null
       mechanism.get = (key) ->
@@ -149,16 +128,6 @@ suite 'este.storage.Local', ->
       goog.result.waitOnError result, ->
         done()
 
-    test 'should throw exception for model without url', (done) ->
-      model.url = null
-      mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
-      model.id = '123'
-      try
-        local.load model
-      catch e
-        assert.instanceOf e, Error
-        done()
-
   suite 'delete', ->
     test 'should delete model from storage', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
@@ -176,13 +145,6 @@ suite 'este.storage.Local', ->
         assert.equal value, '123'
         done()
 
-    test 'should throw exception for model without id', (done) ->
-      try
-        local.delete model
-      catch e
-        assert.instanceOf e, Error
-        done()
-
     test 'should return error result if storage does not exists', (done) ->
       mechanism.get = (key) -> ''
       model.id = '456'
@@ -197,30 +159,14 @@ suite 'este.storage.Local', ->
       goog.result.waitOnError result, ->
         done()
 
-    test 'should throw exception for model without url', (done) ->
-      model.url = null
-      mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
-      model.id = '123'
-      try
-        local.delete model
-      catch e
-        assert.instanceOf e, Error
-        done()
-
   suite 'query', ->
-    test 'should throw exception for .getUrl() != string', (done) ->
-      collection.getUrl = ->
-      try local.query collection
-      catch e
-        done()
-
     test 'should load collection', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"},"456":{"bla":"foo"}}'
       collection.add = (array) ->
         assert.deepEqual array, [
-          foo: 'bla', id: '123'
+          foo: 'bla'
         ,
-          bla: 'foo', id: '456'
+          bla: 'foo'
         ]
         done()
       local.query collection

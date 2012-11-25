@@ -30,7 +30,6 @@ class este.storage.Rest extends este.storage.Base
     @inheritDoc
   ###
   create: (model) ->
-    @checkModelUrl model
     # model toJson, resolve result, etc.
     # goog.labs.net.xhr.send 'POST', @namespace,
     este.result.ok()
@@ -39,26 +38,22 @@ class este.storage.Rest extends este.storage.Base
     @inheritDoc
   ###
   load: (model) ->
-    @checkModelUrl model
     este.result.ok()
 
   ###*
     @inheritDoc
   ###
   save: (model) ->
-    @checkModelUrl model
     este.result.ok()
 
   ###*
     @inheritDoc
   ###
   delete: (model) ->
-    @checkModelUrl model
     este.result.ok()
 
   ###*
     @inheritDoc
   ###
   query: (collection, params) ->
-    @checkCollectionUrl collection
     este.result.ok()
