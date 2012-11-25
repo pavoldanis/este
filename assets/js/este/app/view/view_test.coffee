@@ -25,13 +25,13 @@ suite 'este.app.View', ->
         done()
       view.redirect 1, 2
 
-  suite 'getUrl', ->
+  suite 'createUrl', ->
     test 'should return null for view with null url', ->
-      assert.isNull view.getUrl prototype: {}
+      assert.isNull view.createUrl prototype: {}
 
     test 'should return url for view with url and params', ->
       viewClass = prototype: url: -> 'detail/:id'
-      url = view.getUrl viewClass, id: 123
+      url = view.createUrl viewClass, id: 123
       assert.equal url, 'detail/123'
 
   suite 'mergeHtml', ->

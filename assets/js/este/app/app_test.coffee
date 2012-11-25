@@ -46,9 +46,8 @@ suite 'este.App', ->
           result.setValue params
         , 8
       result
-    # view.udpate = ->
     view.dispose = ->
-    view.url = -> '/'
+    view.getUrl = -> '/'
     view
 
   suite 'constructor', ->
@@ -180,7 +179,7 @@ suite 'este.App', ->
         router.pathNavigate = (url, params, silent) ->
           called = true
         app.urlEnabled = true
-        view1.url = -> ''
+        view1.getUrl = -> ''
         app.load view1, id: 1, false
         assert.isFalse called
 

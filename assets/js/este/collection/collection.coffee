@@ -64,11 +64,13 @@ class este.Collection extends este.Base
   sortReversed: false
 
   ###*
-    Returns model's url.
+    Returns model's url. Do not override it.
     @return {string}
   ###
   getUrl: ->
-    @model::url
+    url = @model::url
+    url = url() if goog.isFunction url
+    `/** @type{string} */ (url)`
 
   ###*
     @param {Array.<Object|este.Model>|Object|este.Model} arg
@@ -167,7 +169,7 @@ class este.Collection extends este.Base
   ###
   findById: (id) ->
     @find (item) =>
-      id == item.getId()
+      id.toString() == item.getId()
 
   ###*
     Find item by client id.

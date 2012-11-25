@@ -1,6 +1,6 @@
 ###*
   @fileoverview Base class for various sync/async storages. It defines common
-  api for models/collections persitence.
+  api for models and collections persitence.
 
 ###
 goog.provide 'este.storage.Base'
@@ -10,7 +10,6 @@ goog.require 'goog.result'
 class este.storage.Base
 
   ###*
-    todo: rename namespace param
     @param {string} namespace
     @constructor
   ###
@@ -22,14 +21,12 @@ class este.storage.Base
   namespace: ''
 
   ###*
-    POST
     @param {este.Model} model
     @return {!goog.result.Result}
   ###
   create: goog.abstractMethod
 
   ###*
-    GET
     @param {este.Model} model
     @param {string} id
     @return {!goog.result.Result}
@@ -37,14 +34,12 @@ class este.storage.Base
   load: goog.abstractMethod
 
   ###*
-    PUT
     @param {este.Model} model
     @return {!goog.result.Result}
   ###
   save: goog.abstractMethod
 
   ###*
-    DELETE
     @param {este.Model} model
     @return {!goog.result.Result}
   ###

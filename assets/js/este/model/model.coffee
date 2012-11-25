@@ -69,9 +69,12 @@ class este.Model extends este.Base
   @eventTypes: (type for name, type of Model.EventType)
 
   ###*
-    @type {string}
+    http://www.restapitutorial.com/lessons/restfulresourcenaming.html
+    Function type is usefull for inheritance.
+    @type {string|function(): string}
+    @protected
   ###
-  url: 'model'
+  url: 'models'
 
   ###*
     @type {Object}
@@ -114,6 +117,14 @@ class este.Model extends este.Base
   ###
   getId: ->
     @id
+
+  ###*
+    @return {string}
+  ###
+  getUrl: ->
+    url = @url
+    url = url() if goog.isFunction url
+    url
 
   ###*
     Set model attribute(s).
@@ -166,7 +177,7 @@ class este.Model extends este.Base
         if currentValue?
           goog.asserts.fail 'Model id is immutable.'
         else
-          @id = value
+          @id = value.toString()
       if key == '_cid' && currentValue?
         goog.asserts.fail 'Model _cid is immutable.'
       @attributes[$key] = value

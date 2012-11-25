@@ -27,15 +27,6 @@ class este.app.View extends este.ui.Component
     REDIRECT: 'redirect'
 
   ###*
-    Url has to always start with '/' prefix. If html5 is not supported, then
-    urls will be converted to '#/' prefix. If url == '', then view is not url
-    projected.
-    Various url definitions: este/assets/js/este/router/route_test.coffee
-    @type {function(): string}
-  ###
-  url: -> ''
-
-  ###*
     @type {este.storage.Base}
   ###
   storage: null
@@ -45,6 +36,16 @@ class este.app.View extends este.ui.Component
     @type {boolean}
   ###
   html5historyEnabled: true
+
+  ###*
+    Url has to always start with '/' prefix. If html5 is not supported, then
+    urls will be converted to '#/' prefix. If url == '', then view is not url
+    projected.
+    Various url definitions: este/assets/js/este/router/route_test.coffee
+    @type {string|function(): string}
+    @protected
+  ###
+  url: -> ''
 
   ###*
     @type {Array.<este.Model.Event>} events
@@ -57,12 +58,21 @@ class este.app.View extends este.ui.Component
     @param {Object=} params
     @return {?string}
   ###
-  getUrl: (viewClass, params) ->
-    url = viewClass::url?()
+  createUrl: (viewClass, params) ->
+    url = viewClass::url
+    url = url() if goog.isFunction url
     return null if !url?
     url = este.router.Route.getUrl url, params
     if !@html5historyEnabled
       url = '#/' + url
+    url
+
+  ###*
+    @return {string}
+  ###
+  getUrl: ->
+    url = @url
+    url = url() if goog.isFunction url
     url
 
   ###*

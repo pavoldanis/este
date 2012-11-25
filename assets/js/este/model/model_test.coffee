@@ -314,3 +314,5 @@ suite 'este.Model', ->
       person.idAttribute = '_id'
       person.setId '123'
       assert.equal person.getId(), '123'
+
+  # todo: getUrl etc.

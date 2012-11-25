@@ -51,7 +51,7 @@ class este.demos.app.simplehtml5.products.View extends este.app.View
     links = []
     for product in @products.toJson()
       # no url strings hardcoding, urls are always generated
-      url = @getUrl este.demos.app.simplehtml5.product.View,
+      url = @createUrl este.demos.app.simplehtml5.product.View,
         id: product['_cid']
       links.push "<li><a href='#{url}'>#{url}</a>"
 

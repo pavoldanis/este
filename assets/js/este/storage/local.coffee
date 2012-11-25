@@ -48,7 +48,7 @@ class este.storage.Local extends este.storage.Base
   ###
   load: (model) ->
     id = model.getId()
-    models = @loadModels model.url
+    models = @loadModels model.getUrl()
     return este.result.fail() if !models
     json = models[id]
     return este.result.fail() if !json
@@ -59,11 +59,12 @@ class este.storage.Local extends este.storage.Base
     @inheritDoc
   ###
   save: (model) ->
-    id = @ensureModelId model
-    serializedModels = @mechanism.get model.url
+    @ensureModelId model
+    id = model.getId()
+    serializedModels = @mechanism.get model.getUrl()
     models = if serializedModels then este.json.parse serializedModels else {}
     models[id] = model.toJson true
-    @saveModels models, model.url
+    @saveModels models, model.getUrl()
     este.result.ok id
 
   ###*
@@ -72,10 +73,10 @@ class este.storage.Local extends este.storage.Base
   delete: (model) ->
     id = model.getId()
     if id
-      models = @loadModels model.url
+      models = @loadModels model.getUrl()
       if models && models[id]
         delete models[id]
-        @saveModels models, model.url
+        @saveModels models, model.getUrl()
         return este.result.ok id
     este.result.fail()
 
@@ -90,34 +91,31 @@ class este.storage.Local extends este.storage.Base
 
   ###*
     @param {este.Model} model
-    @return {string} id
     @protected
   ###
   ensureModelId: (model) ->
     id = model.getId()
-    return id if id?
-    id = @idFactory()
-    model.setId id
-    id
+    return if id
+    model.setId @idFactory()
 
   ###*
     @param {Object.<string, Object>} models
-    @param {string} urn
+    @param {string} url
     @protected
   ###
-  saveModels: (models, urn) ->
+  saveModels: (models, url) ->
     if goog.object.isEmpty models
-      @mechanism.remove urn
+      @mechanism.remove url
     else
       serializedJson = este.json.stringify models
-      @mechanism.set urn, serializedJson
+      @mechanism.set url, serializedJson
 
   ###*
-    @param {string} urn
+    @param {string} url
     @return {Object.<string, Object>}
     @protected
   ###
-  loadModels: (urn) ->
-    serializedJson = @mechanism.get urn
+  loadModels: (url) ->
+    serializedJson = @mechanism.get url
     return null if !serializedJson
     este.json.parse serializedJson

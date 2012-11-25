@@ -122,7 +122,7 @@ class este.App extends este.Base
     @clearPendingRequests()
     @dispatchAppEvent App.EventType.BEFORESHOW, request
     if @urlEnabled && !request.silent
-      url = request.view.url()
+      url = request.view.getUrl()
       @router.pathNavigate url, request.params, true if url
     @layout.show request.view, request.params
 
@@ -131,7 +131,7 @@ class este.App extends este.Base
   ###
   startRouter: ->
     for view in @views
-      url = view.url()
+      url = view.getUrl()
       continue if !url
       @router.add url, goog.bind @onRouteMatch, @, view
     @router.silentTapHandler = true

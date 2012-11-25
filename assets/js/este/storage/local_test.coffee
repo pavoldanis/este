@@ -1,11 +1,11 @@
 suite 'este.storage.Local', ->
 
   Local = este.storage.Local
+  Model = este.Model
 
   root = null
   mechanism = null
   idFactory = null
-  Model = null
   model = null
   collection = null
   local = null
@@ -22,23 +22,6 @@ suite 'este.storage.Local', ->
         delete @[key]
 
     idFactory = -> 'someUniqueId'
-
-    Model = ->
-    Model::url = 'model'
-    Model::setId = (value) -> @set 'id', value
-    Model::getId = -> @get 'id'
-    Model::set = (key, value) ->
-      @[key] = value
-    Model::get = (key) ->
-      @[key]
-    Model::toJson = ->
-      # to remove methods
-      este.json.parse este.json.stringify @
-    Model::set = (json) ->
-      for k, v of json
-        @[k] = json
-      return
-
     model = new Model
 
     collection =
@@ -60,18 +43,9 @@ suite 'este.storage.Local', ->
         done()
       local.save model
 
-    test 'should not assign id for model with id', ->
-      called = false
-      model.get = (key) ->
-        return '123' if key == 'id'
-      model.set = (json, forceIds) ->
-        called = true
-      local.save model
-      assert.isFalse called
-
     test 'should store json to mechanism', (done) ->
       mechanism.set = (key, value) ->
-        assert.equal key, 'model'
+        assert.equal key, 'models'
         assert.equal value, '{"someUniqueId":{"foo":"bla","id":"fok"}}'
         done()
       model.toJson = (raw) ->
@@ -90,14 +64,14 @@ suite 'este.storage.Local', ->
     test 'should mechanism.get model', (done) ->
       getKey = null
       mechanism.get = (key) ->
-        assert.equal key, 'model'
+        assert.equal key, 'models'
         done()
       model.id = '123'
       local.load model
 
     test 'should load model', (done) ->
       mechanism.get = (key) ->
-        assert.equal key, 'model'
+        assert.equal key, 'models'
         '{"123":{"foo":"bla"}}'
       model.id = '123'
       model.set = (json) ->
@@ -132,7 +106,7 @@ suite 'este.storage.Local', ->
     test 'should delete model from storage', (done) ->
       mechanism.get = (key) -> '{"123":{"foo":"bla"}}'
       mechanism.remove = (key) ->
-        assert.equal key, 'model'
+        assert.equal key, 'models'
         done()
       model.id = '123'
       result = local.delete model
