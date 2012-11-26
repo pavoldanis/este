@@ -79,7 +79,7 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
   getLinksHtml: (links) ->
     linksArray = for title, view of links
       title: title
-      href: @getUrl view
+      href: @createUrl view
       selected: @ instanceof view
     este.demos.app.layout.layouts.master.templates.links
       links: linksArray

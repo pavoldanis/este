@@ -29,7 +29,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     undefined, active, completed
     @inheritDoc
   ###
-  url: -> '/:filter?'
+  url: '/:filter?'
 
   ###*
     @type {este.demos.app.todomvc.todos.Collection}
