@@ -442,3 +442,15 @@ suite 'este.Collection', ->
         calls += 'col2called'
       model.set 'foo', 'fok'
       assert.equal calls, 'col1calledcol2calledcol1calledcol2called'
+
+  suite 'getUrl', ->
+    test 'should return associated model url if collection url is empty', ->
+      assert.equal collection.getUrl(), '/models'
+
+    test 'should return string url', ->
+      collection.url = '/todos'
+      assert.equal collection.getUrl(), '/todos'
+
+    test 'should return function url', ->
+      collection.url = -> '/todos'
+      assert.equal collection.getUrl(), '/todos'

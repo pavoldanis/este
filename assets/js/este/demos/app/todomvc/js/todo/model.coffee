@@ -18,7 +18,7 @@ class este.demos.app.todomvc.todo.Model extends este.Model
   ###*
     @inheritDoc
   ###
-  url: 'todos'
+  url: '/todos'
 
   ###*
     @inheritDoc

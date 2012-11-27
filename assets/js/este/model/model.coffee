@@ -74,7 +74,7 @@ class este.Model extends este.Base
     @type {string|function(): string}
     @protected
   ###
-  url: 'models'
+  url: '/models'
 
   ###*
     @type {Object}
@@ -125,6 +125,19 @@ class este.Model extends este.Base
     url = @url
     url = url() if goog.isFunction url
     url
+
+  ###*
+    Generates URLs of the form:
+      "/[collection.getUrl()]/[getId()]" if collection
+      "/[model.url]/[getId()]" without collection
+    @param {este.Collection=} collection
+    @return {string}
+  ###
+  createUrl: (collection) ->
+    url = if collection then collection.getUrl() else @getUrl()
+    id = @getId()
+    return url if !id
+    url + '/' + id
 
   ###*
     Set model attribute(s).

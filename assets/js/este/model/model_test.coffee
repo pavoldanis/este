@@ -315,4 +315,34 @@ suite 'este.Model', ->
       person.setId '123'
       assert.equal person.getId(), '123'
 
-  # todo: getUrl etc.
+  suite 'createUrl', ->
+    suite 'without collection', ->
+      test 'should work for model without id', ->
+        assert.equal person.createUrl(), '/models'
+
+      test 'should work for model with id', ->
+        person.setId 123
+        assert.equal person.createUrl(), '/models/123'
+
+      test 'should work for model with url defined as function', ->
+        person.url = -> '/foos'
+        person.setId 123
+        assert.equal person.createUrl(), '/foos/123'
+
+    suite 'with collection', ->
+      test 'should work for model without id', ->
+        collection = getUrl: -> '/todos'
+        assert.equal person.createUrl(collection), '/todos'
+
+      test 'should work for model with id', ->
+        person.setId 123
+        collection = getUrl: -> '/todos'
+        assert.equal person.createUrl(collection), '/todos/123'
+
+  suite 'getId', ->
+    test 'should return empty string for model without id', ->
+      assert.equal person.getId(), ''
+
+    test 'should return string id for model with id', ->
+      person.setId 123
+      assert.equal person.getId(), '123'

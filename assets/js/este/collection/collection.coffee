@@ -28,6 +28,14 @@ class este.Collection extends este.Base
     return
 
   ###*
+    http://www.restapitutorial.com/lessons/restfulresourcenaming.html
+    Function type is usefull for inheritance.
+    @type {string|function(): string}
+    @protected
+  ###
+  url: ''
+
+  ###*
     @type {Object.<string, boolean>}
     @protected
   ###
@@ -64,13 +72,12 @@ class este.Collection extends este.Base
   sortReversed: false
 
   ###*
-    Returns model's url. Do not override it.
     @return {string}
   ###
   getUrl: ->
-    url = @model::url
+    url = @url || @model::url
     url = url() if goog.isFunction url
-    `/** @type{string} */ (url)`
+    url
 
   ###*
     @param {Array.<Object|este.Model>|Object|este.Model} arg
