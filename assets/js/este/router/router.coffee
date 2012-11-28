@@ -189,7 +189,7 @@ class este.Router extends este.Base
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @history.dispose()

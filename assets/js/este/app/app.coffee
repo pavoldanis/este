@@ -182,7 +182,7 @@ class este.App extends este.Base
     @pendingRequests.length = 0
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @clearPendingRequests()

@@ -17,7 +17,7 @@ class este.demos.app.layout.foo.View extends este.demos.app.layout.layouts.maste
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> super() + 'foo'
 
@@ -28,7 +28,7 @@ class este.demos.app.layout.foo.View extends este.demos.app.layout.layouts.maste
   resizer: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   renderContent: ->
     return if @contentRendered
@@ -36,7 +36,7 @@ class este.demos.app.layout.foo.View extends este.demos.app.layout.layouts.maste
     @content.innerHTML = este.demos.app.layout.foo.templates.element()
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -47,7 +47,7 @@ class este.demos.app.layout.foo.View extends este.demos.app.layout.layouts.maste
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   exitDocument: ->
     super()

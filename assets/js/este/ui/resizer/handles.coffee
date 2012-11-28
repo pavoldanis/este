@@ -79,7 +79,7 @@ class este.ui.resizer.Handles extends este.ui.Component
 	invisibleOverlay: null
 
 	###*
-		@inheritDoc
+		@override
 	###
 	decorateInternal: (element) ->
 		super element
@@ -112,7 +112,7 @@ class este.ui.resizer.Handles extends este.ui.Component
 		goog.style.setHeight @vertical, el.offsetHeight
 
 	###*
-		@inheritDoc
+		@override
 	###
 	enterDocument: ->
 		super()
@@ -215,7 +215,7 @@ class este.ui.resizer.Handles extends este.ui.Component
 		element in [@vertical, @horizontal]
 
 	###*
-		@inheritDoc
+		@override
 	###
 	disposeInternal: ->
 		@dom_.removeNode @horizontal

@@ -17,6 +17,6 @@ class este.demos.app.simplehtml5.products.Collection extends este.Collection
     super array
 
   ###*
-    @inheritDoc
+    @override
   ###
   model: este.demos.app.simplehtml5.product.Model

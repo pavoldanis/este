@@ -44,13 +44,13 @@ class este.storage.Local extends este.storage.Base
   idFactory: ->
 
   ###*
-    @inheritDoc
+    @override
   ###
   addInternal: (model, url) ->
     @saveInternal model, url
 
   ###*
-    @inheritDoc
+    @override
   ###
   loadInternal: (model, url) ->
     id = model.getId()
@@ -62,7 +62,7 @@ class este.storage.Local extends este.storage.Base
     este.result.ok id
 
   ###*
-    @inheritDoc
+    @override
   ###
   saveInternal: (model, url) ->
     @ensureModelId model
@@ -74,7 +74,7 @@ class este.storage.Local extends este.storage.Base
     este.result.ok id
 
   ###*
-    @inheritDoc
+    @override
   ###
   removeInternal: (model, url) ->
     id = model.getId()
@@ -87,7 +87,7 @@ class este.storage.Local extends este.storage.Base
     este.result.fail()
 
   ###*
-    @inheritDoc
+    @override
   ###
   queryInternal: (collection, params) ->
     models = @loadModels collection.getUrl()

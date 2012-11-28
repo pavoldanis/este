@@ -15,7 +15,7 @@ class este.ui.lightbox.AnchorClickHandler extends este.ui.Component
   constructor: ->
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()

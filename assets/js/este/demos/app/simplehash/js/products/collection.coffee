@@ -17,6 +17,6 @@ class este.demos.app.simplehash.products.Collection extends este.Collection
     super array
 
   ###*
-    @inheritDoc
+    @override
   ###
   model: este.demos.app.simplehash.product.Model

@@ -350,7 +350,7 @@ class este.Model extends este.Base
       goog.ui.IdGenerator.getInstance().getNextUniqueId()
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     for key, value of @attributes

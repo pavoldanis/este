@@ -79,7 +79,7 @@ class este.app.View extends este.ui.Component
     este.result.ok params
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -101,7 +101,7 @@ class este.app.View extends este.ui.Component
   events: ->
 
   ###*
-    @inheritDoc
+    @override
   ###
   delegateType: (selector, type, fn, el) ->
     fn = @getDelegatedEventWrapper fn

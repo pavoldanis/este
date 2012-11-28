@@ -16,12 +16,12 @@ class este.demos.app.layout.bla.View extends este.demos.app.layout.layouts.maste
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> super() + 'bla'
 
   ###*
-    @inheritDoc
+    @override
   ###
   events: ->
     super()
@@ -36,7 +36,7 @@ class este.demos.app.layout.bla.View extends este.demos.app.layout.layouts.maste
     alert '.este-content clicked'
 
   ###*
-    @inheritDoc
+    @override
   ###
   renderContent: ->
     return if @contentRendered

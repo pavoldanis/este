@@ -45,7 +45,7 @@ class este.ui.FieldReset extends este.ui.Component
   resetBtn: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -55,7 +55,7 @@ class este.ui.FieldReset extends este.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   canDecorate: (element) ->
     element.tagName in ['INPUT', 'TEXTAREA']
@@ -92,7 +92,7 @@ class este.ui.FieldReset extends este.ui.Component
       goog.dom.insertSiblingAfter @resetBtn, @getElement()
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @inputHandler.dispose()

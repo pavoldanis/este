@@ -15,12 +15,12 @@ class este.demos.app.layout.contacts.View extends este.demos.app.layout.layouts.
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> super() + 'contacts'
 
   ###*
-    @inheritDoc
+    @override
   ###
   renderContent: ->
     @content.innerHTML = 'Contacts content.'

@@ -37,13 +37,13 @@ class este.demos.Grid extends este.ui.Component
   editedRow: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   canDecorate: (el) ->
     false
 
   ###*
-    @inheritDoc
+    @override
   ###
   createDom: ->
     super()
@@ -51,7 +51,7 @@ class este.demos.Grid extends este.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()

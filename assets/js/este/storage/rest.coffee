@@ -27,7 +27,7 @@ class este.storage.Rest extends este.storage.Base
     super namespace
 
   # ###*
-  #   @inheritDoc
+  #   @override
   # ###
   # add: (model) ->
   #   # model toJson, resolve result, etc.
@@ -35,25 +35,25 @@ class este.storage.Rest extends este.storage.Base
   #   este.result.ok()
 
   # ###*
-  #   @inheritDoc
+  #   @override
   # ###
   # load: (model) ->
   #   este.result.ok()
 
   # ###*
-  #   @inheritDoc
+  #   @override
   # ###
   # save: (model) ->
   #   este.result.ok()
 
   # ###*
-  #   @inheritDoc
+  #   @override
   # ###
   # remove: (model) ->
   #   este.result.ok()
 
   # ###*
-  #   @inheritDoc
+  #   @override
   # ###
   # query: (collection, params) ->
   #   este.result.ok()

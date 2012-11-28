@@ -98,7 +98,7 @@ class este.ui.Resizer extends este.ui.Component
 	dragging: false
 
 	###*
-		@inheritDoc
+		@override
 	###
 	enterDocument: ->
 		super()
@@ -110,7 +110,7 @@ class este.ui.Resizer extends este.ui.Component
 		return
 
 	###*
-		@inheritDoc
+		@override
 	###
 	exitDocument: ->
 		super()

@@ -61,7 +61,7 @@ class este.ui.Component extends goog.ui.Component
   submitHandler: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -72,7 +72,7 @@ class este.ui.Component extends goog.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   exitDocument: ->
     super()

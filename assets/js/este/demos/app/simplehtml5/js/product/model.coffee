@@ -17,7 +17,7 @@ class este.demos.app.simplehtml5.product.Model extends este.Model
     super json, idGenerator
 
   ###*
-    @inheritDoc
+    @override
   ###
   schema:
     'name':

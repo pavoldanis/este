@@ -15,7 +15,7 @@ class este.demos.app.simplehash.product.View extends este.app.View
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> '/product/:id'
 
@@ -26,7 +26,7 @@ class este.demos.app.simplehash.product.View extends este.app.View
   params: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   load: (@params = null) ->
     result = new goog.result.SimpleResult
@@ -36,7 +36,7 @@ class este.demos.app.simplehash.product.View extends este.app.View
     result
 
   ###*
-    @inheritDoc
+    @override
   ###
   events: ->
     super()
@@ -44,7 +44,7 @@ class este.demos.app.simplehash.product.View extends este.app.View
       'button click': @onButtonClick
 
   ###*
-    @inheritDoc
+    @override
   ###
   update: ->
     window['console']['log'] "product #{@params['id']} rendered"

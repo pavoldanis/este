@@ -27,7 +27,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
 
   ###*
     undefined, active, completed
-    @inheritDoc
+    @override
   ###
   url: '/:filter?'
 
@@ -44,7 +44,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   filter: View.Filter.ALL
 
   ###*
-    @inheritDoc
+    @override
   ###
   load: (params) ->
     @filter = switch params['filter']
@@ -61,7 +61,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
     @storage.query @todos
 
   ###*
-    @inheritDoc
+    @override
   ###
   events: ->
     super()
@@ -150,7 +150,7 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       'editing': false
 
   ###*
-    @inheritDoc
+    @override
   ###
   update: ->
     json = @getJsonForTemplate()

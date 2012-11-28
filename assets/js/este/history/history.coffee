@@ -149,7 +149,7 @@ class este.History extends este.Base
     @dispatchEvent e
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @history.dispose()

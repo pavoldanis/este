@@ -15,12 +15,12 @@ class este.demos.app.layout.about.View extends este.demos.app.layout.layouts.sid
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> super() + 'about'
 
   ###*
-    @inheritDoc
+    @override
   ###
   renderContent: ->
     @content.innerHTML = 'About content.'

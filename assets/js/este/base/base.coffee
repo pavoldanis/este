@@ -71,7 +71,7 @@ class este.Base extends goog.events.EventTarget
       @off eventTarget, eventTypes, @dispatchEvent
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @handler_?.dispose()

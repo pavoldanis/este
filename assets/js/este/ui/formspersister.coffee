@@ -62,7 +62,7 @@ class este.ui.FormsPersister extends este.ui.Component
   focusHandler: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   decorateInternal: (element) ->
     super element
@@ -103,7 +103,7 @@ class este.ui.FormsPersister extends este.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -113,7 +113,7 @@ class este.ui.FormsPersister extends este.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   exitDocument: ->
     @focusHandler.dispose()

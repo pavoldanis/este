@@ -22,7 +22,7 @@ class este.ui.InvisibleOverlay extends goog.ui.Component
     new InvisibleOverlay
 
   ###*
-    @inheritDoc
+    @override
   ###
   createDom: ->
     super()
@@ -30,7 +30,7 @@ class este.ui.InvisibleOverlay extends goog.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   decorateInternal: (element) ->
     super element

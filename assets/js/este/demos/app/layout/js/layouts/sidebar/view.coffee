@@ -27,7 +27,7 @@ class este.demos.app.layout.layouts.sidebar.View extends este.demos.app.layout.l
   sidebarRendered: false
 
   ###*
-    @inheritDoc
+    @override
   ###
   update: ->
     super()

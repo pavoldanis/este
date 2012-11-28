@@ -48,7 +48,7 @@ class este.dev.Monitor extends este.ui.Component
   timer: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   decorateInternal: (element) ->
     super element
@@ -69,7 +69,7 @@ class este.dev.Monitor extends este.ui.Component
     return
 
   ###*
-    @inheritDoc
+    @override
   ###
   enterDocument: ->
     super()
@@ -84,7 +84,7 @@ class este.dev.Monitor extends este.ui.Component
     @monitor.style.bottom = (bottom + 10) + 'px'
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     clearInterval @timer

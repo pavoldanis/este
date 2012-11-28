@@ -16,7 +16,7 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> '/'
 
@@ -39,7 +39,7 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
   contentRendered: false
 
   ###*
-    @inheritDoc
+    @override
   ###
   update: ->
     @renderElement()

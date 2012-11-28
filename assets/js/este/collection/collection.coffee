@@ -300,7 +300,7 @@ class este.Collection extends este.Base
     delete @ids['$' + id]
 
   ###*
-    @inheritDoc
+    @override
   ###
   disposeInternal: ->
     @clear()

@@ -17,7 +17,7 @@ class este.demos.app.todomvc.todos.Collection extends este.Collection
     super array
 
   ###*
-    @inheritDoc
+    @override
   ###
   model: este.demos.app.todomvc.todo.Model
 

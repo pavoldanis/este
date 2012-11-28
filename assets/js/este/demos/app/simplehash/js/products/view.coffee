@@ -16,7 +16,7 @@ class este.demos.app.simplehash.products.View extends este.app.View
     super()
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: -> '/'
 
@@ -27,7 +27,7 @@ class este.demos.app.simplehash.products.View extends este.app.View
   products: null
 
   ###*
-    @inheritDoc
+    @override
   ###
   load: (params) ->
     result = new goog.result.SimpleResult
@@ -44,7 +44,7 @@ class este.demos.app.simplehash.products.View extends este.app.View
     result
 
   ###*
-    @inheritDoc
+    @override
   ###
   update: ->
     window['console']['log'] "products rendered"

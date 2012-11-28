@@ -16,12 +16,12 @@ class este.demos.app.todomvc.todo.Model extends este.Model
     super json
 
   ###*
-    @inheritDoc
+    @override
   ###
   url: '/todos'
 
   ###*
-    @inheritDoc
+    @override
   ###
   defaults:
     'title': ''
@@ -29,7 +29,7 @@ class este.demos.app.todomvc.todo.Model extends este.Model
     'editing': false
 
   ###*
-    @inheritDoc
+    @override
   ###
   schema:
     'title':

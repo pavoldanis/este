@@ -53,7 +53,7 @@ class este.ui.Lightbox extends este.ui.Component
 		@view.dispose()
 
 	###*
-		@inheritDoc
+		@override
 	###
 	decorateInternal: (element) ->
 		super element
@@ -61,7 +61,7 @@ class este.ui.Lightbox extends este.ui.Component
 		return
 
 	###*
-		@inheritDoc
+		@override
 	###
 	enterDocument: ->
 		super()

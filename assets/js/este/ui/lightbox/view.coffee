@@ -38,7 +38,7 @@ class este.ui.lightbox.View extends este.ui.Component
 	anchors: null
 
 	###*
-		@inheritDoc
+		@override
 	###
 	createDom: ->
 		super()
@@ -78,7 +78,7 @@ class este.ui.lightbox.View extends este.ui.Component
 			</div>"
 
 	###*
-		@inheritDoc
+		@override
 	###
 	enterDocument: ->
 		super()
