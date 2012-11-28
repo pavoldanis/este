@@ -46,9 +46,15 @@ class este.storage.Local extends este.storage.Base
   ###*
     @inheritDoc
   ###
-  load: (model) ->
+  addInternal: (model, url) ->
+    @saveInternal model, url
+
+  ###*
+    @inheritDoc
+  ###
+  loadInternal: (model, url) ->
     id = model.getId()
-    models = @loadModels model.getUrl()
+    models = @loadModels url
     return este.result.fail() if !models
     json = models[id]
     return este.result.fail() if !json
@@ -58,32 +64,32 @@ class este.storage.Local extends este.storage.Base
   ###*
     @inheritDoc
   ###
-  save: (model) ->
+  saveInternal: (model, url) ->
     @ensureModelId model
     id = model.getId()
-    serializedModels = @mechanism.get model.getUrl()
+    serializedModels = @mechanism.get url
     models = if serializedModels then este.json.parse serializedModels else {}
     models[id] = model.toJson true
-    @saveModels models, model.getUrl()
+    @saveModels models, url
     este.result.ok id
 
   ###*
     @inheritDoc
   ###
-  delete: (model) ->
+  removeInternal: (model, url) ->
     id = model.getId()
     if id
-      models = @loadModels model.getUrl()
+      models = @loadModels url
       if models && models[id]
         delete models[id]
-        @saveModels models, model.getUrl()
+        @saveModels models, url
         return este.result.ok id
     este.result.fail()
 
   ###*
     @inheritDoc
   ###
-  query: (collection, params) ->
+  queryInternal: (collection, params) ->
     models = @loadModels collection.getUrl()
     array = (model for id, model of models)
     collection.add array

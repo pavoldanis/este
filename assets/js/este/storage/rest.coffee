@@ -26,34 +26,34 @@ class este.storage.Rest extends este.storage.Base
   constructor: (namespace) ->
     super namespace
 
-  ###*
-    @inheritDoc
-  ###
-  create: (model) ->
-    # model toJson, resolve result, etc.
-    # goog.labs.net.xhr.send 'POST', @namespace,
-    este.result.ok()
+  # ###*
+  #   @inheritDoc
+  # ###
+  # add: (model) ->
+  #   # model toJson, resolve result, etc.
+  #   # goog.labs.net.xhr.send 'POST', @namespace,
+  #   este.result.ok()
 
-  ###*
-    @inheritDoc
-  ###
-  load: (model) ->
-    este.result.ok()
+  # ###*
+  #   @inheritDoc
+  # ###
+  # load: (model) ->
+  #   este.result.ok()
 
-  ###*
-    @inheritDoc
-  ###
-  save: (model) ->
-    este.result.ok()
+  # ###*
+  #   @inheritDoc
+  # ###
+  # save: (model) ->
+  #   este.result.ok()
 
-  ###*
-    @inheritDoc
-  ###
-  delete: (model) ->
-    este.result.ok()
+  # ###*
+  #   @inheritDoc
+  # ###
+  # remove: (model) ->
+  #   este.result.ok()
 
-  ###*
-    @inheritDoc
-  ###
-  query: (collection, params) ->
-    este.result.ok()
+  # ###*
+  #   @inheritDoc
+  # ###
+  # query: (collection, params) ->
+  #   este.result.ok()
