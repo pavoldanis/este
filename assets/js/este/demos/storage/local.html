@@ -58,7 +58,7 @@
     showSerializedLocalStorage()
     showSerializedModels()
 
-    addButton.onclick = function() {
+    var addItem = function() {
       if (!input.value)
         return
       addButton.disabled = true
@@ -75,6 +75,13 @@
       })
     }
 
+    addButton.onclick = addItem
+    goog.events.listen(input, 'keypress', function(e) {
+      if (e.keyCode != 13 || !input.value.trim())
+        return
+      addItem()
+    })
+
     document.getElementById('reload').onclick = function() {
       location.reload()
     }
@@ -83,7 +90,7 @@
       var models = collection.toArray()
       for (var i = 0, l = models.length; i < l; i++) {
         var model = models[i]
-        storage['delete'](model)
+        storage.remove(model)
       }
       location.reload()
     }
