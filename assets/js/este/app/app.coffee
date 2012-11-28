@@ -9,7 +9,7 @@ goog.require 'este.app.Layout'
 goog.require 'este.app.Request'
 goog.require 'este.app.View'
 goog.require 'este.Base'
-goog.require 'este.storage.Base'
+goog.require 'este.storage.Local'
 goog.require 'goog.events.Event'
 goog.require 'goog.result'
 goog.require 'goog.result.SimpleResult'
@@ -80,6 +80,7 @@ class este.App extends este.Base
     Start app.
   ###
   start: ->
+    @storage ?= new este.storage.Local 'este-storage'
     @on @, este.app.View.EventType.REDIRECT, @onRedirect
     @prepareViews()
     if @urlEnabled

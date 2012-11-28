@@ -10,9 +10,7 @@ suite 'este.App', ->
   app = null
 
   setup ->
-    view1 = createMockView true
-    view2 = createMockView()
-    view3 = createMockView()
+    arrangeViews()
     layout =
       show: ->
       dispose: ->
@@ -27,7 +25,13 @@ suite 'este.App', ->
     arrangeAppWithViews()
     app.start()
 
+  arrangeViews = ->
+    view1 = createMockView true
+    view2 = createMockView()
+    view3 = createMockView()
+
   arrangeAppWithViews = ->
+    arrangeViews()
     views = [
       view1
       view2
@@ -74,7 +78,13 @@ suite 'este.App', ->
         done()
       app.start()
 
-    test 'should set view storage', ->
+    test 'should set view storage default', ->
+      assert.instanceOf view1.storage, este.storage.Local
+      assert.instanceOf view2.storage, este.storage.Local
+      assert.instanceOf view3.storage, este.storage.Local
+
+    test 'should set view storage optional on app', ->
+      arrangeAppWithViews()
       app.storage = {}
       app.start()
       assert.equal view1.storage, app.storage
