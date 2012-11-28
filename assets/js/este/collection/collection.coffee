@@ -29,7 +29,8 @@ class este.Collection extends este.Base
 
   ###*
     http://www.restapitutorial.com/lessons/restfulresourcenaming.html
-    Function type is usefull for inheritance.
+    Url has to start with '/'. Function type is usefull for inheritance.
+    If empty, model.url is used.
     @type {string|function(): string}
     @protected
   ###
