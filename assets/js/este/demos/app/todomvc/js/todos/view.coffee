@@ -46,8 +46,26 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###*
     @inheritDoc
   ###
+  load: (params) ->
+    @filter = switch params['filter']
+      when 'active'
+        View.Filter.ACTIVE
+      when 'completed'
+        View.Filter.COMPLETED
+      else
+        View.Filter.ALL
+
+    return super() if @todos
+
+    @todos = new este.demos.app.todomvc.todos.Collection
+    @storage.query @todos
+
+  ###*
+    @inheritDoc
+  ###
   events: ->
     super()
+    @on @todos, 'update', @onTodosUpdate
     @on
       '#new-todo-form submit': @onNewTodoSubmit
       '.toggle tap': @onToggleTap
@@ -59,13 +77,11 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       '.edit': [goog.events.KeyCodes.ENTER, @onEditEnd]
 
   ###*
-    @param {Array.<este.Model.Event>} events
+    @param {este.Model.Event} e
     @protected
   ###
-  onModelUpdate: (events) ->
-    for event in events
-      @storage.saveChanges event
-    @update()
+  onTodosUpdate: (e) ->
+    @storage.saveChangesFromEvent e
 
   ###*
     @protected
@@ -104,6 +120,8 @@ class este.demos.app.todomvc.todos.View extends este.app.View
   ###
   onClearCompletedTap: ->
     @todos.clearCompleted()
+    # todo: call it when storage returns success
+    # este.dom.focus @dom_.getElement 'new-todo'
 
   ###*
     @param {este.demos.app.todomvc.todo.Model} model
@@ -132,37 +150,11 @@ class este.demos.app.todomvc.todos.View extends este.app.View
       'editing': false
 
   ###*
-    Each view is async loaded by default. Load method has to return object
-    implementing goog.result.Result interface. It's better than plain old
-    callbacks. todo: link to article
-    todo: consider move load into presented toward better testability
     @inheritDoc
-  ###
-  load: (params) ->
-    @filter = switch params['filter']
-      when 'active'
-        View.Filter.ACTIVE
-      when 'completed'
-        View.Filter.COMPLETED
-      else
-        View.Filter.ALL
-
-    if !@todos
-      @todos = new este.demos.app.todomvc.todos.Collection
-      # setModel enables autobinding @todos to @onModelUpdate
-      @setModel @todos
-      return @storage.query @todos
-
-    # parent implementation returns success rusult immediately
-    super()
-
-  ###*
-    @protected
   ###
   update: ->
     json = @getJsonForTemplate()
     html = este.demos.app.todomvc.todos.templates.element json
-    # mergeHtml calls 'este.dom.merge' for partial innerHTML updates
     @mergeHtml html
 
   ###*

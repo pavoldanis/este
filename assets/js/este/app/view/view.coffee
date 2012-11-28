@@ -48,12 +48,6 @@ class este.app.View extends este.ui.Component
   url: -> ''
 
   ###*
-    @type {Array.<este.Model.Event>} events
-    @private
-  ###
-  unitOfUiWorkEvents: null
-
-  ###*
     @param {function(new:este.app.View)} viewClass
     @param {Object=} params
     @return {?string}
@@ -76,10 +70,8 @@ class este.app.View extends este.ui.Component
     url
 
   ###*
-    este.storage.Local or este.storage.Rest can be used, or any other object
-    implementing goog.result.Result interface. If you don't want to load
-    anything, just call default super implementation. This method should be
-    overridden.
+    Load method has to return object implementing goog.result.Result interface.
+    This method should be overridden.
     @param {Object=} params
     @return {!goog.result.Result}
   ###
@@ -92,7 +84,6 @@ class este.app.View extends este.ui.Component
   enterDocument: ->
     super()
     @update()
-    @registerModelUpdate()
     @events()
     return
 
@@ -104,25 +95,16 @@ class este.app.View extends este.ui.Component
   update: ->
 
   ###*
-    @protected
-  ###
-  registerModelUpdate: ->
-    model = @getModel()
-    return if !model || !(model instanceof goog.events.EventTarget)
-    @on model, 'update', @onModelUpdateInternal
-
-  ###*
     Use this method for event registration. This method should be overridden.
     @protected
   ###
   events: ->
 
   ###*
-    todo: link article about UI unit of work event delegation handling
     @inheritDoc
   ###
   delegateType: (selector, type, fn, el) ->
-    fn = @getEventWrapper fn
+    fn = @getDelegatedEventWrapper fn
     super selector, type, fn, el
 
   ###*
@@ -130,40 +112,58 @@ class este.app.View extends este.ui.Component
     @return {Function}
     @protected
   ###
-  getEventWrapper: (fn) ->
+  getDelegatedEventWrapper: (fn) ->
     (e) ->
       if goog.dom.isElement e.target
         el = @getClientIdElement e
         if el
           clientId = el.getAttribute 'data-cid'
           model = @findModelByClientId clientId
-      @unitOfUiWorkEvents = []
+      @beforeDelegatedEventAction()
       if model
         fn.call @, model, el, e
       else
         fn.call @, e
-      @onModelUpdate @unitOfUiWorkEvents if @unitOfUiWorkEvents.length
+      @afterDelegatedEventAction()
 
   ###*
-    @param {este.Model.Event} e
     @protected
   ###
-  onModelUpdateInternal: (e) ->
-    if @unitOfUiWorkEvents
-      @unitOfUiWorkEvents.push e
-    else
-      @onModelUpdate [e]
+  beforeDelegatedEventAction: ->
+    @storage.openSession()
 
   ###*
-    @param {Array.<este.Model.Event>} events
     @protected
   ###
-  onModelUpdate: (events) ->
+  afterDelegatedEventAction: ->
+    result = @storage.saveChanges()
+    goog.result.wait result, @onStorageSaveChanges, @
+
+  ###*
+    @param {!goog.result.Result} result
+    @protected
+  ###
+  onStorageSaveChanges: (result) ->
+    switch result.getState()
+      when goog.result.Result.State.SUCCESS
+        @onSaveSuccess()
+      when goog.result.Result.State.ERROR
+        @onSaveError()
+
+  ###*
+    @protected
+  ###
+  onSaveSuccess: ->
     @update()
 
   ###*
-    Save innerHTML update.
-    todo: write and link article about this approach
+    @protected
+  ###
+  onSaveError: ->
+    alert 'todo'
+
+  ###*
+    Merge innerHTML via DOM methods. Only changed elements are updated.
     @param {string} html
     @protected
   ###
