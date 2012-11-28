@@ -70,7 +70,7 @@ class este.Model extends este.Base
 
   ###*
     http://www.restapitutorial.com/lessons/restfulresourcenaming.html
-    Function type is usefull for inheritance.
+    Url has to start with '/'. Function type is usefull for inheritance.
     @type {string|function(): string}
     @protected
   ###
@@ -107,10 +107,12 @@ class este.Model extends este.Base
   attributes: null
 
   ###*
-    @param {string} id
+    @param {string|number} id
   ###
   setId: (id) ->
-    @set @idAttribute, id
+    json = {}
+    json[@idAttribute] = id
+    @setInternal json, true
 
   ###*
     @return {string}

@@ -291,23 +291,6 @@ suite 'este.Model', ->
         assert.deepEqual errors,
           lastName: required: true
 
-  suite 'model id defined in constructor', ->
-    test 'should be immutable', (done) ->
-      person = new Person 'id': 'foo'
-      try
-        person.setId 'bla'
-      catch e
-        done()
-
-  suite 'model id defined after construction', ->
-    test 'should be immutable', (done) ->
-      person = new Person
-      person.setId 'foo'
-      try
-        person.setId 'bla'
-      catch e
-        done()
-
   suite 'idAttribute', ->
     test 'should allow to define alternate id', ->
       person = new Person
@@ -338,6 +321,38 @@ suite 'este.Model', ->
         person.setId 123
         collection = getUrl: -> '/todos'
         assert.equal person.createUrl(collection), '/todos/123'
+
+  suite 'setId', ->
+    test 'should be immutable if defined in constructor then again', (done) ->
+      person = new Person 'id': 'foo'
+      try
+        person.setId 'bla'
+      catch e
+        done()
+
+    test 'should be immutable if defined twice', (done) ->
+      person = new Person
+      person.setId 'foo'
+      try
+        person.setId 'bla'
+      catch e
+        done()
+
+    test 'should not dispatch change event', ->
+      person = new Person
+      dispatched = false
+      goog.events.listenOnce person, 'change', ->
+        dispatched = true
+      person.setId 123
+      assert.isFalse dispatched
+
+    test 'should not dispatch update event', ->
+      person = new Person
+      dispatched = false
+      goog.events.listenOnce person, 'update', ->
+        dispatched = true
+      person.setId 123
+      assert.isFalse dispatched
 
   suite 'getId', ->
     test 'should return empty string for model without id', ->
