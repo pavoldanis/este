@@ -460,7 +460,13 @@ startServer = ->
   wsServer = ws.attach server
   wsServer.on 'connection', (p_socket) ->
     socket = p_socket
-
+  
+  server.on 'error', (e) ->
+    if (e.code == 'EADDRINUSE')
+      throw 'Server address in use. Server could not be started.'
+    else
+      throw e
+      
   server.listen options.port
 
   console.log "Server is listening on http://localhost:#{options.port}/"
