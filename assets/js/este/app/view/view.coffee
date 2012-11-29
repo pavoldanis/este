@@ -4,6 +4,7 @@
 goog.provide 'este.app.View'
 goog.provide 'este.app.View.EventType'
 
+goog.require 'este.app.renderLinks'
 goog.require 'este.app.view.Event'
 goog.require 'este.Collection'
 goog.require 'este.dom.merge'
@@ -57,8 +58,7 @@ class este.app.View extends este.ui.Component
     url = url() if goog.isFunction url
     return null if !url?
     url = este.router.Route.getUrl url, params
-    if !@html5historyEnabled
-      url = '#/' + url
+    url = '#/' + url if !@html5historyEnabled
     url
 
   ###*

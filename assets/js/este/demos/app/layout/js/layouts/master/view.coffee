@@ -54,14 +54,22 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
   renderElement: ->
     return if @elementRendered_
     @elementRendered_ = true
-    links =
-      'Home': este.demos.app.layout.index.View
-      'Bla': este.demos.app.layout.bla.View
-      'Foo': este.demos.app.layout.foo.View
-    linksHtml = @getLinksHtml links
     html = este.demos.app.layout.layouts.master.templates.element
-      linksHtml: linksHtml
+      linksHtml: @getLinksHtml()
     @getElement().innerHTML = html
+
+  ###*
+    @return {string}
+    @protected
+  ###
+  getLinksHtml: ->
+    este.app.renderLinks @, [
+      title: 'Home', view: este.demos.app.layout.index.View
+    ,
+      title: 'Bla', view: este.demos.app.layout.bla.View
+    ,
+      title: 'Foo', view: este.demos.app.layout.foo.View
+    ]
 
   ###*
     Renders default content. This method should be overridden.
@@ -70,16 +78,3 @@ class este.demos.app.layout.layouts.master.View extends este.app.View
   renderContent: ->
     html = este.demos.app.layout.layouts.master.templates.content()
     este.dom.merge @content, html
-
-  ###*
-    @param {Object.<string, function(new:este.app.View)>} links
-    @return {string}
-    @protected
-  ###
-  getLinksHtml: (links) ->
-    linksArray = for title, view of links
-      title: title
-      href: @createUrl view
-      selected: @ instanceof view
-    este.demos.app.layout.layouts.master.templates.links
-      links: linksArray

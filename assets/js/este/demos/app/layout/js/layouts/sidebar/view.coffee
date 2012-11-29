@@ -48,8 +48,9 @@ class este.demos.app.layout.layouts.sidebar.View extends este.demos.app.layout.l
   renderSidebar: ->
     return if @sidebarRendered
     sidebarRendered = true
-    links =
-      'About': este.demos.app.layout.about.View
-      'Contacts': este.demos.app.layout.contacts.View
-    linksHtml = @getLinksHtml links
+    linksHtml = este.app.renderLinks @, [
+      title: 'About', view: este.demos.app.layout.about.View
+    ,
+      title: 'Contacts', view: este.demos.app.layout.contacts.View
+    ]
     @sidebar.innerHTML = linksHtml
