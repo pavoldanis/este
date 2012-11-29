@@ -8,7 +8,3 @@ MONKEY PATCHES
 
     todo
       fix this https://github.com/jashkenas/coffee-script/issues/2583#issuecomment-9718944
-
-  - Closure Library
-      closure/goog/result/resultutil.js
-        http://code.google.com/p/closure-library/issues/detail?id=495
